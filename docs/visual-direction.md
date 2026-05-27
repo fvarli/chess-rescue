@@ -55,24 +55,40 @@ No fantasy pieces. No imported chess fonts. No PNG sprites.
 
 ## State decoration
 
-| State      | Treatment                                                                                  |
-|------------|--------------------------------------------------------------------------------------------|
-| `danger`   | Threatened king square: inset 2px `danger` border, outer glow `danger@66%`, 1.8s pulse.    |
-| `selected` | Origin square: inset 2px `accent` border, `accent@25%` fill.                               |
-| `legal`    | Empty target: filled `accent` dot at 28% square radius. Occupied: 2px `accent@80%` ring.   |
-| `rescued`  | Destination square: inset 2px `rescue` border, outer glow `rescue@66%`, 320ms scale pop.   |
-| `failed`   | Threatened king square: 180ms `danger` flash, then 300ms ease-out fade.                    |
+| State      | Treatment                                                                                                  |
+|------------|------------------------------------------------------------------------------------------------------------|
+| `danger`   | Threatened king square: 2px `danger` border + outer glow alpha 0.40↔0.65, 2.4s asymmetric breath (40% in / 60% out), 2% scale breath. |
+| `selected` | Origin square: 2.5px `accent` border + `accent@15%` fill, scaled in 0.94→1.0 over 140ms. Selected piece itself lifts to scale 1.05. |
+| `legal`    | Empty target: filled `accent` dot at 28% square radius. Occupied: 2px `accent@80%` ring. Dots fan by Manhattan distance, 24ms/step. |
+| `rescued`  | Destination square: 2px `rescue` border + glow with bloom (1.0→1.08, 280ms) → settle (1.08→1.02, 420ms) → breath loop (alpha 0.45↔0.60, 3s). Rescued knight ambient-lifted to 1.04. |
+| `failed`   | Threatened king square: 140ms `danger` flash + 1px / 2-cycle / 80ms micro-shake → 380ms easeOutCubic fade. |
 
 ## Motion
 
-| Element                      | Duration | Curve            |
-|------------------------------|----------|------------------|
-| Selection ring appear         | 120ms    | ease-out         |
-| Legal-move dots fade in       | 140ms    | ease-out         |
-| Move-commit pause             | 180ms    | linear hold      |
-| Rescue glow ramp + scale pop  | 320ms    | ease-out         |
-| Danger pulse                  | 1800ms   | ease-in-out loop |
-| Headline / hint cross-fade    | 220ms    | ease-out         |
-| Failed flash + fade           | 480ms    | ease-out         |
+All values live in `lib/core/theme/motion.dart` as `MotionTokens` — single source of truth.
 
-Motion is restrained on purpose. The board breathes; it does not perform.
+| Element                            | Duration       | Curve                         |
+|------------------------------------|----------------|-------------------------------|
+| Selection ring scale-in            | 140ms          | easeOutCubic                  |
+| Piece lift (1.0 → 1.05)            | 180ms          | easeOutCubic                  |
+| Legal dot bloom (per dot)          | 180ms          | easeOutCubic                  |
+| Legal dot stagger (per group)      | +24ms each     | distance-ordered              |
+| Commit wind-up (ring contract)     | 80ms           | easeOutCubic                  |
+| Piece slide (commit)               | 220ms          | easeInOutCubic                |
+| Danger pulse                       | 2400ms (40/60) | easeOutSine → easeInSine      |
+| Rescue bloom                       | 280ms          | easeOutCubic                  |
+| Rescue settle                      | 420ms          | easeOutCubic                  |
+| Rescue breath (loop)               | 3000ms         | easeInOutSine                 |
+| Failed hold                        | 140ms          | (flat)                        |
+| Failed fade                        | 380ms          | easeOutCubic                  |
+| Failed micro-shake                 | 80ms / 2 cycles| sine                          |
+| Background gradient transition     | 600ms          | easeOutCubic                  |
+| Headline cross-fade + 6px slide    | 240ms (320 rescued) | easeOutCubic             |
+| Hint cross-fade (delayed)          | 320ms (80 wait)| easeOutCubic                  |
+| Button press in / out              | 80 / 160ms     | easeOut / easeOutCubic        |
+| Failed-state invite breath         | 2400ms loop    | easeInOutSine                 |
+| Board ambient breath               | 4800–6400ms    | easeInOutSine                 |
+| Reset overlay fade                 | 200ms          | easeOutCubic                  |
+| Reset settle                       | 320ms          | easeOutCubic                  |
+
+Motion is restrained on purpose. The board breathes; it does not perform. Symmetric `easeInOut` is deliberately avoided — it reads as machine timing.

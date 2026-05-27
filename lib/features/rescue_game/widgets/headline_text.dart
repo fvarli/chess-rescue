@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/motion.dart';
 import '../game_state.dart';
 
 class HeadlineText extends StatelessWidget {
@@ -25,10 +26,23 @@ class HeadlineText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final duration = state == GameState.rescued
+        ? MotionTokens.rescueHeadlineFade
+        : MotionTokens.headlineFade;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 220),
-      switchInCurve: Curves.easeOut,
+      duration: duration,
+      switchInCurve: MotionTokens.standard,
       switchOutCurve: Curves.easeIn,
+      transitionBuilder: (child, anim) {
+        final offset = Tween<Offset>(
+          begin: Offset(0, MotionTokens.headlineEntryOffsetPx / 100),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: MotionTokens.standard)).animate(anim);
+        return FadeTransition(
+          opacity: anim,
+          child: SlideTransition(position: offset, child: child),
+        );
+      },
       child: Text(
         _text,
         key: ValueKey(_text),
@@ -64,8 +78,16 @@ class HintText extends StatelessWidget {
         AppText.body,
       ),
     };
+    // Hint fades in *after* the headline settles. Implemented as an
+    // AnimatedSwitcher whose switchInCurve waits, then eases.
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 220),
+      duration: MotionTokens.hintFade,
+      switchInCurve: Interval(
+        MotionTokens.hintDelayFraction,
+        1.0,
+        curve: MotionTokens.standard,
+      ),
+      switchOutCurve: const Interval(0.0, 0.4, curve: Curves.easeIn),
       child: Text(
         text,
         key: ValueKey(text),

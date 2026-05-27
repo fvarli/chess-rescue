@@ -1,16 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
+import '../../core/haptics.dart';
 import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
 import '../../core/models/square.dart';
+import '../../core/theme/motion.dart';
 import 'game_state.dart';
 
 class GameController extends ChangeNotifier {
   GameController({Puzzle puzzle = Puzzle.knightRescue}) : _puzzle = puzzle {
-    reset();
+    _pieces = List<Piece>.of(_puzzle.pieces);
+    _statusMsg = '▮ Active threat · Qg2#';
   }
 
   final Puzzle _puzzle;
@@ -22,6 +24,7 @@ class GameController extends ChangeNotifier {
   String _statusMsg = '';
   List<Square> _legalSquares = const [];
   bool _commitInFlight = false;
+  bool _resetInFlight = false;
 
   List<Piece> get pieces => _pieces;
   Piece? get selected => _selected;
@@ -29,8 +32,7 @@ class GameController extends ChangeNotifier {
   String get statusMsg => _statusMsg;
   List<Square> get legalSquares => _legalSquares;
   bool get commitInFlight => _commitInFlight;
-
-  static const Duration _commitPause = Duration(milliseconds: 180);
+  bool get resetInFlight => _resetInFlight;
 
   // For the vertical slice only the rescuing knight (e4) responds to taps.
   // The 8 destinations mirror playable.jsx:14-25 — f6 is the rescue,
@@ -62,7 +64,7 @@ class GameController extends ChangeNotifier {
   }
 
   void handleSquare(int file, int rank) {
-    if (_commitInFlight) return;
+    if (_commitInFlight || _resetInFlight) return;
     if (!_state.isPlayable) return;
 
     final tapped = _pieceAt(file, rank);
@@ -75,7 +77,7 @@ class GameController extends ChangeNotifier {
       _selected = tapped;
       _legalSquares = _legalMovesFor(tapped);
       _state = GameState.selected;
-      HapticFeedback.selectionClick();
+      Haptics.select();
       notifyListeners();
       return;
     }
@@ -103,18 +105,38 @@ class GameController extends ChangeNotifier {
       _selected = tapped;
       _legalSquares = _legalMovesFor(tapped);
       _state = GameState.selected;
-      HapticFeedback.selectionClick();
+      Haptics.select();
       notifyListeners();
     }
   }
 
+  // Phase 11 commit flow:
+  // t=0:    tap haptic + windUp (ring contracts, dots fade out)
+  // t=80:   apply move; AnimatedPositioned slides the piece
+  // t=300:  outcome state + outcome haptic + glow ignition
   Future<void> _commitMove(Square target) async {
     final from = _selected!;
     _commitInFlight = true;
+    Haptics.commitTap();
+    // Clear legal squares immediately so dots fade out.
+    _legalSquares = const [];
     notifyListeners();
 
-    // 180ms emotional pause before revealing outcome.
-    await Future<void>.delayed(_commitPause);
+    await Future<void>.delayed(MotionTokens.commitWindUp);
+
+    final moved = from.copyWith(file: target.file, rank: target.rank);
+    _pieces = [
+      for (final p in _pieces)
+        if (p.id != from.id &&
+            !(p.file == target.file && p.rank == target.rank))
+          p,
+      moved,
+    ];
+    // Keep _selected set during the slide so the ring stays visible —
+    // BoardWidget reads commitInFlight to know to contract+fade the ring.
+    notifyListeners();
+
+    await Future<void>.delayed(MotionTokens.pieceSlide);
 
     final isRescue =
         target == _puzzle.rescueTo &&
@@ -122,37 +144,43 @@ class GameController extends ChangeNotifier {
         from.file == _puzzle.rescueFrom.file &&
         from.rank == _puzzle.rescueFrom.rank;
 
-    // Apply the visual move regardless of outcome.
-    final moved = from.copyWith(file: target.file, rank: target.rank);
-    _pieces = [
-      for (final p in _pieces)
-        if (p != from && !(p.file == target.file && p.rank == target.rank)) p,
-      moved,
-    ];
     _selected = null;
-    _legalSquares = const [];
     _commitInFlight = false;
-
     if (isRescue) {
       _state = GameState.rescued;
       _statusMsg = '◐ Attack broken · Nf6+';
-      HapticFeedback.mediumImpact();
+      Haptics.rescue();
     } else {
       _state = GameState.failed;
       _statusMsg = '▮ Still trapped';
-      HapticFeedback.heavyImpact();
+      Haptics.fail();
     }
     notifyListeners();
   }
 
-  void reset() {
+  // Phase 11 reset flow (no snap):
+  // t=0:    resetInFlight=true → BoardWidget fades the rescue/fail overlay
+  // t=200:  pieces + state snap back to canonical; AnimatedPositioned
+  //         slides anything that moved (knight back to e4) + state crossfade
+  // t=520:  resetInFlight clears, full interactivity restored
+  // The button itself plays its haptic — controller does not fire haptic.
+  Future<void> reset() async {
+    if (_resetInFlight) return;
+    _resetInFlight = true;
+    notifyListeners();
+
+    await Future<void>.delayed(MotionTokens.resetOverlayFade);
+
     _pieces = List<Piece>.of(_puzzle.pieces);
     _selected = null;
     _legalSquares = const [];
     _state = GameState.danger;
     _statusMsg = '▮ Active threat · Qg2#';
     _commitInFlight = false;
-    HapticFeedback.selectionClick();
+    notifyListeners();
+
+    await Future<void>.delayed(MotionTokens.resetSettle);
+    _resetInFlight = false;
     notifyListeners();
   }
 }

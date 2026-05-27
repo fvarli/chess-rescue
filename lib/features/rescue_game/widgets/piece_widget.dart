@@ -2,19 +2,36 @@ import 'package:flutter/material.dart';
 
 import '../../../core/models/piece.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/motion.dart';
 
 class PieceWidget extends StatelessWidget {
-  const PieceWidget({super.key, required this.piece, required this.size});
+  const PieceWidget({
+    super.key,
+    required this.piece,
+    required this.size,
+    this.liftedScale = 1.0,
+  });
 
   final Piece piece;
   final double size;
 
+  // Animated target scale, applied via Transform.scale wrapping the painter.
+  // 1.0 = at rest, 1.05 = selected (lifted), 1.04 = rescued (held lift).
+  final double liftedScale;
+
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      child: CustomPaint(
-        size: Size.square(size),
-        painter: _PiecePainter(type: piece.type, color: piece.color),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: liftedScale),
+        duration: MotionTokens.pieceLift,
+        curve: MotionTokens.standard,
+        builder: (context, scale, child) =>
+            Transform.scale(scale: scale, child: child),
+        child: CustomPaint(
+          size: Size.square(size),
+          painter: _PiecePainter(type: piece.type, color: piece.color),
+        ),
       ),
     );
   }

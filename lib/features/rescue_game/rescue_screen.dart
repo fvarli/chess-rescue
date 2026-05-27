@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/motion.dart';
 import 'game_controller.dart';
 import 'game_state.dart';
 import 'widgets/board_widget.dart';
@@ -42,10 +43,11 @@ class _RescueScreenState extends State<RescueScreen> {
             fit: StackFit.expand,
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 320),
+                duration: MotionTokens.gradientTransition,
+                curve: MotionTokens.standard,
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
-                    center: const Alignment(0, -0.2),
+                    center: Alignment(0, isRescued ? -0.1 : -0.2),
                     radius: 0.9,
                     colors: [
                       isRescued
@@ -90,6 +92,9 @@ class _RescueScreenState extends State<RescueScreen> {
                             state: _game.state,
                             threatenedKing: _game.puzzle.threatenedKing,
                             rescueTo: _game.puzzle.rescueTo,
+                            rescueFrom: _game.puzzle.rescueFrom,
+                            commitInFlight: _game.commitInFlight,
+                            resetInFlight: _game.resetInFlight,
                             onTapSquare: _game.handleSquare,
                           ),
                           const SizedBox(height: 28),
