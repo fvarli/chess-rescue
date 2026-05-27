@@ -1,0 +1,151 @@
+# =========================================================
+# Chess Rescue — Flutter + Design Exploration .gitignore
+# =========================================================
+
+# -------------------------
+# OS / File Manager
+# -------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -------------------------
+# IDE / Editor
+# -------------------------
+.idea/
+.vscode/
+*.iml
+
+# JetBrains
+*.ipr
+*.iws
+
+# VSCode local settings
+.history/
+
+# -------------------------
+# Flutter / Dart
+# -------------------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+.pub-cache/
+build/
+
+# Flutter generated
+.flutter-versions
+.flutter-settings
+
+# -------------------------
+# Android
+# -------------------------
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# Signing
+android/key.properties
+android/**/key.jks
+android/**/key.keystore
+*.jks
+*.keystore
+
+# Local config
+android/local.properties
+
+# -------------------------
+# iOS
+# -------------------------
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# Xcode
+ios/Runner.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# -------------------------
+# macOS
+# -------------------------
+macos/Pods/
+
+# -------------------------
+# Linux / Windows build
+# -------------------------
+linux/flutter/ephemeral/
+windows/flutter/ephemeral/
+
+# -------------------------
+# Test / Coverage
+# -------------------------
+coverage/
+*.lcov
+
+# -------------------------
+# Logs
+# -------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+flutter_*.log
+
+# -------------------------
+# Environment / Secrets
+# -------------------------
+.env
+.env.*
+!.env.example
+
+# API keys / service configs
+google-services.json
+GoogleService-Info.plist
+
+# -------------------------
+# Temporary / Cache
+# -------------------------
+tmp/
+temp/
+.cache/
+
+# -------------------------
+# Claude / AI tooling
+# -------------------------
+.claude/
+claude-output/
+claude-temp/
+.ai/
+.prompts-cache/
+
+# -------------------------
+# Design exports
+# -------------------------
+exports/
+renders/
+screenshots/
+recordings/
+
+# Keep docs tracked
+!docs/
+
+# -------------------------
+# Node / React (if tooling added later)
+# -------------------------
+node_modules/
+dist/
+.next/
+.vercel/
+
+# -------------------------
+# Misc
+# -------------------------
+*.swp
+*.swo
+*~

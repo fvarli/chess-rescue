@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chess Rescue · Direction Exploration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #f0eee9; }
+    body { font-family: 'Inter Tight', Inter, system-ui, sans-serif; }
+    @keyframes cr-dangerPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes cr-fadein {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="../components/design-canvas.jsx"></script>
+  <script type="text/babel" src="../components/primitives.jsx"></script>
+  <script type="text/babel" src="../components/d1-tactical.jsx"></script>
+  <script type="text/babel" src="../components/d2-cinematic.jsx"></script>
+  <script type="text/babel" src="../components/d3-calm.jsx"></script>
+  <script type="text/babel" src="../components/d4-converge.jsx"></script>
+  <script type="text/babel" src="../components/d5-daily.jsx"></script>
+  <script type="text/babel" src="../components/playable.jsx"></script>
+
+  <script type="text/babel">
+    // Pull components out of window (each direction script Object.assigns its
+    // exports onto window). Style objects are intentionally local-scoped per
+    // direction; no global `styles` collisions.
+    const {
+      D1, D2, D3, D4, D5, PlayableRescue,
+    } = window;
+
+    const PHONE_W = 360;
+    const PHONE_H = 740;
+    const SHOT_W = 720;
+    const SHOT_H = 1280;
+    const ICON_W = 220;
+    const ICON_H = 220;
+    const NOTES_W = 460;
+    const NOTES_H = 740;
+
+    function Intro() {
+      return (
+        <div style={{
+          width: 720, padding: '40px 48px', fontFamily: '"Inter Tight", Inter, system-ui, sans-serif',
+          color: '#1d1b18',
+        }}>
+          <div style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace',
+            fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'rgba(40,30,20,0.6)' }}>
+            mid-fi emotional exploration · v2 — piece system added
+          </div>
+          <div style={{ fontSize: 48, fontWeight: 600, lineHeight: 1.04,
+            letterSpacing: '-0.025em', marginTop: 12 }}>
+            Chess Rescue
+            <span style={{ color: 'rgba(40,30,20,0.4)', fontWeight: 400 }}> · five visual directions</span>
+          </div>
+          <div style={{ fontSize: 15, color: 'rgba(40,30,20,0.7)', lineHeight: 1.6, marginTop: 16, maxWidth: 580 }}>
+            A short-session comeback puzzle game. Player drops into a losing position; one move rescues
+            the king. <strong>Tactical Sci-Fi Restraint</strong> is the primary foundation — every direction below
+            inherits its HUD discipline and adds an emotional layer (cinematic, calm, daily-ritual, or both).
+            All five share the same custom <strong>chess piece set</strong> (shown in the next section) and the same
+            puzzle moment (mate-in-1, white to move, rescue = Nf6+) for apples-to-apples comparison.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginTop: 28 }}>
+            {[
+              ['01 · Tactical Sci-Fi Restraint', 'HUD-precise, monospace, surgical accents — the primary foundation.'],
+              ['02 · Cinematic Survival', 'Letterboxed, vignetted, single-word headlines — Play Store stop-scroll.'],
+              ['03 · Calm Danger', 'Amber pulse instead of alarm red. Retention-first, low-fatigue.'],
+              ['04 · Convergence A · Tactical × Cinematic', 'The recommended hybrid: HUD clarity, cinematic flourishes.'],
+              ['05 · Convergence B · Daily Ritual', 'A puzzle-of-the-day frame. Stats, streak, no clock pressure.'],
+            ].map(([k, v]) => (
+              <div key={k} style={{
+                padding: 14, background: '#fff8eb',
+                border: '1px solid rgba(0,0,0,0.08)', borderRadius: 8,
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.02em' }}>{k}</div>
+                <div style={{ fontSize: 12, color: 'rgba(40,30,20,0.7)', marginTop: 4, lineHeight: 1.5 }}>{v}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 28, padding: 16, background: '#fff8eb',
+            border: '1px dashed rgba(0,0,0,0.18)', borderRadius: 8,
+            fontSize: 13, color: 'rgba(40,30,20,0.8)', lineHeight: 1.6 }}>
+            ↘ Drag artboards to reorder.  ↘ Click the expand icon (top-right of each artboard) to focus a single
+            screen fullscreen.  ↘ The first artboard below is <strong>live and playable</strong> — tap the white
+            knight, then tap f6.
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <DesignCanvas>
+          <DCSection id="intro" title="Chess Rescue · Five mid-fi directions"
+            subtitle="Apples-to-apples comparison · same puzzle moment, same rescue move (Nf6+)">
+            <DCArtboard id="intro-text" label="Brief" width={720} height={520}>
+              <Intro />
+            </DCArtboard>
+            <DCArtboard id="playable" label="▶ LIVE · tap knight, then f6" width={PHONE_W} height={PHONE_H}>
+              <PlayableRescue />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="system" title="Piece + Board System"
+            subtitle="The set is the product. Designed for instant recognition at touch-target size.">
+            <DCArtboard id="piece-study" label="A · Piece set studies" width={780} height={680}>
+              <PieceStudy
+                palette={D4.T4 && {
+                  light: '#eaeaf2',
+                  dark: '#0c0d14',
+                  lightStroke: 'rgba(12,13,20,0.55)',
+                  darkStroke: 'rgba(234,234,242,0.22)',
+                  boardLight: '#3a3e4c',
+                  sw: 1.15,
+                }}
+                bg="#11141a"
+                accent="#ff5a4c"
+              />
+            </DCArtboard>
+            <DCArtboard id="board-study" label="B · Board material studies" width={780} height={520}>
+              <BoardStudy
+                bg="#11141a"
+                themes={[
+                  { name: 'Matte HUD', accent: '#ff4538', note: 'D1 · Deep slate squares + faint grid lines. Tactical clarity, no chrome.',
+                    theme: { light: '#2d3038', dark: '#161922', danger: '#ff4538', rescue: '#6fe0c0',
+                      gridLines: true, piecePalette: { light: '#e8e6df', dark: '#0c0d12', lightStroke: 'rgba(10,12,16,0.55)', darkStroke: 'rgba(232,230,223,0.22)', sw: 1.1 } } },
+                  { name: 'Warm cinema', accent: '#ef3a2a', note: 'D2 · Earth-warm squares + drop shadow. Reads as a film frame, not a screen.',
+                    theme: { light: '#5b4a3e', dark: '#1f1612', danger: '#ef3a2a', rescue: '#7adfb4',
+                      boardShadow: '0 12px 30px rgba(0,0,0,0.5)',
+                      piecePalette: { light: '#f0e6d2', dark: '#160e0c', lightStroke: 'rgba(0,0,0,0.6)', darkStroke: 'rgba(244,236,224,0.18)', sw: 1.0 } } },
+                  { name: 'Stone & sage', accent: '#e5a64b', note: 'D3 · Warm stone over slate. Long-session friendly, low contrast tension.',
+                    theme: { light: '#cfc6b2', dark: '#3a4146', danger: '#e5a64b', rescue: '#94c4a3',
+                      piecePalette: { light: '#ece4d4', dark: '#1f2326', lightStroke: 'rgba(31,35,38,0.5)', darkStroke: 'rgba(236,228,212,0.18)', sw: 1.1 } } },
+                ]}
+              />
+            </DCArtboard>
+            <DCArtboard id="piece-notes" label="C · Design rationale" width={NOTES_W} height={680}>
+              <div style={{
+                width: '100%', height: '100%', padding: 32,
+                background: '#f8f6f1', color: '#1d1b18',
+                fontFamily: '"Inter Tight", Inter, system-ui, sans-serif',
+                fontSize: 12.5, lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: 14,
+              }}>
+                <div>
+                  <div style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase',
+                    color: 'rgba(40,30,20,0.55)' }}>piece + board rationale</div>
+                  <div style={{ fontSize: 22, fontWeight: 600, marginTop: 4, color: '#c96442',
+                    letterSpacing: '-0.01em' }}>
+                    Custom pieces, not Staunton
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', opacity: 0.7 }}>Silhouette discipline</div>
+                  <div>Each piece reduces its iconic feature to the minimum that still reads: cross + finial
+                    bead (K), five-point crown (Q), four crenellations (R), pointed mitre with single slit (B),
+                    horse-head profile facing left (N), spherical head + neck (P). All share a common base
+                    (lower-and-upper collar + foot ellipse) so the set reads as a family.</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', opacity: 0.7 }}>Touch-target legibility</div>
+                  <div>Tested at 36px on a 40px square (real gameplay size on a 360-wide phone). All six
+                    pieces remain distinguishable; the rook reads first, then king/queen by crown shape,
+                    knight by snout, bishop by pointed head, pawn by spherical head.</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', opacity: 0.7 }}>Material per direction</div>
+                  <div>Pieces inherit a <code>piecePalette</code> from each direction's board theme. Light/dark
+                    fills + outline colors shift to match the surface (e.g. warmer ivory on D2's earthy board,
+                    cooler bone on D1's matte HUD). The geometry never changes.</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', opacity: 0.7 }}>Danger state</div>
+                  <div>The threatened king picks up an accent-color drop-shadow rim — visible at all sizes
+                    without changing the silhouette, so the player's eye snaps to it during the 2-second scan.</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', opacity: 0.7 }}>What's deliberately missing</div>
+                  <div>No wood grain. No marble. No bevel-and-emboss. No 3D render. No glow on every piece —
+                    only the king under threat. No decorative beads on the queen's crown stack. The pieces
+                    are flat silhouettes that <em>read</em> as 3D sculpture, not <em>are</em> 3D renders.</div>
+                </div>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="d1" title="01 · Tactical Sci-Fi Restraint"
+            subtitle="HUD-precise, monospace, surgical accents · primary foundation">
+            <DCArtboard id="d1-home" label="A · Home" width={PHONE_W} height={PHONE_H}><D1.T1Home /></DCArtboard>
+            <DCArtboard id="d1-gameplay" label="B · Gameplay · Danger" width={PHONE_W} height={PHONE_H}><D1.T1Gameplay /></DCArtboard>
+            <DCArtboard id="d1-selected" label="C · Piece selected" width={PHONE_W} height={PHONE_H}><D1.T1Selected /></DCArtboard>
+            <DCArtboard id="d1-rescue" label="D · Rescue" width={PHONE_W} height={PHONE_H}><D1.T1Rescue /></DCArtboard>
+            <DCArtboard id="d1-retry" label="E · Still trapped" width={PHONE_W} height={PHONE_H}><D1.T1Retry /></DCArtboard>
+            <DCArtboard id="d1-onb" label="F · Onboarding" width={PHONE_W} height={PHONE_H}><D1.T1Onboarding /></DCArtboard>
+            <DCArtboard id="d1-shot" label="G · Play Store" width={SHOT_W} height={SHOT_H}><D1.T1Screenshot /></DCArtboard>
+            <DCArtboard id="d1-icon" label="H · Icon" width={ICON_W} height={ICON_H}><D1.T1Icon /></DCArtboard>
+            <DCArtboard id="d1-notes" label="I · Notes" width={NOTES_W} height={NOTES_H}>
+              <Notes
+                title="Tactical Sci-Fi Restraint"
+                subtitle="Direction 01 · Primary foundation"
+                palette={['#0a0c10','#171b22','#2d3038','#ff4538','#6fe0c0','#e8e6df']}
+                accent="#ff4538"
+                why="Reads as a tactical HUD: matte dark surfaces, monospace timestamps, surgical red/cyan accents. The board feels like an instrument. No decoration competes with the position; danger and rescue are conveyed by a single color shift."
+                feeling="Composed, alert, professional. The player feels like an operator, not a hobbyist. Loss feels diagnostic rather than punitive."
+                signal="Modern, premium, anti-Chess.com. Stops scrolls because it doesn't look like a chess app — it looks like something more serious."
+                risks="Risk of feeling cold. The red HUD glow during danger must stay restrained — one element, not many. Monospace must be saved for status, not body."
+                attracts="Late-20s+ professionals, ex-strategy-gamers, players turned off by gamified UIs. High intent, slower-burn install."
+              />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="d2" title="02 · Cinematic Survival"
+            subtitle="Letterboxed, vignetted, single-word headlines · acquisition layer">
+            <DCArtboard id="d2-home" label="A · Home" width={PHONE_W} height={PHONE_H}><D2.T2Home /></DCArtboard>
+            <DCArtboard id="d2-gameplay" label="B · Gameplay · Danger" width={PHONE_W} height={PHONE_H}><D2.T2Gameplay /></DCArtboard>
+            <DCArtboard id="d2-rescue" label="C · Rescue" width={PHONE_W} height={PHONE_H}><D2.T2Rescue /></DCArtboard>
+            <DCArtboard id="d2-retry" label="D · Still trapped" width={PHONE_W} height={PHONE_H}><D2.T2Retry /></DCArtboard>
+            <DCArtboard id="d2-onb" label="E · Onboarding" width={PHONE_W} height={PHONE_H}><D2.T2Onboarding /></DCArtboard>
+            <DCArtboard id="d2-shot" label="F · Play Store" width={SHOT_W} height={SHOT_H}><D2.T2Screenshot /></DCArtboard>
+            <DCArtboard id="d2-icon" label="G · Icon" width={ICON_W} height={ICON_H}><D2.T2Icon /></DCArtboard>
+            <DCArtboard id="d2-notes" label="H · Notes" width={NOTES_W} height={NOTES_H}>
+              <Notes
+                title="Cinematic Survival"
+                subtitle="Direction 02 · Emotional acquisition layer"
+                palette={['#0b0807','#1a0f0c','#5b4a3e','#ef3a2a','#7adfb4','#f4ece0']}
+                accent="#ef3a2a"
+                why="Frames each puzzle as a film scene: warm vignette, letterboxing, heavy italic sans-display headlines. The board sits in the spotlight; everything else recedes. Big, single-word emotional copy ('Rescued.', 'Still trapped.')."
+                feeling="Stakes. Drama. The player feels like the protagonist of a survival moment, not the user of an app."
+                signal="Best Play Store performance of the five. Stops scrolling fastest because the screenshots look like trailer stills, not game UI."
+                risks="Italic display type on small phones can feel decorative — must be reserved for emotional beats only, never on the gameplay HUD. Vignette must not eat board contrast at the corners."
+                attracts="Story-driven mobile gamers, casual narrative players, the Monument-Valley / Alto's-Odyssey audience who don't think of themselves as 'chess players'."
+              />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="d3" title="03 · Calm Danger / Restrained Drama"
+            subtitle="Amber pulse instead of alarm red · retention stabilizer">
+            <DCArtboard id="d3-home" label="A · Home" width={PHONE_W} height={PHONE_H}><D3.T3Home /></DCArtboard>
+            <DCArtboard id="d3-gameplay" label="B · Gameplay · Danger" width={PHONE_W} height={PHONE_H}><D3.T3Gameplay /></DCArtboard>
+            <DCArtboard id="d3-rescue" label="C · Rescue" width={PHONE_W} height={PHONE_H}><D3.T3Rescue /></DCArtboard>
+            <DCArtboard id="d3-retry" label="D · Near miss" width={PHONE_W} height={PHONE_H}><D3.T3Retry /></DCArtboard>
+            <DCArtboard id="d3-onb" label="E · Onboarding" width={PHONE_W} height={PHONE_H}><D3.T3Onboarding /></DCArtboard>
+            <DCArtboard id="d3-shot" label="F · Play Store" width={SHOT_W} height={SHOT_H}><D3.T3Screenshot /></DCArtboard>
+            <DCArtboard id="d3-icon" label="G · Icon" width={ICON_W} height={ICON_H}><D3.T3Icon /></DCArtboard>
+            <DCArtboard id="d3-notes" label="H · Notes" width={NOTES_W} height={NOTES_H}>
+              <Notes
+                title="Calm Danger / Restrained Drama"
+                subtitle="Direction 03 · Retention stabilizer"
+                palette={['#171a1c','#1f2326','#cfc6b2','#e5a64b','#94c4a3','#ece4d4']}
+                accent="#e5a64b"
+                why="Re-encodes danger as warmth (amber pulse) instead of alarm (sharp red). Generous whitespace, softer typography, mature warm-charcoal palette. The session feels like reading rather than alerting."
+                feeling="Quiet pressure. The player understands they're in trouble but doesn't feel attacked by the UI. Failure is a 'near miss', not a punishment."
+                signal="Mature, premium, NYT-Games-adjacent. Slower acquisition but the people who install are very likely to come back tomorrow."
+                risks="Amber-as-danger may take ~2 puzzles to learn. The first onboarding screen must make 'orange = your king is threatened' explicit."
+                attracts="Long-session adults, NYT Games subscribers, people who play one puzzle with morning coffee. Low novelty-seeking, high habit-forming."
+              />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="d4" title="04 · Convergence A · Tactical × Cinematic"
+            subtitle="HUD clarity + cinematic flourishes · recommended hybrid">
+            <DCArtboard id="d4-home" label="A · Home" width={PHONE_W} height={PHONE_H}><D4.T4Home /></DCArtboard>
+            <DCArtboard id="d4-gameplay" label="B · Gameplay · Danger" width={PHONE_W} height={PHONE_H}><D4.T4Gameplay /></DCArtboard>
+            <DCArtboard id="d4-rescue" label="C · Rescue" width={PHONE_W} height={PHONE_H}><D4.T4Rescue /></DCArtboard>
+            <DCArtboard id="d4-retry" label="D · Not yet" width={PHONE_W} height={PHONE_H}><D4.T4Retry /></DCArtboard>
+            <DCArtboard id="d4-onb" label="E · Onboarding (with rescue arrow)" width={PHONE_W} height={PHONE_H}><D4.T4Onboarding /></DCArtboard>
+            <DCArtboard id="d4-shot" label="F · Play Store" width={SHOT_W} height={SHOT_H}><D4.T4Screenshot /></DCArtboard>
+            <DCArtboard id="d4-icon" label="G · Icon" width={ICON_W} height={ICON_H}><D4.T4Icon /></DCArtboard>
+            <DCArtboard id="d4-notes" label="H · Notes" width={NOTES_W} height={NOTES_H}>
+              <Notes
+                title="Convergence A · Tactical × Cinematic"
+                subtitle="Direction 04 · Recommended hybrid"
+                palette={['#0d0e12','#161821','#3a3e4c','#ff5a4c','#5ee2c0','#eaeaf2']}
+                accent="#5ee2c0"
+                why="The HUD discipline of D1 during gameplay (rounded glass status pill, monospace threat readouts, surgical accent dots) plus the D2 cinematic flourish at emotional beats (big 'Rescued.' headline, radial glow on the rescue square, single accent gradient on the home title)."
+                feeling="Tense but legible. Heroic but not theatrical. Players feel both 'I can read this fast' and 'this is dramatic when it matters'."
+                signal="Reads modern in screenshots AND survives long sessions. The strongest single-direction balance of acquisition and retention."
+                risks="Two visual systems coexisting; the boundary between 'HUD mode' and 'cinematic moment' must be explicit (rescue = unmistakably different). Without discipline this slides toward generic dark gaming UI."
+                attracts="The broadest audience of the five. Strategy gamers AND emotional puzzle players. Highest projected D1 retention; second-best Play Store CTR after D2."
+              />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="d5" title="05 · Convergence B · Daily Ritual"
+            subtitle="Stats, streak, no clock pressure · the long-haul candidate">
+            <DCArtboard id="d5-home" label="A · Home" width={PHONE_W} height={PHONE_H}><D5.T5Home /></DCArtboard>
+            <DCArtboard id="d5-gameplay" label="B · Gameplay" width={PHONE_W} height={PHONE_H}><D5.T5Gameplay /></DCArtboard>
+            <DCArtboard id="d5-rescue" label="C · Rescue" width={PHONE_W} height={PHONE_H}><D5.T5Rescue /></DCArtboard>
+            <DCArtboard id="d5-retry" label="D · Near miss" width={PHONE_W} height={PHONE_H}><D5.T5Retry /></DCArtboard>
+            <DCArtboard id="d5-onb" label="E · Onboarding" width={PHONE_W} height={PHONE_H}><D5.T5Onboarding /></DCArtboard>
+            <DCArtboard id="d5-shot" label="F · Play Store" width={SHOT_W} height={SHOT_H}><D5.T5Screenshot /></DCArtboard>
+            <DCArtboard id="d5-icon" label="G · Icon" width={ICON_W} height={ICON_H}><D5.T5Icon /></DCArtboard>
+            <DCArtboard id="d5-notes" label="H · Notes" width={NOTES_W} height={NOTES_H}>
+              <Notes
+                title="Convergence B · Daily Ritual"
+                subtitle="Direction 05 · Retention-first"
+                palette={['#16161a','#1e1e23','#d4cab6','#d96152','#7fc7a7','#f0ebe1']}
+                accent="#d96152"
+                why="Treats each puzzle as a small daily event — date stamp, puzzle number, stats card with streak/time/solved. Tactical legibility with a humanist italic-sans editorial voice that says 'this is a daily ritual, not a game session'."
+                feeling="Calm anticipation. The player checks in like they check the weather. Failure is recoverable because there's always tomorrow's puzzle."
+                signal="The Wordle / NYT Games comparison gets made instantly. Strong word-of-mouth potential, weaker first-impression spectacle."
+                risks="If the daily-puzzle frame is real, content cadence is hard for an indie MVP. If it's just framing, the user notices. Streak counter introduces guilt — must be optional."
+                attracts="People who do one puzzle a day and stop. Crossword crowd, language-app dropouts, anyone who's ever said 'I don't have time for chess'. Lowest churn, lowest install rate."
+              />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="eval" title="Evaluation · The 10-point check"
+            subtitle="How each direction scores on the brief's criteria">
+            <DCArtboard id="eval-matrix" label="Scorecard" width={NOTES_W * 1.6} height={680}>
+              <div style={{
+                width: '100%', height: '100%', padding: 28,
+                background: '#f8f6f1', color: '#1d1b18',
+                fontFamily: 'Inter Tight, system-ui, sans-serif', fontSize: 12,
+              }}>
+                <div style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase',
+                  color: 'rgba(40,30,20,0.55)' }}>direction scorecard</div>
+                <div style={{ fontSize: 22, fontWeight: 600, marginTop: 4, letterSpacing: '-0.01em' }}>
+                  Where each direction wins
+                </div>
+                <table style={{
+                  width: '100%', marginTop: 18, borderCollapse: 'collapse',
+                }}>
+                  <thead>
+                    <tr style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase',
+                      color: 'rgba(40,30,20,0.5)', textAlign: 'left' }}>
+                      <th style={{ padding: '6px 8px', fontWeight: 500 }}>criterion</th>
+                      <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'center' }}>01</th>
+                      <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'center' }}>02</th>
+                      <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'center' }}>03</th>
+                      <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'center', color: '#c96442' }}>04 ★</th>
+                      <th style={{ padding: '6px 8px', fontWeight: 500, textAlign: 'center' }}>05</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ['Board dominant', 5, 5, 4, 5, 5],
+                      ['Pieces readable instantly', 5, 5, 5, 5, 5],
+                      ['Danger readable instantly', 5, 4, 3, 5, 4],
+                      ['Rescue feels relieving', 3, 5, 4, 5, 4],
+                      ['Retry feels recoverable', 3, 4, 5, 4, 5],
+                      ['Tactile interaction', 4, 3, 4, 5, 4],
+                      ['Avoids generic chess app', 5, 5, 4, 5, 5],
+                      ['Stop-scroll on Play Store', 4, 5, 3, 5, 3],
+                      ['Long-session fatigue', 3, 2, 5, 4, 5],
+                      ['Premium without fake luxury', 5, 4, 5, 5, 4],
+                      ['Indie-MVP sustainable', 5, 3, 5, 4, 4],
+                    ].map(([label, ...scores], i) => (
+                      <tr key={i} style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                        <td style={{ padding: '8px', fontSize: 12 }}>{label}</td>
+                        {scores.map((s, j) => (
+                          <td key={j} style={{ padding: '8px', textAlign: 'center' }}>
+                            <span style={{
+                              display: 'inline-block', minWidth: 18,
+                              fontSize: 11, fontWeight: 500,
+                              color: s >= 5 ? '#1d8b5f' : s >= 4 ? '#1d1b18' : 'rgba(40,30,20,0.5)',
+                            }}>{'●'.repeat(s)}<span style={{ color: 'rgba(0,0,0,0.1)' }}>{'●'.repeat(5-s)}</span></span>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div style={{ marginTop: 18, padding: 14, background: '#fff8eb',
+                  borderRadius: 8, fontSize: 12.5, lineHeight: 1.6, color: 'rgba(40,30,20,0.85)' }}>
+                  <strong style={{ color: '#c96442' }}>Recommendation:</strong> Lead with <strong>04 Convergence A</strong> as the primary
+                  direction (best aggregate score, balanced acquisition + retention). Cherry-pick <strong>02 Cinematic
+                  Survival's</strong> screenshot framing for Play Store assets only. Hold <strong>05 Daily Ritual</strong> as a
+                  fallback for a v2 retention pivot if D1 churn is high.
+                </div>
+              </div>
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
