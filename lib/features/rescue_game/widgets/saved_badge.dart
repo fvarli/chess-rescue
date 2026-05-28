@@ -6,10 +6,19 @@ import '../../../core/theme/app_theme.dart';
 // Long-press is a hidden debug reset (wired via onReset) — it knows nothing
 // about storage.
 class SavedBadge extends StatelessWidget {
-  const SavedBadge({super.key, required this.count, required this.onReset});
+  const SavedBadge({
+    super.key,
+    required this.count,
+    required this.onReset,
+    this.complete = false,
+  });
 
   final int count;
   final VoidCallback onReset;
+
+  // Once every puzzle is saved, the badge gently shifts to the rescue color —
+  // a quiet, persistent pride marker.
+  final bool complete;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +30,7 @@ class SavedBadge extends StatelessWidget {
         child: Text(
           '$count SAVED',
           style: AppText.mono.copyWith(
-            color: AppColors.textMuted,
+            color: complete ? AppColors.rescue : AppColors.textMuted,
             fontSize: 9.5,
           ),
         ),

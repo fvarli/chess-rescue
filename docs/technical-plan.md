@@ -119,6 +119,15 @@ A brand-new player gets a *light-touch* cold open — the normal game, gently bi
   3. **Held first rescue** — `BoardWidget.extendedSettle` lengthens the rescue glow's settle by `MotionTokens.firstRescueSettleExtra` (the bloom stays fixed; `bloomEnd` is computed from the live `_rescueBloom.duration`). No CTA delay.
 - **Additive motion tokens only:** `firstRescueSettleExtra`, `focusCueFade`, `focusCueAlphaMin/Max`, `focusCueFillAlpha`. Existing tokens unchanged.
 
+## Phase 16 — Session flow polish
+
+A quiet, intentional close to the 5-puzzle sequence (calm pride, not arcade victory). Same screen, no modal/results screen, no controller logic change (`allComplete`/`hasNext` already exist).
+
+- **Completion footnote:** `HintText.complete` (passed only when `state == rescued && allComplete && !hasNext`) renders the normal success explanation plus a subtle second line — **"The board is quiet now."** (`AppText.body`, `textMuted`, sentence case) — beneath it. It reads as an afterthought; "Rescued." stays the hero headline.
+- **Badge completion tint:** `SavedBadge.complete` (= `allComplete`) shifts the badge text to the rescue color (mint) — a quiet, persistent pride marker; copy unchanged.
+- **Footer** stays "Start over ↻"; the surrounding treatment makes it feel intentional.
+- After **Start over**, `allComplete` stays true (badge stays mint) but `hasNext` is true again, so the footnote only returns once the player completes puzzle 5 again.
+
 ## What is intentionally out of scope
 
 - A real legal-move generator (knight moves, slider pieces, check detection).

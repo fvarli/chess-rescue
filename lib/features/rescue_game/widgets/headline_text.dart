@@ -62,6 +62,7 @@ class HintText extends StatelessWidget {
     required this.failureHint,
     required this.successExplanation,
     this.onboarding = false,
+    this.complete = false,
   });
 
   final GameState state;
@@ -73,6 +74,10 @@ class HintText extends StatelessWidget {
   // First-run only: evocative, non-instructional copy for the cold open.
   // Rescued falls through to the normal explanation.
   final bool onboarding;
+
+  // True only on the final puzzle's rescued screen once all five are saved.
+  // Adds a quiet completion footnote beneath the success explanation.
+  final bool complete;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +115,27 @@ class HintText extends StatelessWidget {
               AppText.body,
             ),
           };
+    // On the final completion, a quiet footnote sits beneath the success line.
+    final Widget child = complete
+        ? Column(
+            key: const ValueKey('complete'),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(text, style: style, textAlign: TextAlign.center),
+              const SizedBox(height: 6),
+              Text(
+                'The board is quiet now.',
+                style: AppText.body.copyWith(color: AppColors.textMuted),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )
+        : Text(
+            text,
+            key: ValueKey(text),
+            style: style,
+            textAlign: TextAlign.center,
+          );
     // Hint fades in *after* the headline settles. Implemented as an
     // AnimatedSwitcher whose switchInCurve waits, then eases.
     return AnimatedSwitcher(
@@ -120,12 +146,7 @@ class HintText extends StatelessWidget {
         curve: MotionTokens.standard,
       ),
       switchOutCurve: const Interval(0.0, 0.4, curve: Curves.easeIn),
-      child: Text(
-        text,
-        key: ValueKey(text),
-        style: style,
-        textAlign: TextAlign.center,
-      ),
+      child: child,
     );
   }
 }

@@ -44,6 +44,8 @@ class _RescueScreenState extends State<RescueScreen> {
         builder: (context, _) {
           final isRescued = _game.state == GameState.rescued;
           final puzzle = _game.currentPuzzle;
+          final sequenceComplete =
+              isRescued && _game.allComplete && !_game.hasNext;
           final buttonLabel = switch (_game.state) {
             GameState.rescued =>
               _game.hasNext ? 'Next puzzle  ↦' : 'Start over  ↻',
@@ -95,6 +97,7 @@ class _RescueScreenState extends State<RescueScreen> {
                                 SavedBadge(
                                   count: _game.completedCount,
                                   onReset: _game.resetProgress,
+                                  complete: _game.allComplete,
                                 ),
                             ],
                           ),
@@ -134,6 +137,7 @@ class _RescueScreenState extends State<RescueScreen> {
                             failureHint: puzzle.failureHint,
                             successExplanation: puzzle.successExplanation,
                             onboarding: _game.isOnboarding,
+                            complete: sequenceComplete,
                           ),
                           const Spacer(),
                           FooterButton(

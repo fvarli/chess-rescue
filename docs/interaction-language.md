@@ -100,6 +100,16 @@ The very first launch is a *light-touch cold open*: the normal game, gently bias
 
 After the first rescue is survived, the flag is set and the cold open never returns — relaunches resume the saved puzzle in `danger` with the normal copy and no focus cue. The debug reset (long-press SAVED badge) re-arms it for testing.
 
+## Phase 16 — Session close
+
+Completing all five is a quiet exhale, not a celebration. On the final puzzle's rescued screen (and only there):
+
+- "Rescued." stays the hero headline. Beneath the usual success line, a soft, secondary footnote appears: **"The board is quiet now."** — reflective, restrained, like an afterthought.
+- The **SAVED badge** gently turns mint once all five are saved, and stays mint as a quiet, permanent marker (copy unchanged).
+- The footer stays **"Start over ↻"** — a deliberate choice to replay, framed by the calm close rather than an auto-loop.
+
+After "Start over", the badge stays mint but the footnote only returns when the player completes the set again. No modal, no results screen, no reward animation — quiet pride, not celebration UI.
+
 ## Haptics
 
 The slice uses Flutter's built-in `HapticFeedback`, accessed through `lib/core/haptics.dart` so the tactile vocabulary stays consistent:
