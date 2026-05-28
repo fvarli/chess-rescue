@@ -124,6 +124,20 @@ Output: a per-dimension pass/fail + an overall score. Thresholds start
 **conservative** and are paired with human authoring review — deliberately simple,
 not a scoring rabbit hole. Failing instances are dropped before they reach a session.
 
+**v1 implementation (Phase 19D, `lib/core/models/readability.dart`):** the dimensions
+are computed as **pure geometric heuristics** — alignment-by-piece-type, Chebyshev
+proximity, strict betweenness, knight-relation — with **no blocker/legality/engine
+logic**. `threatVisibility` = a dark Q/R/B/N aligned-by-type with, or within 2 squares
+of, the king. `rescueClarity` = the rescue captures the attacker, interposes on the
+king's line, or counter-checks the enemy king. `clutter` ≤ 20 pieces; `visualBalance`
+= bounding box ≥ 3×3; `moveDiscoverability` = 2–8 distinct moves incl. the rescue;
+`emotionalImmediacy`/`panicReadability` are composites. All 5 base + 5 mirror pass;
+broken puzzles fail. **Limitation:** with no explicit per-template *lane* metadata yet,
+the gate infers the attacker/lane geometrically — a lenient v1; a later phase can add
+explicit lane metadata for sharper scoring. A debug-only instance gallery
+(`lib/debug/instance_gallery.dart`, separate entrypoint) renders base + mirror
+instances with their verdict for visual review; it is absent from release builds.
+
 ---
 
 ## Authoring checklist (per new template)

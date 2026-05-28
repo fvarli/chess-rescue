@@ -172,8 +172,16 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   an involution. **Offset (`dx/dy`) is reserved, asserted-zero, not active.** Copy is
   preserved as-is (notation is geometrically stale on mirror — acceptable while
   variants are preview-only; decoupled before they ship).
-- **19D** — `readabilityScore()` validator + a **debug-only** instance gallery to
-  eyeball generated instances.
+- **19D — DONE.** `readabilityScore()` (`lib/core/models/readability.dart`) — the
+  emotional-legibility gate (7 dimensions: threatVisibility, rescueClarity, clutter,
+  visualBalance, moveDiscoverability, emotionalImmediacy, panicReadability), pure
+  geometric heuristics (alignment / proximity / betweenness / knight-relation; no
+  blockers, no engine). All 5 base + 5 mirror pass; obviously-broken puzzles fail
+  (`test/readability_test.dart`). Debug instance gallery is a **separate entrypoint**
+  `lib/debug/instance_gallery.dart` (run `flutter run -t lib/debug/instance_gallery.dart`)
+  reusing `BoardWidget` — never imported by `lib/main.dart`, so it is tree-shaken out
+  of the normal release artifact (release builds the default target). No in-app menu,
+  no gameplay change.
 - **19E** — `SessionComposer` (seeded, paced); wire `GameController` to consume a
   composed session instead of the static library.
 - **19F** — author more templates per archetype; tune readability thresholds.
