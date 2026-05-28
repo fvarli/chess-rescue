@@ -89,12 +89,24 @@ squares) that (a) the rescue is still the unique whitelisted win and (b) the
 attacker→king lane is unobstructed. Variations that fail are **dropped, not
 shipped.**
 
-## Copy is decoupled from geometry
+## Copy is decoupled from geometry — DONE (Phase 20)
 
-Success/danger/failure copy lives at the **archetype/template** level, not per
-square (e.g. success reads "KNIGHT CHECKS BACK", not "Nf6+"). This means geometric
-variation can never produce wrong notation. `Puzzle.rescueNotation` becomes
-optional/derived, not load-bearing.
+All **displayed** copy is geometry-safe emotional language — no squares, no notation —
+so base and mirror share correct wording:
+- `statusText`: "▮ Active threat" / "▮ In check" / "▮ Checked on the file|diagonal|rank"
+  ("file/diagonal/rank" are mirror-invariant concepts).
+- rescued status (in `GameController`): "◐ Attack broken" (no move suffix).
+- `successExplanation`: archetype lines — "THE KNIGHT STRIKES BACK", "THE CHECKER IS
+  GONE", "THE FILE IS SEALED", "THE DIAGONAL IS CLOSED", "THE QUEEN FALLS".
+- `dangerHint`/`failureHint` were already square-free.
+
+`rescueNotation` is now **internal metadata only** (not displayed): kept on base puzzles
+(e.g. `Nf6+`), cleared (`''`) on variants by `applyVariation`. Geometric variation can
+no longer produce wrong displayed notation.
+
+**Runtime variant opt-in is now unblocked** — the only remaining question before feeding
+the composer into `PuzzleLibrary.all`/`GameController` is the `#mirror` persistence
+mapping (does a mirror completion count as its base or as distinct?).
 
 ## Readability scoring (the anti-drift guardrail)
 

@@ -60,7 +60,7 @@ class PuzzleLibrary {
   static const Puzzle _p1 = Puzzle(
     id: 'p1-knight-rescue',
     title: 'Knight rescue',
-    statusText: '▮ Active threat · Qg2#',
+    statusText: '▮ Active threat',
     pieces: [
       Piece(
         id: 'wK',
@@ -201,7 +201,7 @@ class PuzzleLibrary {
     rescueNotation: 'Nf6+',
     dangerHint: 'Tap a white piece to see its moves.',
     failureHint: "That move doesn't break the attack. Look for a check.",
-    successExplanation: 'KNIGHT TO F6 · CHECK & FORK',
+    successExplanation: 'THE KNIGHT STRIKES BACK',
     threatenedKing: Square(6, 0), // g1
   );
 
@@ -214,7 +214,7 @@ class PuzzleLibrary {
   static const Puzzle _p2 = Puzzle(
     id: 'p2-take-the-checker',
     title: 'Take the checker',
-    statusText: '▮ In check · Nf3+',
+    statusText: '▮ In check',
     pieces: [
       Piece(
         id: 'wK',
@@ -304,7 +304,7 @@ class PuzzleLibrary {
     rescueNotation: 'gxf3',
     dangerHint: 'The checker sits one step away.',
     failureHint: 'The knight still gives check.',
-    successExplanation: 'PAWN TAKES F3 · REMOVES THE CHECKER',
+    successExplanation: 'THE CHECKER IS GONE',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );
@@ -319,7 +319,7 @@ class PuzzleLibrary {
   static const Puzzle _p3 = Puzzle(
     id: 'p3-block-the-file',
     title: 'Block the file',
-    statusText: '▮ In check · Qg5+',
+    statusText: '▮ Checked on the file',
     pieces: [
       Piece(
         id: 'wK',
@@ -404,7 +404,7 @@ class PuzzleLibrary {
     rescueNotation: 'Ng3',
     dangerHint: 'Checked straight down the file.',
     failureHint: "That doesn't block the check.",
-    successExplanation: 'KNIGHT TO G3 · BLOCKS THE FILE',
+    successExplanation: 'THE FILE IS SEALED',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );
@@ -419,7 +419,7 @@ class PuzzleLibrary {
   static const Puzzle _p4 = Puzzle(
     id: 'p4-seal-the-diagonal',
     title: 'Seal the diagonal',
-    statusText: '▮ In check · Qa7+',
+    statusText: '▮ Checked on the diagonal',
     pieces: [
       Piece(
         id: 'wK',
@@ -505,7 +505,7 @@ class PuzzleLibrary {
     rescueNotation: 'Be3',
     dangerHint: 'The long diagonal is loaded.',
     failureHint: 'The diagonal is still open.',
-    successExplanation: 'BISHOP TO E3 · SEALS THE DIAGONAL',
+    successExplanation: 'THE DIAGONAL IS CLOSED',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );
@@ -522,7 +522,7 @@ class PuzzleLibrary {
   static const Puzzle _p5 = Puzzle(
     id: 'p5-win-the-queen',
     title: 'Win the queen',
-    statusText: '▮ In check · Qe1+',
+    statusText: '▮ Checked on the rank',
     pieces: [
       Piece(
         id: 'wK',
@@ -607,7 +607,7 @@ class PuzzleLibrary {
     rescueNotation: 'Rxe1',
     dangerHint: 'The queen has crashed the back rank.',
     failureHint: 'The queen still gives check.',
-    successExplanation: 'ROOK TAKES E1 · WINS THE QUEEN',
+    successExplanation: 'THE QUEEN FALLS',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );

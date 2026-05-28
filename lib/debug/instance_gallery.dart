@@ -99,6 +99,11 @@ class _GalleryCard extends StatelessWidget {
               color: ok ? AppColors.rescue : AppColors.danger,
             ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            'danger: ${p.statusText}   ·   success: ${p.successExplanation}',
+            style: AppText.mono.copyWith(color: AppColors.textDim),
+          ),
           const SizedBox(height: 10),
           Center(
             child: BoardWidget(

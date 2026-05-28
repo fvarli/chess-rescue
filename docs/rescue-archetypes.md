@@ -92,8 +92,21 @@ So each instance reads in a glance, under pressure:
 - **Board-side weighting** — the action cluster sits coherently (a corner or side),
   not smeared across the whole board.
 - **Copy at archetype/template level, not per-square** — success copy is
-  archetype-flavored ("KNIGHT CHECKS BACK", "SEAL THE LINE"), so geometric variation
-  never produces wrong move notation. `rescueNotation` is non-load-bearing.
+  archetype-flavored, so geometric variation never produces wrong move notation.
+  `rescueNotation` is non-load-bearing (internal metadata only).
+
+  **Geometry-safe copy (Phase 20, shipped):** displayed fields carry no squares/notation.
+
+  | Archetype | statusText (danger) | successExplanation |
+  |---|---|---|
+  | counterCheck | `▮ Active threat` | `THE KNIGHT STRIKES BACK` |
+  | captureAttackerMinor | `▮ In check` | `THE CHECKER IS GONE` |
+  | blockFile | `▮ Checked on the file` | `THE FILE IS SEALED` |
+  | sealDiagonal | `▮ Checked on the diagonal` | `THE DIAGONAL IS CLOSED` |
+  | captureAttackerHeavy | `▮ Checked on the rank` | `THE QUEEN FALLS` |
+
+  Rescued status is the constant `◐ Attack broken`. "file/diagonal/rank" are
+  mirror-invariant, so base and mirror display identical, correct copy.
 - **No multi-line calculation** — the rescue is one believable move; the *feeling*
   carries it, not depth. Banned: engine-only correctness, hidden tactics, calc trees.
 

@@ -57,13 +57,17 @@ These are intentional, not bugs:
 
 ## Status / copy conventions
 
-- Status pill pattern: `▮ <danger> · <enemy move>`. Puzzle 1 is a *looming* mate
-  threat (`Active threat · Qg2#`); puzzles 2–5 are *immediate* checks
-  (`In check · <move>`). The success pill is derived: `◐ Attack broken ·
-  <rescueNotation>`.
+- **All displayed copy is geometry-safe (Phase 20)** — no squares, no notation — so
+  base and mirror variants read identically and correctly. Status pill: `▮ Active
+  threat` / `▮ In check` / `▮ Checked on the file|diagonal|rank` (mirror-invariant
+  concepts). Success pill is the constant `◐ Attack broken`. `successExplanation` is an
+  archetype line (e.g. "THE FILE IS SEALED"). See `docs/rescue-archetypes.md` for the
+  table.
+- `rescueNotation` is **internal metadata only** — not displayed; kept on base puzzles,
+  cleared on variants.
 - Headlines ("Save the king." / "Where will it go?" / "Rescued." / "Not the
   move.") and the selected-state instruction are generic across all puzzles.
-- `dangerHint`, `failureHint`, and `successExplanation` are per-puzzle.
+- `dangerHint`, `failureHint`, and `successExplanation` are per-puzzle (geometry-safe).
 
 ## Authoring a new puzzle
 

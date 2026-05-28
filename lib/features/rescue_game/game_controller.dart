@@ -165,7 +165,7 @@ class GameController extends ChangeNotifier {
     if (isRescue) {
       _completed.add(puzzle.id);
       _state = GameState.rescued;
-      _statusMsg = '◐ Attack broken · ${puzzle.rescueNotation}';
+      _statusMsg = '◐ Attack broken';
       Haptics.rescue();
       // Mark the first rescue survived so the cold open never re-triggers,
       // but keep _onboarding true in memory through this rescued screen.

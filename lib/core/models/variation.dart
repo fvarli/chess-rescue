@@ -65,7 +65,9 @@ Puzzle applyVariation(Puzzle base, Variation v) {
     tappableSquare: t(base.tappableSquare),
     legalMoves: [for (final s in base.legalMoves) t(s)],
     rescueTo: t(base.rescueTo),
-    rescueNotation: base.rescueNotation,
+    // Exact notation is geometry-specific and not displayed; clear it on
+    // variants rather than carry a stale value (Phase 20).
+    rescueNotation: '',
     dangerHint: base.dangerHint,
     failureHint: base.failureHint,
     successExplanation: base.successExplanation,
