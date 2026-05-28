@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import '../core/models/puzzle.dart';
 import '../core/models/puzzle_library.dart';
 import '../core/models/readability.dart';
+import '../core/models/session_composer.dart';
 import '../core/theme/app_theme.dart';
 import '../features/rescue_game/game_state.dart';
 import '../features/rescue_game/widgets/board_widget.dart';
@@ -44,9 +45,21 @@ class _GalleryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final session1 = SessionComposer.compose(
+      templates: PuzzleLibrary.templates,
+      seed: 1,
+    );
+    final session2 = SessionComposer.compose(
+      templates: PuzzleLibrary.templates,
+      seed: 2,
+    );
     final entries = <_Entry>[
       for (final p in PuzzleLibrary.all) _Entry('base', p),
       for (final p in PuzzleLibrary.mirrorVariants) _Entry('mirror', p),
+      for (var i = 0; i < session1.length; i++)
+        _Entry('session seed=1 · slot ${i + 1}', session1[i]),
+      for (var i = 0; i < session2.length; i++)
+        _Entry('session seed=2 · slot ${i + 1}', session2[i]),
     ];
     return Scaffold(
       backgroundColor: AppColors.bg,

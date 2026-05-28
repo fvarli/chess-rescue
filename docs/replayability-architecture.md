@@ -123,6 +123,14 @@ vary the rescuer piece-type; only pick readability-passing instances; keep it sh
 (mobile rhythm). Seeded → reproducible, which enables a future daily session with no
 new architecture. Think album sequencing, not a difficulty ladder.
 
+**v1 (19E):** the arc maps to the current taxonomy as opener = capture-minor,
+rising = counter-check, middle = interpose (block-file / seal-diagonal), peak =
+capture-heavy (queen), finale = the other interpose. Each archetype appears once
+(no back-to-back); the two interposes sit at middle + finale (separated by the peak),
+seed choosing their order; each slot is base-or-mirror forced to a mix. It is
+**preview-only** — not wired into the runtime (mirrored copy is not geometry-safe;
+see the roadmap entry below).
+
 ## Worked example (proving the model on paper)
 
 Take the current **knight rescue** (counter-check archetype): white K g1, black
@@ -182,8 +190,21 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   reusing `BoardWidget` — never imported by `lib/main.dart`, so it is tree-shaken out
   of the normal release artifact (release builds the default target). No in-app menu,
   no gameplay change.
-- **19E** — `SessionComposer` (seeded, paced); wire `GameController` to consume a
-  composed session instead of the static library.
+- **19E — DONE (preview-only).** `SessionComposer.compose({templates, seed})`
+  (`lib/core/models/session_composer.dart`) — deterministic, builds a paced
+  5-puzzle session from the gated base+mirror pool (opener=capture-minor → rising=
+  counter-check → middle=interpose → peak=win-queen → finale=interpose; each
+  archetype once → no back-to-back; base/mirror forced to a mix). Same seed →
+  identical session; different seeds vary the interpose order + base/mirror pattern.
+  **Runtime is UNCHANGED:** `PuzzleLibrary.all`/`GameController` still ship the 5 base
+  puzzles, because mirrored copy is **not geometry-safe** (15 square-specific strings
+  in `statusText`/`rescueNotation`/`successExplanation` go stale on mirror). The
+  composer is exposed preview-only (debug gallery shows seed-1/seed-2 sessions) and
+  covered by `test/session_composer_test.dart`. **Prerequisite for runtime opt-in:** a
+  geometry-safe-copy phase (decouple copy from squares — see 19A) so mirror variants
+  can ship without stale notation. Persistence is untouched (no `#mirror` id reaches
+  `ProgressStore`); how a `#mirror` completion maps to its base is deferred to that
+  opt-in phase.
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer.
 
