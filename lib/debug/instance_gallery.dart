@@ -12,6 +12,7 @@ import '../core/models/puzzle.dart';
 import '../core/models/puzzle_library.dart';
 import '../core/models/readability.dart';
 import '../core/models/session_composer.dart';
+import '../core/models/variation.dart';
 import '../core/theme/app_theme.dart';
 import '../features/rescue_game/game_state.dart';
 import '../features/rescue_game/widgets/board_widget.dart';
@@ -56,6 +57,11 @@ class _GalleryScreen extends StatelessWidget {
     final entries = <_Entry>[
       for (final p in PuzzleLibrary.all) _Entry('base', p),
       for (final p in PuzzleLibrary.mirrorVariants) _Entry('mirror', p),
+      // Phase 22B — Tier-1 expansion families (not wired into live sessions).
+      for (final t in PuzzleLibrary.expansionTemplates)
+        _Entry('expansion', t.toPuzzle()),
+      for (final t in PuzzleLibrary.expansionTemplates)
+        _Entry('expansion mirror', t.toPuzzle(Variation.mirror)),
       for (var i = 0; i < session1.length; i++)
         _Entry('session seed=1 · slot ${i + 1}', session1[i]),
       for (var i = 0; i < session2.length; i++)

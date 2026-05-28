@@ -242,8 +242,19 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   (B2, C1–C4). Proposes new archetypes (`deflection`, `quietDefense`, `guardSquare`,
   `unpin`, `prophylaxis`) + activates the frontiers. All extensions stay geometric/heuristic
   — no engine.
-- **19F** — author more templates per archetype; tune readability thresholds. (Phase 22A's
-  T1 families are the next concrete authoring target — no system work required.)
+- **Phase 22B — DONE (authored, gated, gallery; not wired).** The 4 Tier-1 expansion
+  families (`a4-the-breakaway`, `b1-the-martyr`, `b3-remove-the-defender`,
+  `b4-the-cross-check`) authored as a **separate** `PuzzleLibrary.expansionTemplates` pool —
+  fully validated, readability-scored, copy-safe, mirror-safe (`test/expansion_families_test.dart`)
+  and rendered in the debug gallery. Deliberately **kept out** of `templates` / `all` /
+  `session` / `SessionComposer`, so the 5-puzzle onboarding session and every Phase 21
+  invariant are untouched. Reuses the existing `RescueArchetype` frontier values
+  (`forcedInterposition`, `removeDefender`) + `counterCheck`. No system changes.
+- **Phase 22C — TODO (wire the expansion pool).** Surface the expansion families in live
+  composed sessions. Requires composer work: multi-template-per-archetype selection (the
+  current `{archetype: template}` map keeps only one per archetype) and/or new arc slots for
+  `forcedInterposition` / `removeDefender`. Must preserve seed-0 = canonical onboarding.
+- **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).
 

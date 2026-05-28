@@ -55,6 +55,32 @@ class PuzzleLibrary {
       ? all
       : SessionComposer.compose(templates: templates, seed: seed);
 
+  // ── Phase 22B — Tier-1 expansion families (authored + gated; NOT wired) ──
+  // A separate pool of new canonical rescue families. Subjected to the full
+  // validation / readability / copy-safety / mirror battery (see
+  // test/expansion_families_test.dart) and rendered in the debug gallery, but
+  // deliberately kept OUT of `templates` / `all` / `session` / the composer so
+  // the 5-puzzle onboarding session and every Phase 21 invariant are preserved.
+  // Live wiring is a later phase (22C). See docs/rescue-archetypes.md.
+  static const List<PuzzleTemplate> expansionTemplates = [
+    PuzzleTemplate(
+      archetype: RescueArchetype.counterCheck,
+      puzzle: _a4Breakaway,
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.forcedInterposition,
+      puzzle: _b1Martyr,
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.removeDefender,
+      puzzle: _b3RemoveDefender,
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.counterCheck,
+      puzzle: _b4CrossCheck,
+    ),
+  ];
+
   // ── Puzzle 1 — Knight rescue (REAL).
   // Archetype: COUNTER-CHECK (zwischenzug). Black threatens Qg2#. Instead of
   // defending, white plays Nf6+ — the knight on f6 checks the black king on
@@ -615,6 +641,385 @@ class PuzzleLibrary {
     dangerHint: 'The queen has crashed the back rank.',
     failureHint: 'The queen still gives check.',
     successExplanation: 'THE QUEEN FALLS',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ════════════════════════════════════════════════════════════════════
+  // Phase 22B — Tier-1 expansion families (in `expansionTemplates`, not the
+  // live runtime). Each keeps the king on g1, one clear tension lane, one
+  // emotionally obvious rescue + curated decoys. See docs/rescue-archetypes.md.
+  // ════════════════════════════════════════════════════════════════════
+
+  // ── A4 — The Breakaway (PROTOTYPE).
+  // Archetype: COUNTER-CHECK (escape flavor). A black bishop on a8 has the
+  // white knight on d5 in its sights while the black queen sits at the gate on
+  // e2. The knight leaps Nf6+ — escaping the bishop's diagonal and checking the
+  // black king on g8, so black must answer the check.
+  // Why it saves: the hunted piece breaks free and seizes the tempo.
+  // Decoys: knight squares that flee but land no blow (e7, c7, b4, f4).
+  static const Puzzle _a4Breakaway = Puzzle(
+    id: 'a4-the-breakaway',
+    title: 'The breakaway',
+    statusText: '▮ Hunted at the gate',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-g2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 6,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-h2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 7,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wN',
+        type: PieceType.knight,
+        color: PieceColor.light,
+        file: 3,
+        rank: 4,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 4,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bB',
+        type: PieceType.bishop,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(3, 4), // d5
+    legalMoves: [
+      Square(5, 5), // f6 * (checks the king, escapes the bishop)
+      Square(4, 6), // e7
+      Square(2, 6), // c7
+      Square(1, 3), // b4
+      Square(5, 3), // f4
+    ],
+    rescueTo: Square(5, 5), // f6
+    rescueNotation: 'Nf6+',
+    dangerHint: 'Your knight is cornered and the gate is under fire.',
+    failureHint: 'That slips away but strikes nothing. Hit back with a check.',
+    successExplanation: 'THE KNIGHT BREAKS FREE',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── B1 — The Martyr (PROTOTYPE).
+  // Archetype: FORCED INTERPOSITION (sacrifice). The black queen on a7 checks
+  // the king on g1 down the open a7–g1 diagonal. The rook on d1 throws itself
+  // in front: Rd4 — undefended, destined to be taken, but the king lives.
+  // Why it saves: a body on the line breaks the check; the cost is the point.
+  // Decoys: rook moves that don't sit on the diagonal (d2, d3, c1, f1).
+  static const Puzzle _b1Martyr = Puzzle(
+    id: 'b1-the-martyr',
+    title: 'The martyr',
+    statusText: '▮ The line is open',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-g2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 6,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-h2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 7,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wR',
+        type: PieceType.rook,
+        color: PieceColor.light,
+        file: 3,
+        rank: 0,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(3, 0), // d1
+    legalMoves: [
+      Square(3, 3), // d4 * (interposes on the diagonal)
+      Square(3, 1), // d2
+      Square(3, 2), // d3
+      Square(2, 0), // c1
+      Square(5, 0), // f1
+    ],
+    rescueTo: Square(3, 3), // d4
+    rescueNotation: 'Rd4',
+    dangerHint: 'The diagonal is loaded and the king stands bare.',
+    failureHint: "That doesn't stand in the way. Throw a body on the line.",
+    successExplanation: 'A BODY FOR THE KING',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── B3 — Remove the defender (PROTOTYPE).
+  // Archetype: REMOVE THE DEFENDER. The black bishop on c6 guards g2 along the
+  // long diagonal; with the knight on g3 covering f1, the queen on h3 threatens
+  // Qg2#. The knight on d4 takes the keystone: Nxc6 — and the mate collapses.
+  // Why it saves: pull the one piece holding the attack together.
+  // Decoys: knight moves that ignore the keystone (e6, f5, b5, c2); f3 is
+  // omitted because it would also block the bishop's guard of g2.
+  static const Puzzle _b3RemoveDefender = Puzzle(
+    id: 'b3-remove-the-defender',
+    title: 'Remove the defender',
+    statusText: '▮ Held up by one piece',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-h2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 7,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wN',
+        type: PieceType.knight,
+        color: PieceColor.light,
+        file: 3,
+        rank: 3,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 2,
+      ),
+      Piece(
+        id: 'bB',
+        type: PieceType.bishop,
+        color: PieceColor.dark,
+        file: 2,
+        rank: 5,
+      ),
+      Piece(
+        id: 'bN',
+        type: PieceType.knight,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 2,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(3, 3), // d4
+    legalMoves: [
+      Square(2, 5), // c6 * (captures the keystone bishop)
+      Square(4, 5), // e6
+      Square(5, 4), // f5
+      Square(1, 4), // b5
+      Square(2, 1), // c2
+    ],
+    rescueTo: Square(2, 5), // c6
+    rescueNotation: 'Nxc6',
+    dangerHint: 'One defender is propping up the whole attack.',
+    failureHint: 'The attack still stands. Tear out its support.',
+    successExplanation: 'THE PROP IS GONE',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── B4 — The Cross-Check (PROTOTYPE).
+  // Archetype: COUNTER-CHECK (cross-check flavor). The black queen on g7 checks
+  // the king on g1 down the open g-file. The knight on e5 lands on g6: it
+  // blocks the file AND checks the black king on h8 — a check answered with a
+  // check.
+  // Why it saves: you stop dying and start attacking in the same move.
+  // Decoys: knight moves that neither block nor check (c6, d7, c4, f3); plain
+  // blocks (g4, g2) are omitted so the cross-check is the only listed escape.
+  static const Puzzle _b4CrossCheck = Puzzle(
+    id: 'b4-the-cross-check',
+    title: 'The cross-check',
+    statusText: '▮ In check',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-h2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 7,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wN',
+        type: PieceType.knight,
+        color: PieceColor.light,
+        file: 4,
+        rank: 4,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(4, 4), // e5
+    legalMoves: [
+      Square(6, 5), // g6 * (blocks the file and checks the king)
+      Square(2, 5), // c6
+      Square(3, 6), // d7
+      Square(2, 3), // c4
+      Square(5, 2), // f3
+    ],
+    rescueTo: Square(6, 5), // g6
+    rescueNotation: 'Ng6+',
+    dangerHint: "You're in check — but you can answer in kind.",
+    failureHint:
+        "That doesn't break the check. Answer with a check of your own.",
+    successExplanation: 'CHECK MEETS CHECK',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );

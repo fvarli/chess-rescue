@@ -328,7 +328,12 @@ Consumes the frontiers and adds new shapes (enum **not** edited in this phase):
 
 All extensions stay **geometric/heuristic — no engine**, per the product guardrails.
 - **T1 — authorable today, zero system change:** A4, B1, B4, B3 (*with care*). Stationary-king
-  capture / interpose / counter-check rescues that pass the current gate. **Build first.**
+  capture / interpose / counter-check rescues that pass the current gate.
+  **DONE (Phase 22B)** — authored as `PuzzleLibrary.expansionTemplates`
+  (`a4-the-breakaway`, `b1-the-martyr`, `b3-remove-the-defender`, `b4-the-cross-check`),
+  gated by `test/expansion_families_test.dart` (validation + readability + copy-safety +
+  mirror) and shown in the debug gallery. **Not yet wired** into the live composer/sessions
+  — that is Phase 22C.
 - **T2 — Escape Support Layer** (A1–A3): danger anchor follows the relocating king; a
   `rescueClarity` "escape" branch (rescue = empty, king-legal, not attacked, *uniquely* safe);
   an attacked-square shading overlay; a lightweight "is-square-attacked" check.
