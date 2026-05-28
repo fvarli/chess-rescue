@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'piece.dart';
 import 'puzzle.dart';
 import 'square.dart';
 
@@ -137,6 +138,65 @@ Puzzle applyDecoyTexture(Puzzle base, List<Square> decoyPool, int textureSeed) {
     pieces: base.pieces,
     tappableSquare: base.tappableSquare,
     legalMoves: newLegalMoves,
+    rescueTo: base.rescueTo,
+    rescueNotation: base.rescueNotation,
+    dangerHint: base.dangerHint,
+    failureHint: base.failureHint,
+    successExplanation: base.successExplanation,
+    threatenedKing: base.threatenedKing,
+    isPrototype: base.isPrototype,
+  );
+}
+
+/// Preview-only **scenery texture** (Phase 23C): change the board's *atmosphere*
+/// (cosmetic context pawns) without touching the rescue, the tension lane, or
+/// any functional square.
+///
+/// `scenerySeed == 0` (or empty data) returns the base unchanged — the canonical
+/// board is the anchor. For `scenerySeed > 0`, deterministically apply **1–2**
+/// ops: remove a [removable] piece (by id) and/or add a [pool] piece. Apply in
+/// base coordinates *before* a geometric [applyVariation] (mirror).
+///
+/// **Pawns only** by design: the readability gate never counts pawns as
+/// attackers, so scenery can't change threat/rescue clarity. Honesty (avoiding
+/// functional squares and tension lanes) is an authoring guarantee — the pools
+/// are hand-vetted and asserted by tests.
+Puzzle applyScenery(
+  Puzzle base,
+  List<String> removable,
+  List<Piece> pool,
+  int scenerySeed,
+) {
+  if (scenerySeed == 0 || (removable.isEmpty && pool.isEmpty)) return base;
+
+  final rng = Random(scenerySeed);
+  final opCount = removable.length + pool.length;
+  final k = 1 + rng.nextInt(opCount < 2 ? opCount : 2); // 1..min(2, opCount)
+  final picked = _pickDistinct(rng, opCount, k);
+
+  final removeIds = <String>{};
+  final addPieces = <Piece>[];
+  for (final op in picked) {
+    if (op < removable.length) {
+      removeIds.add(removable[op]);
+    } else {
+      addPieces.add(pool[op - removable.length]);
+    }
+  }
+
+  final pieces = [
+    for (final p in base.pieces)
+      if (!removeIds.contains(p.id)) p,
+    ...addPieces,
+  ];
+
+  return Puzzle(
+    id: base.id,
+    title: base.title,
+    statusText: base.statusText,
+    pieces: pieces,
+    tappableSquare: base.tappableSquare,
+    legalMoves: base.legalMoves,
     rescueTo: base.rescueTo,
     rescueNotation: base.rescueNotation,
     dangerHint: base.dangerHint,

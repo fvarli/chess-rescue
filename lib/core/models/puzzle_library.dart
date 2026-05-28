@@ -31,14 +31,51 @@ class PuzzleLibrary {
     PuzzleTemplate(
       archetype: RescueArchetype.captureAttackerMinor,
       puzzle: _p2,
-      // No pool: the g2 pawn's only moves (g3/g4/gxf3) are already shown.
+      // No decoy pool: the g2 pawn's only moves (g3/g4/gxf3) are already shown.
+      // Scenery: cosmetic shelter pawns; a7 is empty + off every line (knight
+      // check has no slider lane).
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-a7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 0,
+          rank: 6,
+        ),
+      ],
     ),
-    PuzzleTemplate(archetype: RescueArchetype.blockFile, puzzle: _p3),
-    // No pool: the e2 knight's only unshown square is g1 (own king).
+    PuzzleTemplate(
+      archetype: RescueArchetype.blockFile,
+      puzzle: _p3,
+      // No decoy pool: the e2 knight's only unshown square is g1 (own king).
+      // Scenery: shelter pawns; a7 is empty + off the g-file lane.
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-a7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 0,
+          rank: 6,
+        ),
+      ],
+    ),
     PuzzleTemplate(
       archetype: RescueArchetype.sealDiagonal,
       puzzle: _p4,
       decoyPool: [Square(7, 5)], // h6 (on the c1–h6 diagonal, doesn't seal)
+      // Scenery: shelter pawns; b7 is empty + off the a7–g1 diagonal (b6 is on it).
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-b7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 1,
+          rank: 6,
+        ),
+      ],
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.captureAttackerHeavy,
@@ -52,6 +89,17 @@ class PuzzleLibrary {
         Square(6, 2), // g3
         Square(7, 2), // h3
         Square(1, 2), // b3
+      ],
+      // Scenery: shelter pawns; a7 is empty + off the rank-1 lane.
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-a7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 0,
+          rank: 6,
+        ),
       ],
     ),
   ];
@@ -94,6 +142,17 @@ class PuzzleLibrary {
       archetype: RescueArchetype.counterCheck,
       puzzle: _a4Breakaway,
       decoyPool: [Square(1, 5), Square(2, 2)], // b6, c3 (e7 excluded — see _a4)
+      // Scenery: shelter pawns; a7 is empty + off the a8→d5 bishop line (b7/c6).
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-a7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 0,
+          rank: 6,
+        ),
+      ],
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.forcedInterposition,
@@ -106,6 +165,17 @@ class PuzzleLibrary {
         Square(1, 0), // b1
         Square(4, 0), // e1
       ],
+      // Scenery: shelter pawns; b7 is empty + off the a7–g1 diagonal.
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-b7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 1,
+          rank: 6,
+        ),
+      ],
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.removeDefender,
@@ -114,11 +184,33 @@ class PuzzleLibrary {
         Square(1, 2),
         Square(4, 1),
       ], // b3, e2 (f3 excluded — blocks guard)
+      // Scenery: shelter pawns; a6 is empty + off the c6→g2 guard diagonal.
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-a6',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 0,
+          rank: 5,
+        ),
+      ],
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.counterCheck,
       puzzle: _b4CrossCheck,
       decoyPool: [Square(3, 2)], // d3 (g4 excluded — blocks the file)
+      // Scenery: shelter pawns; a7 is empty + off the g-file lane.
+      removableScenery: ['bP-f7', 'bP-h7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-a7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 0,
+          rank: 6,
+        ),
+      ],
     ),
   ];
 

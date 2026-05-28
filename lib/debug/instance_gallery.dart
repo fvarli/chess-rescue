@@ -86,6 +86,26 @@ class _GalleryScreen extends StatelessWidget {
           showMoves: true,
         ),
       ],
+      // Phase 23C — scenery texture preview (board atmosphere varies).
+      for (final t in [
+        ...PuzzleLibrary.templates,
+        ...PuzzleLibrary.expansionTemplates,
+      ].where((t) => t.removableScenery.isNotEmpty)) ...[
+        _Entry(
+          'scenery s=1 · ${t.puzzle.id}',
+          t.toTexturedPuzzle(scenerySeed: 1),
+        ),
+        _Entry('scenery s=2', t.toTexturedPuzzle(scenerySeed: 2)),
+        _Entry(
+          'scenery+decoy+mirror',
+          t.toTexturedPuzzle(
+            variation: Variation.mirror,
+            textureSeed: 1,
+            scenerySeed: 1,
+          ),
+          showMoves: true,
+        ),
+      ],
       for (var i = 0; i < session1.length; i++)
         _Entry('session seed=1 · slot ${i + 1}', session1[i]),
       for (var i = 0; i < session2.length; i++)

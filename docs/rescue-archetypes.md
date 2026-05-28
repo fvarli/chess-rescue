@@ -171,6 +171,11 @@ instances with their verdict for visual review; it is absent from release builds
    texture (preview-only). Every pool entry must be a real, believable move that does **not**
    resolve the danger (the gate can't verify this — it's piece-type/blocker-blind), e.g. B3
    excludes `f3`, B4 excludes `g4`, A4 excludes `e7`.
+   **Scenery (Phase 23C):** eligible templates also carry `removableScenery` (cosmetic pieces
+   safe to drop) + `sceneryPool` (addable context **pawns**) used by `applyScenery` for
+   at-a-glance freshness (preview-only). Pawns only (the gate ignores pawns as attackers);
+   every pool square must be empty and off every functional square + tension lane (slider →
+   king/hero), and plausible (ranks 2–7).
 4. Run it (and a few of its variations) through the readability gate; fix or drop.
 5. Tag it for session pacing (opener / rising / mid / peak / finale energy).
 

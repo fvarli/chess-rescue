@@ -71,7 +71,7 @@ fresh rescues.
 | **Mirror (horizontal)** — *shipped* | `file → 7 − file` for every piece/square | left/right feel flips; rescue stays valid (e.g. Nf6+ → its mirror) |
 | **Board offset** — *deferred (Phase 23A)* | translate the whole cluster by `(dx, dy)` | current positions are corner-to-corner → no vertical offset, only P5/B3/B4 horizontally; revisit with compact templates (small / centering-preferred) |
 | **Decoy swap** — *shipped preview (Phase 23B)* | swap 1–2 believable decoys from a hand-vetted pool (`textureSeed`) | changes texture, not the rescue; honesty is authoring-vetted (gate is piece-type-blind) — subtle (move-dots only); preview-only, not yet wired |
-| **Pawn-density / scenery** — *Phase 23C* | add/remove a couple of context pawns | changes clutter feel within limits; needs a new lane-/functional-square check (readability is blocker-blind) — the visible freshness lever |
+| **Pawn-density / scenery** — *shipped preview (Phase 23C)* | toggle 1–2 cosmetic context **pawns** (`scenerySeed`) | the visible freshness lever; pawns-only (gate ignores pawns as attackers); vetted off functional squares + king/hero lanes; preview-only, not yet wired |
 
 **Forbidden:** unreadable clutter, hidden tactical-only moves, multi-line calc
 trees, engine-only correctness, random chaos.
@@ -290,6 +290,18 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   correctness fix:** A4's decoy `e7` (a real 2nd check on g8) replaced with `e3` — it was a
   dual solution whose live failure copy lied. Honesty stays authoring-vetted (gate is
   geometry-only); a full audit found e7 was the only dishonest authored decoy.
+- **Phase 23C — DONE (scenery texture, preview-only).** `applyScenery` (`variation.dart`)
+  deterministically toggles **1–2 cosmetic context pawns** (`removableScenery` drops +
+  `sceneryPool` adds; `scenerySeed 0` = anchor), composed in `toTexturedPuzzle({variation,
+  textureSeed, scenerySeed})` — orthogonal to decoys (pieces vs legalMoves) and mirror.
+  **Pawns-only** by design: the gate never counts pawns as attackers, so threat/rescue
+  clarity can't change. Added to the 8 eligible templates (P2–P5, A4, B1, B3, B4 — all
+  `removableScenery: [bP-f7, bP-h7]` + one far-queenside pool pawn off every lane); **P1 is
+  excluded** (dense cold-open). This makes P2/P3 freshenable (decoys couldn't). **Not wired
+  into the live runtime** — only the gallery renders it. Safety (off functional squares +
+  king/hero lanes, plausible ranks, lane-clear) is vetted data + `test/scenery_texture_test.dart`
+  (anchor, determinism, gate, rescue/moves/copy untouched, added-pawn safety, compose with
+  decoy+mirror, P1 no-op). A runtime `validateScenery` gate-fallback is deferred to 23D.
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).
