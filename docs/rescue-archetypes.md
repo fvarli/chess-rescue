@@ -1,6 +1,6 @@
 # Rescue Archetypes, Puzzle Grammar & Readability
 
-> Status: **design (Phase 19A)**. Companion to `replayability-architecture.md`.
+> Status: **design (Phase 19A; family catalog extended Phase 22A)**. Companion to `replayability-architecture.md`.
 > Defines *what makes a Chess Rescue puzzle*, independent of geometry.
 
 A puzzle is an **emotional rescue situation**, not a chess problem. Every template
@@ -68,11 +68,18 @@ instantiate the first five; the rest are the authoring frontier.
 - **Rescue logic:** interpose on the lane (the point is stopping mate *now*).
 - **Failure pattern:** refusing the sac / saving the piece instead.
 
-### 8. Escape square  *(deferred)*
-- **Feeling:** "I slip free."
-- **Why deferred:** the king *moves*, which interacts with the failed-flash anchoring
-  (the flash sits on the threatened-king square). Revisit when the failure visuals
-  support a moving king. Documented for completeness, not for near-term authoring.
+### 8. Escape square  *(special category — Phase 22A)*
+- **Feeling:** "I slip free." The king *itself* moves to the one safe square.
+- **Visual shape:** the king is ringed by empty-but-enemy-covered squares; exactly one
+  neighbor is safe. Visually open (passes "king not boxed"), emotionally sealed.
+- **Readability:** requires the **Escape Support Layer (Tier 2)** — the danger anchor must
+  follow the relocating king, attacked king-steps must be shaded, and a lightweight
+  "is-this-square-attacked" check must verify a *unique* safe square.
+- **Rescue logic:** move the king to the only uncovered safe square.
+- **Failure pattern:** stepping onto a covered square, or trying to block/capture instead
+  of fleeing.
+- **Status:** reserved as a **rare cinematic spike**, not the default language — the
+  stationary king stays dominant. See families A1–A3 in the catalog below.
 
 ---
 
@@ -163,3 +170,173 @@ instances with their verdict for visual review; it is absent from release builds
 5. Tag it for session pacing (opener / rising / mid / peak / finale energy).
 
 See `replayability-architecture.md` for how templates become sessions.
+
+---
+
+## Rescue family catalog — Phase 22A (design)
+
+The shipped 5 families cluster on **capture / block / seal / counter-check** with a
+stationary king. Phase 22A widens the *emotional language* with ~12 handcrafted families
+across three feelings. This is a **design catalog, not positions** — no concrete boards.
+
+**Direction:** the **stationary king stays the dominant language**; king-movement rescues
+(Set A's true escapes) are **rare cinematic spikes**, a special category. Design the full
+emotional range now and flag the system work each family needs (tiers below).
+
+Tag per family: `[archetype · king-state · tier]`. Tiers: **T1** authorable today (no
+system change), **T2** needs the Escape Support Layer, **T3** needs the Calm/Deflection
+readability branch (both detailed under "Implementation tiers").
+
+### SET A — Panic Escapes
+*The walls close; you don't fight, you flee. Find the one breath of air.*
+
+**A1 · The Air Pocket** — `[escapeSquare · KING MOVES · T2]`
+- **Feeling:** claustrophobia breaking into a single gasp of air.
+- **Shape:** king ringed by empty squares; 2–3 distant attackers cover all neighbors but one.
+- **Rescue:** king steps to the only neighbor no enemy covers.
+- **Failure:** stepping onto an empty-but-covered square; or blocking/capturing instead of moving.
+- **Readability risk:** "covered but empty" danger is invisible — needs attacked-step shading so the one un-shaded exit reads.
+- **Why different:** pure flight; the only act is the king's own survival.
+- **Variation:** mirror-safe; offset-risky near edges (keep ≥1 off every edge); re-verify the single-safe-square invariant after each transform.
+- **Mobile:** sparse and thumb-clear, but leans entirely on legible shading.
+
+**A2 · The Corridor** — `[escapeSquare · KING MOVES · T2]`
+- **Feeling:** running down a narrow hallway with something behind you; the exit is straight ahead.
+- **Shape:** a slider bears down; an empty lane opens *away* from it.
+- **Rescue:** king flees one step down the corridor, out of the slider's mating reach.
+- **Failure:** a lateral step still in the net, or a step toward the slider.
+- **Readability risk:** the corridor must read as a clean empty lane; side-square coverage must be shaded.
+- **Why different:** kinetic relief — motion *away* — vs A1's static gasp.
+- **Variation:** mirror-safe; corridor length gives offset room if not edge-anchored.
+- **Mobile:** a long thin empty lane parses instantly; the king's slide sells the escape.
+
+**A3 · The Cold Doorway** — `[escapeSquare · KING MOVES · T2]`
+- **Feeling:** courage against instinct — the only shelter is the scariest-looking square.
+- **Shape:** obvious flight squares are covered; the safe square sits inside the enemy formation (a knight's blind spot, behind a pawn).
+- **Rescue:** king steps *into* the scary square the attacker can't actually reach.
+- **Failure:** fleeing to the open-looking far square (covered); refusing the counterintuitive one.
+- **Readability risk:** highest of the escapes — the safe square *looks* unsafe; needs shading + extreme restraint.
+- **Why different:** relief through counter-instinct courage — surprising, memorable.
+- **Variation:** mirror-safe; most fragile under offset (leans on a specific enemy's geometry).
+- **Mobile:** absolute minimum pieces, or the surprise doesn't land.
+
+**A4 · The Breakaway** — `[counterCheck (escape flavor) · KING STATIONARY · T1]`
+- **Feeling:** a hunted piece bolts free *and* turns to strike — escape + defiance in one leap.
+- **Shape:** a key white piece is forked while the king is also threatened, on two clear separate lines.
+- **Rescue:** the hunted piece leaps to a square that escapes capture *and* checks; the forced reply breaks the king's threat.
+- **Failure:** fleeing to a quiet safe square (king's threat still lands); a checking square that's covered.
+- **Readability risk:** two ideas at once (escape + check) — keep the king-line and hunter-line distinct.
+- **Why different:** escape *feeling* with a stationary king — bridges Set A and Set B.
+- **Variation:** gate-compatible today; mirror-safe.
+- **Mobile:** ≤10 pieces so both lines stay legible.
+
+### SET B — Heroic Counters
+*You don't run. You strike back — often by giving something up.*
+
+**B1 · The Martyr** — `[forcedInterposition (sacrificial) · KING STATIONARY · T1]`
+- **Feeling:** "take me, not the king." A noble piece throws itself into the line to die.
+- **Shape:** a slider checks down a lane; a *valuable* white piece interposes, visibly undefended.
+- **Rescue:** interpose on the lane — the check breaks now; the coming capture is beside the point.
+- **Failure:** a move that doesn't fully block; or "saving" the valuable piece and losing the king.
+- **Readability risk:** geometrically identical to P3/P4 — the sacrifice must be carried by copy + the visible value of the offered piece.
+- **Why different:** blocks feel safe/clever; the Martyr feels costly. Same move type, opposite emotion.
+- **Variation:** gate-compatible today; mirror/offset-safe like P3/P4.
+- **Mobile:** proven interposition geometry; only the emotional read is new.
+
+**B2 · The Lure** — `[deflection (NEW) · KING STATIONARY · T3]`
+- **Feeling:** misdirection — "look over here." Dangle bait the attacker can't refuse.
+- **Shape:** the mating attacker can be deflected; a white move makes a forcing threat elsewhere.
+- **Rescue:** the deflecting move forces the attacker off the mating line → the threat dissolves.
+- **Failure:** a threat the attacker can *ignore* (not forcing); or grabbing the bait yourself.
+- **Readability risk:** "why it works" depends on the enemy's forced reply — risks feeling like 2 moves; must be clearly forcing.
+- **Why different:** you win by making the *enemy* move wrong — indirection.
+- **Variation:** needs new deflection logic; a check-flavored Lure fits counterCheck today.
+- **Mobile:** two foci (lure target + king) — keep in one glance.
+
+**B3 · Remove the Defender** — `[removeDefender (enum exists) · KING STATIONARY · T1*]`
+- **Feeling:** dismantling — the attack stands on one prop; kick it out and it collapses.
+- **Shape:** a dark attacker threatens mate, sustained by exactly ONE defender.
+- **Rescue:** capture that lone defender; the attacker is now unsupported / its mate refuted.
+- **Failure:** capturing the attacker directly (still defended → recapture); or taking the wrong piece.
+- **Readability risk:** the gate sees a capture and passes *structurally* but can't verify the defender is the keystone — needs authoring discipline (and later a "threat actually defused" check). Avoid boards where several captures look equal.
+- **Why different:** two-step logic compressed into one strike — reading the enemy's structure.
+- **Variation:** *authorable now with care*; mirror/offset-safe.
+- **Mobile:** keep the defender→attacker→king chain visible; ≤11 pieces.
+
+**B4 · The Cross-Check** — `[counterCheck (cross-check flavor) · KING STATIONARY · T1]`
+- **Feeling:** defiant reversal — answer a check with a check that's also a shield.
+- **Shape:** enemy checks; a white move blocks *and* gives check (interpose-with-check or discovery).
+- **Rescue:** the block-that-checks escapes check and seizes the initiative in one move.
+- **Failure:** blocking without checking (passive); checking without blocking (still in check — illegal).
+- **Readability risk:** two king-lines in one move — keep clean and separate.
+- **Why different:** defend AND attack in the *same* move — distinct from P1's pure counter-check.
+- **Variation:** gate-compatible today; mirror-safe.
+- **Mobile:** low piece count for one-glance parsing.
+
+### SET C — Calm Intelligence
+*No panic, no violence — a quiet, almost invisible move defuses everything.*
+
+**C1 · The Vent** — `[quietDefense / luft (NEW) · KING STATIONARY · T3]`
+- **Feeling:** a held breath released — a tiny move opens air for the king; the threat silently dies.
+- **Shape:** back-rank box: the king is hemmed by its OWN pieces/the edge; a quiet pawn nudge opens a flight square.
+- **Rescue:** push the pawn (no capture, no check) — the would-be mate now has an answer, so it never works.
+- **Failure:** trying to capture/block the attacker; or moving the wrong pawn.
+- **Readability risk:** the win is the *absence* of a future event — nothing visibly happens; needs copy + a flight-square highlight.
+- **Why different:** the quietest possible win — anti-climax as relief.
+- **Variation:** needs T3 quiet-move logic; back-rank versions are edge-anchored → offset-risky.
+- **Mobile:** risk of "did I do anything?" — lean on the highlight + copy.
+
+**C2 · The Invisible Wall** — `[guardSquare / invisibleDefense (NEW) · KING STATIONARY · T3]`
+- **Feeling:** a shield appears from nowhere — no clash, the attack just can't land.
+- **Shape:** the attacker wants one mating square; a white piece quietly moves to *guard* it (not block the lane, not capture).
+- **Rescue:** cover the target square so any arrival is recaptured → mate refuted before it happens.
+- **Failure:** blocking the lane (wrong square); guarding the wrong square; an irrelevant capture.
+- **Readability risk:** the defended square is *off* the obvious lane — needs a threat-square concept + highlight.
+- **Why different:** defense without confrontation — you change nothing visible yet win.
+- **Variation:** needs T3 "guards the threat square" logic + `threatSquare` metadata; mirror-safe.
+- **Mobile:** must highlight the contested target square, or the move is opaque.
+
+**C3 · The Unpin** — `[unpin (NEW) · KING STATIONARY · T3]`
+- **Feeling:** a paralyzed ally wakes up — free a frozen defender and it springs back to guard.
+- **Shape:** a white defender is pinned (can't move without exposing the king), so it isn't truly guarding; a quiet move removes the pin.
+- **Rescue:** unpin (block the pinning line / guard behind the pinned piece); the freed piece now defends the threatened square.
+- **Failure:** moving the pinned piece itself (loses king); addressing the wrong line.
+- **Readability risk:** a pin is an invisible relationship — needs pin-visualization. The most chess-literate family.
+- **Why different:** you fix the *board*, not the threat directly — cerebral restoration.
+- **Variation:** needs T3 unpin logic + pin metadata; mirror-safe.
+- **Mobile:** highest chess-knowledge demand — keep rare and heavily telegraphed, or it tilts toward trainer.
+
+**C4 · The Long View** — `[prophylaxis (NEW) · KING STATIONARY · T3]`
+- **Feeling:** foresight, total calm — see where the storm will land and take that ground first.
+- **Shape:** the attacker needs ONE key square to begin; a white piece quietly occupies/controls it first.
+- **Rescue:** take/cover the key square → the assault can never start.
+- **Failure:** reacting to the present instead of the future square; covering the wrong one.
+- **Readability risk:** the threat isn't live yet — clashes with "you are in danger NOW"; hardest to make feel urgent.
+- **Why different:** winning *before* the fight — pure intelligence, the far pole from Set A's panic.
+- **Variation:** needs T3 prophylaxis logic + "attacker's key square" metadata; mirror/offset-safe.
+- **Mobile:** must manufacture visible tension for a threat that hasn't happened — use sparingly.
+
+### Archetype taxonomy changes (proposed)
+
+Consumes the frontiers and adds new shapes (enum **not** edited in this phase):
+- **Activate:** `escapeSquare` (A1–A3), `forcedInterposition` (B1), `removeDefender` (B3).
+- **Add:** `deflection` (B2), `quietDefense` (C1), `guardSquare`/`invisibleDefense` (C2),
+  `unpin` (C3), `prophylaxis` (C4).
+- **Reuse:** `counterCheck` for A4 and B4 — split out `crossCheck` later if the gate logic diverges.
+
+### Implementation tiers
+
+All extensions stay **geometric/heuristic — no engine**, per the product guardrails.
+- **T1 — authorable today, zero system change:** A4, B1, B4, B3 (*with care*). Stationary-king
+  capture / interpose / counter-check rescues that pass the current gate. **Build first.**
+- **T2 — Escape Support Layer** (A1–A3): danger anchor follows the relocating king; a
+  `rescueClarity` "escape" branch (rescue = empty, king-legal, not attacked, *uniquely* safe);
+  an attacked-square shading overlay; a lightweight "is-square-attacked" check.
+- **T3 — Calm/Deflection branch** (B2, C1, C2, C3, C4): `threatSquare` (+ pin / key-square /
+  forced-reply) metadata on `Puzzle`; `rescueClarity` branches for quiet / guard / deflection /
+  unpin / prophylaxis; highlights for the contested/target/key square.
+
+**Identity risks to watch:** Unpin (C3) and Long View (C4) flirt with "chess literacy" — keep
+rare, telegraph hard. The Lure (B2) and the quiet families (C1/C2/C4) win via something that
+*doesn't* happen or the enemy's reply — telegraph so the rescue still reads as one clean
+insight, not a calculated sequence.

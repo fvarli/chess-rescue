@@ -232,7 +232,18 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   more templates deepen it later. (Cross-version note: composer output is deterministic
   within a version; a mid-session resume could shift if the composer changes across an
   update — self-heals next completion.)
-- **19F** — author more templates per archetype; tune readability thresholds.
+- **Phase 22A — DONE (design only).** Canonical rescue family expansion: ~12 new
+  handcrafted families across three emotional sets (Panic Escapes / Heroic Counters /
+  Calm Intelligence) — see the "Rescue family catalog" in `rescue-archetypes.md`. Widens
+  the emotional language beyond capture/block/seal/counter-check. Stationary king stays
+  dominant; king-walk escapes are rare cinematic spikes. No positions, no code, no enum
+  edits — the catalog tiers each family: **T1** authorable today (A4, B1, B3, B4), **T2**
+  needs an Escape Support Layer (A1–A3), **T3** needs a Calm/Deflection readability branch
+  (B2, C1–C4). Proposes new archetypes (`deflection`, `quietDefense`, `guardSquare`,
+  `unpin`, `prophylaxis`) + activates the frontiers. All extensions stay geometric/heuristic
+  — no engine.
+- **19F** — author more templates per archetype; tune readability thresholds. (Phase 22A's
+  T1 families are the next concrete authoring target — no system work required.)
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).
 
