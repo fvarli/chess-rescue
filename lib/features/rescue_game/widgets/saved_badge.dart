@@ -14,7 +14,9 @@ class SavedBadge extends StatelessWidget {
   });
 
   final int count;
-  final VoidCallback onReset;
+
+  // Debug-only reset (null in release → no long-press handler).
+  final VoidCallback? onReset;
 
   // Once every puzzle is saved, the badge gently shifts to the rescue color —
   // a quiet, persistent pride marker.

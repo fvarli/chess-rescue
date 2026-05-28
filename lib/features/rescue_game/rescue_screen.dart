@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import '../../core/storage/progress_store.dart';
@@ -16,7 +17,7 @@ import 'widgets/status_bar.dart';
 class RescueScreen extends StatefulWidget {
   const RescueScreen({super.key, required this.store});
 
-  final ProgressStore store;
+  final ProgressStore? store;
 
   @override
   State<RescueScreen> createState() => _RescueScreenState();
@@ -105,7 +106,10 @@ class _RescueScreenState extends State<RescueScreen> {
                               if (_game.completedCount > 0)
                                 SavedBadge(
                                   count: _game.completedCount,
-                                  onReset: _game.resetProgress,
+                                  // Debug-only affordance: inert in release.
+                                  onReset: kDebugMode
+                                      ? _game.resetProgress
+                                      : null,
                                   complete: _game.allComplete,
                                 ),
                             ],

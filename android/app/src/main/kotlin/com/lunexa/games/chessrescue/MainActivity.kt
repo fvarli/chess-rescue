@@ -1,4 +1,4 @@
-package com.chessrescue.chess_rescue
+package com.lunexa.games.chessrescue
 
 import io.flutter.embedding.android.FlutterActivity
 

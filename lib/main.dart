@@ -15,14 +15,21 @@ Future<void> main() async {
       systemNavigationBarColor: AppColors.bg,
     ),
   );
-  final store = await ProgressStore.create();
+  // Never fail to launch because local storage init threw — fall back to a
+  // degraded, no-persistence session instead of crashing.
+  ProgressStore? store;
+  try {
+    store = await ProgressStore.create();
+  } catch (_) {
+    store = null;
+  }
   runApp(ChessRescueApp(store: store));
 }
 
 class ChessRescueApp extends StatelessWidget {
   const ChessRescueApp({super.key, required this.store});
 
-  final ProgressStore store;
+  final ProgressStore? store;
 
   @override
   Widget build(BuildContext context) {

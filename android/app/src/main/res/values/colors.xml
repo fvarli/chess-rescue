@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- D4 background (AppColors.bg). Used for the launch window so there is no
+         white flash before the dark Flutter UI draws. -->
+    <color name="launchBackground">#FF0D0E12</color>
+</resources>
