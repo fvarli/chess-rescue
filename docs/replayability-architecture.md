@@ -70,8 +70,8 @@ fresh rescues.
 |---|---|---|
 | **Mirror (horizontal)** — *shipped* | `file → 7 − file` for every piece/square | left/right feel flips; rescue stays valid (e.g. Nf6+ → its mirror) |
 | **Board offset** — *deferred (Phase 23A)* | translate the whole cluster by `(dx, dy)` | current positions are corner-to-corner → no vertical offset, only P5/B3/B4 horizontally; revisit with compact templates (small / centering-preferred) |
-| **Decoy swap** — *shipped preview (Phase 23B)* | swap 1–2 believable decoys from a hand-vetted pool (`textureSeed`) | changes texture, not the rescue; honesty is authoring-vetted (gate is piece-type-blind) — subtle (move-dots only); preview-only, not yet wired |
-| **Pawn-density / scenery** — *shipped preview (Phase 23C)* | toggle 1–2 cosmetic context **pawns** (`scenerySeed`) | the visible freshness lever; pawns-only (gate ignores pawns as attackers); vetted off functional squares + king/hero lanes; preview-only, not yet wired |
+| **Decoy swap** — *wired (Phase 23B preview → 23D live)* | swap 1–2 believable decoys from a hand-vetted pool (`textureSeed`) | changes texture, not the rescue; honesty is authoring-vetted (gate is piece-type-blind); live on ≤2 middle slots/session |
+| **Pawn-density / scenery** — *wired (Phase 23C preview → 23D live)* | toggle 1–2 cosmetic context **pawns** (`scenerySeed`) | the visible freshness lever; pawns-only (gate ignores pawns as attackers); vetted off functional squares + king/hero lanes; live on ≤2 middle slots/session |
 
 **Forbidden:** unreadable clutter, hidden tactical-only moves, multi-line calc
 trees, engine-only correctness, random chaos.
@@ -302,6 +302,19 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   king/hero lanes, plausible ranks, lane-clear) is vetted data + `test/scenery_texture_test.dart`
   (anchor, determinism, gate, rescue/moves/copy untouched, added-pawn safety, compose with
   decoy+mirror, P1 no-op). A runtime `validateScenery` gate-fallback is deferred to 23D.
+- **Phase 23D — DONE (texture wired into runtime).** `SessionComposer` now textures live
+  composed sessions (seed ≥ 1): after the 22C template/mirror draws (unchanged), it picks
+  **0–2 of the 3 middle slots** (`rng.nextInt(3)`) and gives each a light **decoy and/or
+  scenery** layer (single layer preferred), then `_instance` builds it via `toTexturedPuzzle`
+  with a **gate-fallback chain** (full texture → drop scenery → geometry → canonical base) so
+  every session stays valid/readable/length-5. **Opener + finale are never textured** (clean
+  bookends); combined with the 22C cap, sessions stay ≥3/5 canonical families with at most 2
+  lightly-textured boards — fresh, not remixed. Texture never changes ids (decoy/scenery keep
+  the base id), rescue, tappable, or copy, so `canonicalPuzzleId`, completion, and copy-safety
+  are intact. **Seed 0 still returns `all`** (unreachable by the composer). Covered by
+  `test/runtime_texture_test.dart` (seed-0 untextured, determinism, clean bookends, ≤2
+  textured middles, rescue/copy preserved, no occupied legal-move squares, canonical ids,
+  ≥6 distinct sessions). Texture is now fully live.
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).

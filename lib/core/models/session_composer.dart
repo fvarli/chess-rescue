@@ -94,21 +94,66 @@ class SessionComposer {
     if (useMirror.every((m) => m)) useMirror[0] = false;
     if (useMirror.every((m) => !m)) useMirror[0] = true;
 
+    // Texture (Phase 23D): clean bookends (opener/finale never textured); at most
+    // two of the three middle slots (rising/interpose/peak) get a light decoy
+    // and/or scenery texture, preferring a single layer. A crafted album with
+    // occasional freshness — not a remix. Drawn after the 22C draws so template +
+    // mirror selection is unchanged; deterministic from the session seed.
+    final textureSeeds = List<int>.filled(chosen.length, 0);
+    final scenerySeeds = List<int>.filled(chosen.length, 0);
+    final texturedCount = rng.nextInt(3); // 0, 1, or 2 middle slots
+    final picked = ([1, 2, 3]..shuffle(rng)).take(texturedCount).toSet();
+    for (var slot = 1; slot <= 3; slot++) {
+      if (!picked.contains(slot)) continue;
+      final t = chosen[slot];
+      final canDecoy = t.decoyPool.isNotEmpty;
+      final canScenery =
+          t.sceneryPool.isNotEmpty || t.removableScenery.isNotEmpty;
+      final modes = <String>[
+        if (canDecoy) 'decoy',
+        if (canScenery) 'scenery',
+        if (canDecoy && canScenery) 'both',
+      ];
+      if (modes.isEmpty) continue;
+      final mode = modes[rng.nextInt(modes.length)];
+      if (mode == 'decoy' || mode == 'both') {
+        textureSeeds[slot] = 1 + rng.nextInt(64);
+      }
+      if (mode == 'scenery' || mode == 'both') {
+        scenerySeeds[slot] = 1 + rng.nextInt(64);
+      }
+    }
+
     return [
       for (var i = 0; i < chosen.length; i++)
-        _instance(chosen[i], useMirror[i]),
+        _instance(chosen[i], useMirror[i], textureSeeds[i], scenerySeeds[i]),
     ];
   }
 
-  // Resolve a slot to a gate-clean instance: prefer the chosen orientation,
-  // then the other orientation, then the template's base (always gate-clean).
-  // Guarantees every slot yields a valid, readable puzzle so a session is always
-  // `sessionLength` long — even if a future template's mirror were to fail.
-  static Puzzle _instance(PuzzleTemplate t, bool mirror) {
-    final first = mirror ? t.toPuzzle(Variation.mirror) : t.toPuzzle();
-    if (_ok(first)) return first;
-    final other = mirror ? t.toPuzzle() : t.toPuzzle(Variation.mirror);
-    if (_ok(other)) return other;
+  // Resolve a slot to a gate-clean instance, preferring the requested texture and
+  // degrading gracefully so a session is always valid/readable and `sessionLength`
+  // long: full texture → drop scenery → geometry only → canonical base.
+  static Puzzle _instance(
+    PuzzleTemplate t,
+    bool mirror,
+    int textureSeed,
+    int scenerySeed,
+  ) {
+    final v = mirror ? Variation.mirror : Variation.identity;
+    final attempts = <Puzzle Function()>[
+      () => t.toTexturedPuzzle(
+        variation: v,
+        textureSeed: textureSeed,
+        scenerySeed: scenerySeed,
+      ),
+      () => t.toTexturedPuzzle(variation: v, textureSeed: textureSeed),
+      () => t.toTexturedPuzzle(variation: v),
+      () => t.toPuzzle(),
+    ];
+    for (final make in attempts) {
+      final p = make();
+      if (_ok(p)) return p;
+    }
     return t.toPuzzle();
   }
 
