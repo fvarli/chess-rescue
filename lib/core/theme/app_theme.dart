@@ -25,6 +25,13 @@ class AppColors {
   static const Color pieceDark = Color(0xFF0C0D14);
   static const Color pieceLightStroke = Color(0x8C0C0D14); // 55% alpha
   static const Color pieceDarkStroke = Color(0x38EAEAF2); // 22% alpha
+
+  // Atmosphere / surfaces
+  static const Color backdropDanger = Color(0xFF1A1C28); // radial gradient core
+  static const Color backdropRescue = Color(0xFF0E2A23); // radial gradient core
+  static const Color onRescue = Color(0xFF062019); // text on the mint footer
+  static const Color pillFill = Color(0xB30D0E12); // status pill background
+  static const Color boardShadow = Color(0x8C000000); // board drop shadow
 }
 
 class AppText {

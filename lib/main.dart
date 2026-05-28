@@ -30,6 +30,12 @@ class ChessRescueApp extends StatelessWidget {
       title: 'Chess Rescue',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      // Board-dominant single screen — clamp accessibility text scaling so the
+      // fixed composition stays stable (no scroll by design).
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.35,
+        child: child!,
+      ),
       home: RescueScreen(store: store),
     );
   }

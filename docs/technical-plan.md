@@ -74,16 +74,9 @@ This matches `primitives.jsx` exactly to keep cross-referencing trivial.
 
 ## Animation strategy
 
-| Concern                  | Implementation                                                          |
-|--------------------------|-------------------------------------------------------------------------|
-| Danger pulse on king sq  | `AnimationController` (1.8s, repeat reverse) inside `BoardWidget`        |
-| Rescue glow + scale pop  | One-shot `AnimationController` (320ms ease-out) triggered on state→rescue|
-| Failed flash on king sq  | One-shot `AnimationController` (480ms ease-out) triggered on state→failed |
-| Legal-dots fade-in       | `AnimatedOpacity` per dot, 140ms                                         |
-| Headline / hint swap     | `AnimatedSwitcher` 220ms                                                 |
-| Commit pause             | `Future.delayed(180ms)` inside `GameController.commitMove` before reveal |
+**All animation timings and curves live in one place: `lib/core/theme/motion.dart` (`MotionTokens`).** Do not hardcode durations in widgets, and do not duplicate the numbers here — they drifted once already. The current values are tabulated in `interaction-language.md` and `visual-direction.md`; `MotionTokens` is the source of truth.
 
-Animation controllers are owned by the widgets that play them. The controller does not orchestrate animation timing beyond the commit pause.
+Mechanism, in brief: `BoardWidget` owns the `AnimationController`s (danger pulse, rescue bloom/breath, failed flash + micro-shake, ambient breath) that play the board's glows; entrance/exit motions (selection ring, legal dots, headline/hint, footer press, piece lift/slide) use `TweenAnimationBuilder` / `AnimatedSwitcher` / `AnimatedPositioned`. `GameController` only sequences the commit flow (wind-up → slide → outcome) and the reset/settle timing via `Future.delayed` against `MotionTokens`; it does not drive frame-level animation.
 
 ## Phase 12 — Puzzle sequencing
 
@@ -127,6 +120,17 @@ A quiet, intentional close to the 5-puzzle sequence (calm pride, not arcade vict
 - **Badge completion tint:** `SavedBadge.complete` (= `allComplete`) shifts the badge text to the rescue color (mint) — a quiet, persistent pride marker; copy unchanged.
 - **Footer** stays "Start over ↻"; the surrounding treatment makes it feel intentional.
 - After **Start over**, `allComplete` stays true (badge stays mint) but `hasNext` is true again, so the footnote only returns once the player completes puzzle 5 again.
+
+## Phase 17 — Layout robustness (Android)
+
+Hardens the single screen for real phones; no features, no redesign, no gameplay change. Full QA checklist in `docs/android-layout-qa.md`.
+
+- **Text scale clamped to 1.35×** app-wide via `MediaQuery.withClampedTextScaling` in `main.dart` — keeps the board-dominant, no-scroll composition stable under large accessibility fonts (deliberate; full scaling deferred).
+- **Responsive board sizing** in `RescueScreen`: `min(maxWidth − 32, maxHeight − 260).clamp(200, 360)` (logical px, inside `SafeArea`). The `− 32` matches the content padding (fixes a latent ~8px horizontal overflow on 360dp phones); the `260` reserve covers the status row, headline, two-line completion hint, footer and gaps at 1.35× so the `Column` never overflows. On normal/tall phones the board is unchanged (width-bound ≈360); it only shrinks on short screens.
+- **No scroll, no `IntrinsicHeight`** — the existing `Column` + two `Spacer`s are kept; the reserve guarantees fit on real portrait phones.
+- **Footer touch target** raised to ~48px (vertical padding 16).
+- **Portrait enforced**, `SafeArea` + full-bleed gradient, compositor-cheap animations, and permission-free `HapticFeedback` impacts are unchanged.
+- Verified: `flutter build linux --debug` and `flutter build apk --debug` both succeed.
 
 ## What is intentionally out of scope
 

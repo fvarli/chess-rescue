@@ -258,7 +258,7 @@ class _BoardWidgetState extends State<BoardWidget>
           color: AppColors.boardDark,
           boxShadow: const [
             BoxShadow(
-              color: Color(0x8C000000),
+              color: AppColors.boardShadow,
               offset: Offset(0, 30),
               blurRadius: 60,
             ),
@@ -594,7 +594,12 @@ class _BoardWidgetState extends State<BoardWidget>
       height: _sq,
       child: IgnorePointer(
         child: TweenAnimationBuilder<double>(
-          tween: Tween<double>(end: targetScale),
+          // begin seeds the first build only — the ring scales in 0.94→1.0 on
+          // appearance; the contract-on-commit animates from the live value.
+          tween: Tween<double>(
+            begin: MotionTokens.ringStartScale,
+            end: targetScale,
+          ),
           duration: contracted
               ? MotionTokens.commitWindUp
               : MotionTokens.ringIn,
@@ -755,7 +760,9 @@ class _LegalDot extends StatelessWidget {
       height: sq,
       child: IgnorePointer(
         child: TweenAnimationBuilder<double>(
-          tween: Tween<double>(end: visible ? 1.0 : 0.0),
+          // begin seeds the first build so dots fan in (0→1) with the staggered
+          // inCurve + 0.6→1.0 bloom; the commit fade-out animates from 1→0.
+          tween: Tween<double>(begin: 0.0, end: visible ? 1.0 : 0.0),
           duration: visible ? totalInDuration : MotionTokens.commitDotFadeOut,
           curve: visible ? inCurve : Curves.easeOut,
           builder: (context, t, _) {

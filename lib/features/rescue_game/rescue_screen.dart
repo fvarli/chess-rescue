@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/storage/progress_store.dart';
@@ -64,8 +66,8 @@ class _RescueScreenState extends State<RescueScreen> {
                     radius: 0.9,
                     colors: [
                       isRescued
-                          ? const Color(0xFF0E2A23)
-                          : const Color(0xFF1A1C28),
+                          ? AppColors.backdropRescue
+                          : AppColors.backdropDanger,
                       AppColors.bg,
                     ],
                     stops: const [0.0, 0.8],
@@ -75,10 +77,17 @@ class _RescueScreenState extends State<RescueScreen> {
               SafeArea(
                 child: LayoutBuilder(
                   builder: (context, c) {
-                    final boardSize = c.maxWidth < c.maxHeight - 280
-                        ? c.maxWidth - 24
-                        : c.maxHeight - 280;
-                    final size = boardSize.clamp(240.0, 360.0);
+                    // Board stays dominant on phones; shrinks gracefully on
+                    // short screens. hPad matches the Column's horizontal
+                    // padding (16+16). chromeReserve covers the status row,
+                    // headline, two-line completion hint, footer and gaps at
+                    // the clamped 1.35x text scale, so the Column never
+                    // overflows. Tested assumption: portrait phones, no scroll.
+                    const double hPad = 16, chromeReserve = 260;
+                    const double boardMin = 200, boardMax = 360;
+                    final size = math
+                        .min(c.maxWidth - hPad * 2, c.maxHeight - chromeReserve)
+                        .clamp(boardMin, boardMax);
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(

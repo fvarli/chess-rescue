@@ -95,7 +95,7 @@ class _FooterButtonState extends State<FooterButton>
           child: AnimatedContainer(
             duration: MotionTokens.headlineFade,
             curve: MotionTokens.standard,
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
               color: isRescued ? AppColors.rescue : Colors.transparent,
               border: Border.all(
@@ -117,7 +117,7 @@ class _FooterButtonState extends State<FooterButton>
               child: Text(
                 label,
                 style: AppText.button.copyWith(
-                  color: isRescued ? const Color(0xFF062019) : AppColors.text,
+                  color: isRescued ? AppColors.onRescue : AppColors.text,
                 ),
               ),
             ),

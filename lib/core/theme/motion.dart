@@ -16,7 +16,6 @@ class MotionTokens {
 
   // — Legal-move dots (fan, don't pop)
   static const Duration dotBloom = Duration(milliseconds: 180);
-  static const Duration dotCaptureBloom = Duration(milliseconds: 200);
   static const Duration dotStaggerStep = Duration(milliseconds: 24);
   static const double dotStartScale = 0.6;
 
@@ -55,9 +54,8 @@ class MotionTokens {
   static const double microShakeAmplitudePx = 1.0;
   static const int microShakeCycles = 2;
 
-  // — Background gradient + radial bloom
+  // — Background gradient transition
   static const Duration gradientTransition = Duration(milliseconds: 600);
-  static const Duration gradientRadiusPulse = Duration(milliseconds: 2200);
 
   // — Headline + hint cross-fade (staggered)
   static const Duration headlineFade = Duration(milliseconds: 240);
