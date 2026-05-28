@@ -250,10 +250,19 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   `session` / `SessionComposer`, so the 5-puzzle onboarding session and every Phase 21
   invariant are untouched. Reuses the existing `RescueArchetype` frontier values
   (`forcedInterposition`, `removeDefender`) + `counterCheck`. No system changes.
-- **Phase 22C — TODO (wire the expansion pool).** Surface the expansion families in live
-  composed sessions. Requires composer work: multi-template-per-archetype selection (the
-  current `{archetype: template}` map keeps only one per archetype) and/or new arc slots for
-  `forcedInterposition` / `removeDefender`. Must preserve seed-0 = canonical onboarding.
+- **Phase 22C — DONE (wired, canonical-anchored).** `SessionComposer.compose` is now
+  multi-template aware: `compose({templates, expansion, seed})` builds
+  `Map<archetype, List<template>>` (canonical first) and picks one candidate per slot.
+  `PuzzleLibrary.session(seed >= 1)` feeds it `templates + expansionTemplates`; **seed 0 still
+  returns `all`** (onboarding lock). Arc slots: opener (`captureAttackerMinor`, canonical),
+  rising (`counterCheck` → knight-rescue / breakaway / cross-check), middle (the middle
+  interpose + the Martyr `forcedInterposition`), peak — reframed **"high-stakes resolution"**
+  (`captureAttackerHeavy` + `removeDefender`), finale (the other canonical interpose,
+  canonical). **Canonical-anchored cap:** opener + finale locked canonical and at most 2 of
+  the 3 middle slots may be expansion → every session is **>= 3/5 canonical**. Deterministic
+  (single `Random(seed)`), length-5 guaranteed (orientation/base fallback), no procedural
+  generation. Covered by `test/session_composer_test.dart` (expansion-pool group: cap,
+  coverage of all 4 families, pacing, determinism, seed-0 lock).
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).

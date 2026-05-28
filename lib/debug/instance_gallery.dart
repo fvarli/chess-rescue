@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import '../core/models/puzzle.dart';
 import '../core/models/puzzle_library.dart';
 import '../core/models/readability.dart';
-import '../core/models/session_composer.dart';
 import '../core/models/variation.dart';
 import '../core/theme/app_theme.dart';
 import '../features/rescue_game/game_state.dart';
@@ -46,14 +45,9 @@ class _GalleryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final session1 = SessionComposer.compose(
-      templates: PuzzleLibrary.templates,
-      seed: 1,
-    );
-    final session2 = SessionComposer.compose(
-      templates: PuzzleLibrary.templates,
-      seed: 2,
-    );
+    // Live composed sessions (Phase 22C — combined canonical + expansion pool).
+    final session1 = PuzzleLibrary.session(1);
+    final session2 = PuzzleLibrary.session(2);
     final entries = <_Entry>[
       for (final p in PuzzleLibrary.all) _Entry('base', p),
       for (final p in PuzzleLibrary.mirrorVariants) _Entry('mirror', p),

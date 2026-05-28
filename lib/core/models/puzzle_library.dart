@@ -48,12 +48,18 @@ class PuzzleLibrary {
       .map((t) => t.toPuzzle(Variation.mirror))
       .toList(growable: false);
 
-  // The runtime session for a given seed (Phase 21). Seed 0 is the canonical
-  // authored session (preserves the onboarding cold open + first impression);
-  // seeds >= 1 are deterministic, paced composed sessions (mirror variants).
+  // The runtime session for a given seed (Phase 21 / Phase 22C). Seed 0 is the
+  // canonical authored session (preserves the onboarding cold open + first
+  // impression) — a hard lock. Seeds >= 1 are deterministic, paced composed
+  // sessions drawing from the canonical backbone plus the expansion families
+  // (canonical-anchored: opener + finale locked, <= 2 expansion middles).
   static List<Puzzle> session(int seed) => seed == 0
       ? all
-      : SessionComposer.compose(templates: templates, seed: seed);
+      : SessionComposer.compose(
+          templates: templates,
+          expansion: expansionTemplates,
+          seed: seed,
+        );
 
   // ── Phase 22B — Tier-1 expansion families (authored + gated; NOT wired) ──
   // A separate pool of new canonical rescue families. Subjected to the full

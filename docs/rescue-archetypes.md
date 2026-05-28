@@ -332,8 +332,11 @@ All extensions stay **geometric/heuristic — no engine**, per the product guard
   **DONE (Phase 22B)** — authored as `PuzzleLibrary.expansionTemplates`
   (`a4-the-breakaway`, `b1-the-martyr`, `b3-remove-the-defender`, `b4-the-cross-check`),
   gated by `test/expansion_families_test.dart` (validation + readability + copy-safety +
-  mirror) and shown in the debug gallery. **Not yet wired** into the live composer/sessions
-  — that is Phase 22C.
+  mirror) and shown in the debug gallery.
+  **WIRED (Phase 22C)** — surfaced in live composed sessions (seed >= 1) via the
+  multi-template `SessionComposer`: A4/B4 in the rising slot, B1 in the interpose slot, B3 in
+  the reframed "high-stakes resolution" peak. Canonical-anchored (opener + finale locked,
+  <= 2 expansion middles → >= 3/5 canonical); seed-0 onboarding unchanged.
 - **T2 — Escape Support Layer** (A1–A3): danger anchor follows the relocating king; a
   `rescueClarity` "escape" branch (rescue = empty, king-legal, not attacked, *uniquely* safe);
   an attacked-square shading overlay; a lightweight "is-square-attacked" check.
