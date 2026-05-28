@@ -166,6 +166,11 @@ instances with their verdict for visual review; it is absent from release builds
 2. Lay out: threatened king, attacker(s) on one clear lane, the single rescuer, the
    one rescue square, 2–5 believable decoys, minimal context pawns (≤ ~12 total).
 3. Define variation metadata: legal transforms, cluster bounding box, decoy pool.
+   **Decoy pool (Phase 23B):** eligible templates carry `PuzzleTemplate.decoyPool` — extra
+   *hand-vetted, honest* hero moves used by `applyDecoyTexture` to vary the wrong-move
+   texture (preview-only). Every pool entry must be a real, believable move that does **not**
+   resolve the danger (the gate can't verify this — it's piece-type/blocker-blind), e.g. B3
+   excludes `f3`, B4 excludes `g4`, A4 excludes `e7`.
 4. Run it (and a few of its variations) through the readability gate; fix or drop.
 5. Tag it for session pacing (opener / rising / mid / peak / finale energy).
 

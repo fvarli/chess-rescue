@@ -70,7 +70,7 @@ fresh rescues.
 |---|---|---|
 | **Mirror (horizontal)** — *shipped* | `file → 7 − file` for every piece/square | left/right feel flips; rescue stays valid (e.g. Nf6+ → its mirror) |
 | **Board offset** — *deferred (Phase 23A)* | translate the whole cluster by `(dx, dy)` | current positions are corner-to-corner → no vertical offset, only P5/B3/B4 horizontally; revisit with compact templates (small / centering-preferred) |
-| **Decoy swap** — *next (Phase 23B)* | choose a different believable decoy set from the pool | changes texture, not the rescue; honesty is authoring-vetted (gate is piece-type-blind) — subtle (move-dots only) |
+| **Decoy swap** — *shipped preview (Phase 23B)* | swap 1–2 believable decoys from a hand-vetted pool (`textureSeed`) | changes texture, not the rescue; honesty is authoring-vetted (gate is piece-type-blind) — subtle (move-dots only); preview-only, not yet wired |
 | **Pawn-density / scenery** — *Phase 23C* | add/remove a couple of context pawns | changes clutter feel within limits; needs a new lane-/functional-square check (readability is blocker-blind) — the visible freshness lever |
 
 **Forbidden:** unreadable clutter, hidden tactical-only moves, multi-line calc
@@ -278,6 +278,18 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   catch it. Sequencing: **23B** decoy preview-only → **23C** scenery (+ the new validation) →
   **23D** runtime wiring (texture 0 stays the anchor). Decoy freshness is subtle (move-dots
   only); scenery is the visible lever.
+- **Phase 23B — DONE (decoy texture, preview-only; + A4 decoy fix).** `applyDecoyTexture`
+  (`variation.dart`) deterministically swaps **1–2** authored decoys for hand-vetted pool
+  decoys (`textureSeed 0` = canonical anchor), composed via
+  `PuzzleTemplate.toTexturedPuzzle({variation, textureSeed})` — orthogonal to mirror,
+  rescue + count + distinctness preserved. Decoy pools added to the 7 eligible templates
+  (P1, P4, P5, A4, B1, B3, B4; P2/P3 have none — their heroes are move-exhausted). **Not
+  wired into the live runtime** — only the debug gallery renders textured variants. Covered
+  by `test/decoy_texture_test.dart` (gate, rescue, count, anchor, determinism, mirror
+  composition, banned-square exclusions, ineligible no-ops, copy unchanged). **Bundled
+  correctness fix:** A4's decoy `e7` (a real 2nd check on g8) replaced with `e3` — it was a
+  dual solution whose live failure copy lied. Honesty stays authoring-vetted (gate is
+  geometry-only); a full audit found e7 was the only dishonest authored decoy.
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).

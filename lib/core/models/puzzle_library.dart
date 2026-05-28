@@ -22,16 +22,37 @@ class PuzzleLibrary {
   // existing const puzzle; toPuzzle() is identity in 19B (the variation seam
   // for 19C). See docs/replayability-architecture.md.
   static const List<PuzzleTemplate> templates = [
-    PuzzleTemplate(archetype: RescueArchetype.counterCheck, puzzle: _p1),
+    PuzzleTemplate(
+      archetype: RescueArchetype.counterCheck,
+      puzzle: _p1,
+      // Knight's other honest non-checking squares (f2 = own pawn, excluded).
+      decoyPool: [Square(2, 2), Square(3, 1)], // c3, d2
+    ),
     PuzzleTemplate(
       archetype: RescueArchetype.captureAttackerMinor,
       puzzle: _p2,
+      // No pool: the g2 pawn's only moves (g3/g4/gxf3) are already shown.
     ),
     PuzzleTemplate(archetype: RescueArchetype.blockFile, puzzle: _p3),
-    PuzzleTemplate(archetype: RescueArchetype.sealDiagonal, puzzle: _p4),
+    // No pool: the e2 knight's only unshown square is g1 (own king).
+    PuzzleTemplate(
+      archetype: RescueArchetype.sealDiagonal,
+      puzzle: _p4,
+      decoyPool: [Square(7, 5)], // h6 (on the c1–h6 diagonal, doesn't seal)
+    ),
     PuzzleTemplate(
       archetype: RescueArchetype.captureAttackerHeavy,
       puzzle: _p5,
+      // The rook only resolves on e1 (capture); f1 is unreachable, so every
+      // other rook square is an honest decoy.
+      decoyPool: [
+        Square(4, 4), // e5
+        Square(4, 5), // e6
+        Square(2, 2), // c3
+        Square(6, 2), // g3
+        Square(7, 2), // h3
+        Square(1, 2), // b3
+      ],
     ),
   ];
 
@@ -72,18 +93,32 @@ class PuzzleLibrary {
     PuzzleTemplate(
       archetype: RescueArchetype.counterCheck,
       puzzle: _a4Breakaway,
+      decoyPool: [Square(1, 5), Square(2, 2)], // b6, c3 (e7 excluded — see _a4)
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.forcedInterposition,
       puzzle: _b1Martyr,
+      // Only d4 interposes on the diagonal; every other rook square is honest.
+      decoyPool: [
+        Square(3, 4), // d5
+        Square(3, 5), // d6
+        Square(0, 0), // a1
+        Square(1, 0), // b1
+        Square(4, 0), // e1
+      ],
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.removeDefender,
       puzzle: _b3RemoveDefender,
+      decoyPool: [
+        Square(1, 2),
+        Square(4, 1),
+      ], // b3, e2 (f3 excluded — blocks guard)
     ),
     PuzzleTemplate(
       archetype: RescueArchetype.counterCheck,
       puzzle: _b4CrossCheck,
+      decoyPool: [Square(3, 2)], // d3 (g4 excluded — blocks the file)
     ),
   ];
 
@@ -663,7 +698,9 @@ class PuzzleLibrary {
   // e2. The knight leaps Nf6+ — escaping the bishop's diagonal and checking the
   // black king on g8, so black must answer the check.
   // Why it saves: the hunted piece breaks free and seizes the tempo.
-  // Decoys: knight squares that flee but land no blow (e7, c7, b4, f4).
+  // Decoys: knight squares that flee but land no blow (e3, c7, b4, f4).
+  // Note: e7 was removed — Ne7 also checks the king on g8, so it was a second
+  // valid rescue masquerading as a decoy (the failure copy would have lied).
   static const Puzzle _a4Breakaway = Puzzle(
     id: 'a4-the-breakaway',
     title: 'The breakaway',
@@ -743,7 +780,7 @@ class PuzzleLibrary {
     tappableSquare: Square(3, 4), // d5
     legalMoves: [
       Square(5, 5), // f6 * (checks the king, escapes the bishop)
-      Square(4, 6), // e7
+      Square(4, 2), // e3 (was e7 — e7 is a 2nd check on g8, a dishonest decoy)
       Square(2, 6), // c7
       Square(1, 3), // b4
       Square(5, 3), // f4
