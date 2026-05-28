@@ -160,8 +160,18 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   identity `toPuzzle()` seam → same 5 `Puzzle` instances, same order, zero behavior
   change. `GameController` is untouched. `toPuzzle()` is the seam 19C replaces with
   variation application.
-- **19C** — `Variation` + pure `applyVariation()` (mirror + offset first);
-  per-instance validity re-check; snapshot tests.
+- **19C — DONE (mirror).** `Variation` + pure `applyVariation()`
+  (`lib/core/models/variation.dart`) with horizontal **mirror** (`file → 7 − file`,
+  rank preserved; player stays light-at-bottom). No-op variation returns the same
+  instance, so `PuzzleLibrary.all` is byte-identical. `validatePuzzle()`
+  (`puzzle_validation.dart`) gates instances (bounds, unique squares, light piece on
+  `tappableSquare`, `rescueTo ∈ legalMoves`, light king on `threatenedKing`).
+  `PuzzleLibrary.mirrorVariants` exposes the 5 mirror instances (preview-only — `all`
+  unchanged; no random selection / composer yet). Tests in `test/variation_test.dart`
+  (11 cases): all 5 mirror variants validate; identity preserves instance; mirror is
+  an involution. **Offset (`dx/dy`) is reserved, asserted-zero, not active.** Copy is
+  preserved as-is (notation is geometrically stale on mirror — acceptable while
+  variants are preview-only; decoupled before they ship).
 - **19D** — `readabilityScore()` validator + a **debug-only** instance gallery to
   eyeball generated instances.
 - **19E** — `SessionComposer` (seeded, paced); wire `GameController` to consume a

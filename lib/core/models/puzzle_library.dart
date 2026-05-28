@@ -3,6 +3,7 @@ import 'puzzle.dart';
 import 'puzzle_template.dart';
 import 'rescue_archetype.dart';
 import 'square.dart';
+import 'variation.dart';
 
 // Curated rescue sequence. Puzzle 1 is the real canonical rescue; puzzles
 // 2–5 are handcrafted prototype placeholders (isPrototype: true) — board-legal
@@ -34,10 +35,17 @@ class PuzzleLibrary {
   ];
 
   // The runtime sequence GameController consumes. Identity conversion over the
-  // const templates → the same 5 Puzzle instances, same order (19B is
-  // behavior-preserving).
+  // const templates → the same 5 Puzzle instances, same order (behavior-
+  // preserving; 19C keeps `all` as identity — variants are not shipped here).
   static final List<Puzzle> all = templates
       .map((t) => t.toPuzzle())
+      .toList(growable: false);
+
+  // Phase 19C preview only — horizontal-mirror variants of each template.
+  // NOT consumed by the runtime; exposed for tests/inspection and future
+  // session composition (19E). See docs/replayability-architecture.md.
+  static final List<Puzzle> mirrorVariants = templates
+      .map((t) => t.toPuzzle(Variation.mirror))
       .toList(growable: false);
 
   // ── Puzzle 1 — Knight rescue (REAL).

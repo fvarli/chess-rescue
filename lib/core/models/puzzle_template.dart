@@ -1,5 +1,6 @@
 import 'puzzle.dart';
 import 'rescue_archetype.dart';
+import 'variation.dart';
 
 /// A hand-authored rescue situation tagged with its archetype — the Template
 /// layer of the Phase 19A replayability architecture
@@ -15,6 +16,9 @@ class PuzzleTemplate {
   final RescueArchetype archetype;
   final Puzzle puzzle;
 
-  /// Produce the runtime instance. Identity for now — the variation seam.
-  Puzzle toPuzzle() => puzzle;
+  /// Produce a runtime instance, optionally transformed by a [Variation].
+  /// The default (identity) returns the base puzzle unchanged — the variation
+  /// seam from Phase 19A.
+  Puzzle toPuzzle([Variation variation = Variation.identity]) =>
+      applyVariation(puzzle, variation);
 }
