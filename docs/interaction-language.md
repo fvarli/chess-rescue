@@ -37,7 +37,7 @@ danger ─────────────────────►  selec
                 (320ms settle)
 ```
 
-There is **always** exactly one button on screen: `Reset` in `danger` / `selected`, `Try again ↺` in `failed`, `Reset` (filled mint) in `rescued`.
+There is **always** exactly one button on screen. Its label and action depend on state (see **Phase 12 — Puzzle sequencing** below): `Reset` in `danger` / `selected`, `Try again ↺` in `failed`, and `Next puzzle ↦` (or `Start over ↻` on the last puzzle, filled mint) in `rescued`.
 
 ## Tap targets
 
@@ -59,12 +59,26 @@ Headlines cross-fade with a 6px upward slide; the hint follows ~80ms later, so r
 
 ## Status pill (top of screen)
 
-A single capsule pill at the top, monospaced and quiet. It contains a colored dot and a label:
+A single capsule pill at the top, monospaced and quiet. It contains a colored dot, a per-puzzle label, and a counter (`PUZZLE n/5`) on the right. For puzzle 1:
 
 - `danger`:   `▮ Active threat · Qg2#`
 - `selected`: `▮ Active threat · Qg2#` *(stays the same — the threat hasn't moved)*
-- `rescued`:  `◐ Attack broken · Nf6+`
+- `rescued`:  `◐ Attack broken · Nf6+` *(derived from the puzzle's rescue notation)*
 - `failed`:   `▮ Still trapped`
+
+The danger label and rescue notation are per-puzzle data; the failed label is generic.
+
+## Phase 12 — Puzzle sequencing
+
+The single puzzle is now a curated 5-puzzle sequence. The emotional loop is unchanged per puzzle; sequencing wraps around it.
+
+- **Counter:** the status pill's right side shows `PUZZLE n/5`.
+- **After rescue:** the footer button reads `Next puzzle ↦` and advances to the next puzzle, which **crossfades** in (240ms) in `danger`. On the final puzzle it reads `Start over ↻` and loops to puzzle 1.
+- **After failure:** the footer reads `Try again ↺` and reloads the **same** puzzle using the Phase 11 settle animation (the rescuer slides home). Retry is immediate, safe, frictionless.
+- **Completion:** tracked in memory for the session only (no persistence). Re-solving on a loop-around keeps the record.
+- **Per-puzzle copy:** each puzzle supplies its own `dangerHint`, `failureHint`, and `successExplanation`. Headlines ("Save the king." / "Where will it go?" / "Rescued." / "Not the move.") and the selected-state instruction stay generic across all puzzles.
+
+Puzzle 1 is the real canonical rescue (Nf6+). Puzzles 2–5 are clearly-marked prototype placeholders (capture the checker, block the file, seal the diagonal, win the queen) — all framed "Save the king," all keeping the king stationary so the failure flash stays meaningful.
 
 ## Haptics
 

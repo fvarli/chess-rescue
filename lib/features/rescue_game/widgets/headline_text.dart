@@ -54,27 +54,32 @@ class HeadlineText extends StatelessWidget {
 }
 
 class HintText extends StatelessWidget {
-  const HintText({super.key, required this.state, required this.hasSelection});
+  const HintText({
+    super.key,
+    required this.state,
+    required this.hasSelection,
+    required this.dangerHint,
+    required this.failureHint,
+    required this.successExplanation,
+  });
 
   final GameState state;
   final bool hasSelection;
+  final String dangerHint;
+  final String failureHint;
+  final String successExplanation;
 
   @override
   Widget build(BuildContext context) {
     final (text, style) = switch (state) {
       GameState.rescued => (
-        'KNIGHT TO F6 · CHECK & FORK',
+        successExplanation,
         AppText.mono.copyWith(color: AppColors.rescue, letterSpacing: 2.1),
       ),
-      GameState.failed => (
-        "That move doesn't break the attack. Look for a check.",
-        AppText.body,
-      ),
+      GameState.failed => (failureHint, AppText.body),
       GameState.selected => ('Tap a highlighted square to move.', AppText.body),
       GameState.danger => (
-        hasSelection
-            ? 'Tap a highlighted square to move.'
-            : 'Tap a white piece to see its moves.',
+        hasSelection ? 'Tap a highlighted square to move.' : dangerHint,
         AppText.body,
       ),
     };

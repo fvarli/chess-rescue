@@ -20,7 +20,6 @@ class BoardWidget extends StatefulWidget {
     required this.state,
     required this.threatenedKing,
     required this.rescueTo,
-    required this.rescueFrom,
     required this.commitInFlight,
     required this.resetInFlight,
     required this.onTapSquare,
@@ -33,7 +32,6 @@ class BoardWidget extends StatefulWidget {
   final GameState state;
   final Square threatenedKing;
   final Square rescueTo;
-  final Square rescueFrom;
   final bool commitInFlight;
   final bool resetInFlight;
   final void Function(int file, int rank) onTapSquare;
@@ -227,8 +225,9 @@ class _BoardWidgetState extends State<BoardWidget>
     if (widget.selected?.id == p.id) {
       return MotionTokens.pieceLiftedScale;
     }
+    // Any rescuing piece (knight/pawn/bishop/rook) holds a lift on its
+    // destination square once the rescue lands.
     if (widget.state == GameState.rescued &&
-        p.type == PieceType.knight &&
         p.color == PieceColor.light &&
         p.file == widget.rescueTo.file &&
         p.rank == widget.rescueTo.rank) {

@@ -39,6 +39,13 @@ class _RescueScreenState extends State<RescueScreen> {
         listenable: _game,
         builder: (context, _) {
           final isRescued = _game.state == GameState.rescued;
+          final puzzle = _game.currentPuzzle;
+          final buttonLabel = switch (_game.state) {
+            GameState.rescued =>
+              _game.hasNext ? 'Next puzzle  ↦' : 'Start over  ↻',
+            GameState.failed => 'Try again  ↺',
+            _ => 'Reset',
+          };
           return Stack(
             fit: StackFit.expand,
             children: [
@@ -76,6 +83,8 @@ class _RescueScreenState extends State<RescueScreen> {
                             child: StatusBar(
                               state: _game.state,
                               message: _game.statusMsg,
+                              counter:
+                                  'PUZZLE ${_game.puzzleNumber}/${_game.puzzleCount}',
                             ),
                           ),
                           const SizedBox(height: 30),
@@ -84,26 +93,38 @@ class _RescueScreenState extends State<RescueScreen> {
                             hasSelection: _game.selected != null,
                           ),
                           const Spacer(),
-                          BoardWidget(
-                            size: size,
-                            pieces: _game.pieces,
-                            selected: _game.selected,
-                            legalSquares: _game.legalSquares,
-                            state: _game.state,
-                            threatenedKing: _game.puzzle.threatenedKing,
-                            rescueTo: _game.puzzle.rescueTo,
-                            rescueFrom: _game.puzzle.rescueFrom,
-                            commitInFlight: _game.commitInFlight,
-                            resetInFlight: _game.resetInFlight,
-                            onTapSquare: _game.handleSquare,
+                          AnimatedSwitcher(
+                            duration: MotionTokens.headlineFade,
+                            switchInCurve: MotionTokens.standard,
+                            switchOutCurve: Curves.easeIn,
+                            child: BoardWidget(
+                              key: ValueKey(puzzle.id),
+                              size: size,
+                              pieces: _game.pieces,
+                              selected: _game.selected,
+                              legalSquares: _game.legalSquares,
+                              state: _game.state,
+                              threatenedKing: puzzle.threatenedKing,
+                              rescueTo: puzzle.rescueTo,
+                              commitInFlight: _game.commitInFlight,
+                              resetInFlight: _game.resetInFlight,
+                              onTapSquare: _game.handleSquare,
+                            ),
                           ),
                           const SizedBox(height: 28),
                           HintText(
                             state: _game.state,
                             hasSelection: _game.selected != null,
+                            dangerHint: puzzle.dangerHint,
+                            failureHint: puzzle.failureHint,
+                            successExplanation: puzzle.successExplanation,
                           ),
                           const Spacer(),
-                          FooterButton(state: _game.state, onTap: _game.reset),
+                          FooterButton(
+                            state: _game.state,
+                            label: buttonLabel,
+                            onTap: _game.onPrimaryAction,
+                          ),
                           const SizedBox(height: 16),
                         ],
                       ),

@@ -5,18 +5,20 @@ import 'package:flutter/foundation.dart';
 import '../../core/haptics.dart';
 import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
+import '../../core/models/puzzle_library.dart';
 import '../../core/models/square.dart';
 import '../../core/theme/motion.dart';
 import 'game_state.dart';
 
 class GameController extends ChangeNotifier {
-  GameController({Puzzle puzzle = Puzzle.knightRescue}) : _puzzle = puzzle {
-    _pieces = List<Piece>.of(_puzzle.pieces);
-    _statusMsg = '▮ Active threat · Qg2#';
+  GameController({List<Puzzle>? puzzles})
+    : _puzzles = puzzles ?? PuzzleLibrary.all {
+    _loadPuzzle(0);
   }
 
-  final Puzzle _puzzle;
-  Puzzle get puzzle => _puzzle;
+  final List<Puzzle> _puzzles;
+  int _index = 0;
+  final Set<String> _completed = {};
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -26,6 +28,15 @@ class GameController extends ChangeNotifier {
   bool _commitInFlight = false;
   bool _resetInFlight = false;
 
+  // — Puzzle sequencing
+  Puzzle get currentPuzzle => _puzzles[_index];
+  int get puzzleNumber => _index + 1;
+  int get puzzleCount => _puzzles.length;
+  bool get hasNext => _index < _puzzles.length - 1;
+  int get completedCount => _completed.length;
+  bool get allComplete => _completed.length == _puzzles.length;
+
+  // — Game state
   List<Piece> get pieces => _pieces;
   Piece? get selected => _selected;
   GameState get state => _state;
@@ -34,24 +45,24 @@ class GameController extends ChangeNotifier {
   bool get commitInFlight => _commitInFlight;
   bool get resetInFlight => _resetInFlight;
 
-  // For the vertical slice only the rescuing knight (e4) responds to taps.
-  // The 8 destinations mirror playable.jsx:14-25 — f6 is the rescue,
-  // the rest are decoys that resolve to `failed`.
+  void _loadPuzzle(int i) {
+    _index = i;
+    final p = _puzzles[i];
+    _pieces = List<Piece>.of(p.pieces);
+    _selected = null;
+    _legalSquares = const [];
+    _state = GameState.danger;
+    _statusMsg = p.statusText;
+    _commitInFlight = false;
+  }
+
+  // Whitelisted moves: only the puzzle's designated piece responds, and only
+  // with that puzzle's curated destinations. No engine.
   List<Square> _legalMovesFor(Piece p) {
-    if (p.type == PieceType.knight &&
-        p.color == PieceColor.light &&
-        p.file == 4 &&
-        p.rank == 3) {
-      return const [
-        Square(5, 5), // f6 — RESCUE
-        Square(3, 5), // d6
-        Square(2, 4), // c5
-        Square(2, 2), // c3
-        Square(3, 1), // d2 (own pawn, decoy)
-        Square(5, 1), // f2 (own pawn, decoy)
-        Square(6, 2), // g3
-        Square(6, 4), // g5
-      ];
+    final puzzle = currentPuzzle;
+    if (p.file == puzzle.tappableSquare.file &&
+        p.rank == puzzle.tappableSquare.rank) {
+      return puzzle.legalMoves;
     }
     return const [];
   }
@@ -69,7 +80,7 @@ class GameController extends ChangeNotifier {
 
     final tapped = _pieceAt(file, rank);
 
-    // Re-select case: tapping a different (rescuing) light piece while one is selected.
+    // Re-select: tapping the rescuing piece again while one is selected.
     if (_selected != null &&
         tapped != null &&
         tapped.color == PieceColor.light &&
@@ -85,8 +96,7 @@ class GameController extends ChangeNotifier {
     // Commit move attempt.
     if (_selected != null) {
       final target = Square(file, rank);
-      final isLegal = _legalSquares.contains(target);
-      if (!isLegal) {
+      if (!_legalSquares.contains(target)) {
         // Silent cancel.
         _selected = null;
         _legalSquares = const [];
@@ -98,7 +108,7 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    // Initial selection — only pieces with legal moves are tappable.
+    // Initial selection — only the designated piece is tappable.
     if (tapped != null &&
         tapped.color == PieceColor.light &&
         _legalMovesFor(tapped).isNotEmpty) {
@@ -110,15 +120,12 @@ class GameController extends ChangeNotifier {
     }
   }
 
-  // Phase 11 commit flow:
-  // t=0:    tap haptic + windUp (ring contracts, dots fade out)
-  // t=80:   apply move; AnimatedPositioned slides the piece
-  // t=300:  outcome state + outcome haptic + glow ignition
+  // Commit flow (unchanged Phase 11 timing):
+  // t=0: tap haptic + wind-up · t=80: apply move (slide) · t=300: outcome.
   Future<void> _commitMove(Square target) async {
     final from = _selected!;
     _commitInFlight = true;
     Haptics.commitTap();
-    // Clear legal squares immediately so dots fade out.
     _legalSquares = const [];
     notifyListeners();
 
@@ -132,23 +139,19 @@ class GameController extends ChangeNotifier {
           p,
       moved,
     ];
-    // Keep _selected set during the slide so the ring stays visible —
-    // BoardWidget reads commitInFlight to know to contract+fade the ring.
     notifyListeners();
 
     await Future<void>.delayed(MotionTokens.pieceSlide);
 
-    final isRescue =
-        target == _puzzle.rescueTo &&
-        from.type == PieceType.knight &&
-        from.file == _puzzle.rescueFrom.file &&
-        from.rank == _puzzle.rescueFrom.rank;
+    final puzzle = currentPuzzle;
+    final isRescue = target == puzzle.rescueTo;
 
     _selected = null;
     _commitInFlight = false;
     if (isRescue) {
+      _completed.add(puzzle.id);
       _state = GameState.rescued;
-      _statusMsg = '◐ Attack broken · Nf6+';
+      _statusMsg = '◐ Attack broken · ${puzzle.rescueNotation}';
       Haptics.rescue();
     } else {
       _state = GameState.failed;
@@ -158,12 +161,27 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Phase 11 reset flow (no snap):
-  // t=0:    resetInFlight=true → BoardWidget fades the rescue/fail overlay
-  // t=200:  pieces + state snap back to canonical; AnimatedPositioned
-  //         slides anything that moved (knight back to e4) + state crossfade
-  // t=520:  resetInFlight clears, full interactivity restored
-  // The button itself plays its haptic — controller does not fire haptic.
+  // Footer button routing.
+  void onPrimaryAction() {
+    switch (_state) {
+      case GameState.rescued:
+        if (hasNext) {
+          _loadPuzzle(_index + 1);
+          notifyListeners();
+        } else {
+          _loadPuzzle(0); // start over; _completed is preserved for the session
+          notifyListeners();
+        }
+        break;
+      case GameState.failed:
+      case GameState.danger:
+      case GameState.selected:
+        reset();
+        break;
+    }
+  }
+
+  // Retry / restart the CURRENT puzzle with the Phase 11 settle animation.
   Future<void> reset() async {
     if (_resetInFlight) return;
     _resetInFlight = true;
@@ -171,11 +189,12 @@ class GameController extends ChangeNotifier {
 
     await Future<void>.delayed(MotionTokens.resetOverlayFade);
 
-    _pieces = List<Piece>.of(_puzzle.pieces);
+    final p = currentPuzzle;
+    _pieces = List<Piece>.of(p.pieces);
     _selected = null;
     _legalSquares = const [];
     _state = GameState.danger;
-    _statusMsg = '▮ Active threat · Qg2#';
+    _statusMsg = p.statusText;
     _commitInFlight = false;
     notifyListeners();
 

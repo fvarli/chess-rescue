@@ -6,9 +6,15 @@ import '../../../core/theme/motion.dart';
 import '../game_state.dart';
 
 class FooterButton extends StatefulWidget {
-  const FooterButton({super.key, required this.state, required this.onTap});
+  const FooterButton({
+    super.key,
+    required this.state,
+    required this.label,
+    required this.onTap,
+  });
 
   final GameState state;
+  final String label;
   final VoidCallback onTap;
 
   @override
@@ -54,11 +60,7 @@ class _FooterButtonState extends State<FooterButton>
   @override
   Widget build(BuildContext context) {
     final isRescued = widget.state == GameState.rescued;
-    final label = switch (widget.state) {
-      GameState.rescued => 'Reset',
-      GameState.failed => 'Try again  ↺',
-      _ => 'Reset',
-    };
+    final label = widget.label;
     final pressedScale = _pressed ? MotionTokens.buttonPressedScale : 1.0;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

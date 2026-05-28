@@ -41,22 +41,27 @@ lib/
 ```
 RescueScreen
   └─ ListenableBuilder(game)            ← rebuilds on GameController.notifyListeners()
-       ├─ StatusBar(state, msg)
+       ├─ StatusBar(state, msg, counter: "PUZZLE n/5")
        ├─ HeadlineText(state)
-       ├─ BoardWidget(
-       │      pieces, selected, legal, state,
-       │      onTapSquare: game.handleSquare,
-       │   )
-       └─ FooterButton(state, onReset: game.reset)
+       ├─ AnimatedSwitcher(key: currentPuzzle.id)   ← crossfade on puzzle change
+       │    └─ BoardWidget(
+       │         pieces, selected, legal, state,
+       │         threatenedKing, rescueTo,
+       │         onTapSquare: game.handleSquare,
+       │       )
+       ├─ HintText(state, dangerHint, failureHint, successExplanation)
+       └─ FooterButton(state, label, onTap: game.onPrimaryAction)
 ```
 
 `GameController` owns all mutable state. Widgets are stateless apart from animation controllers that drive purely visual concerns (danger pulse, rescue glow).
 
 ## Move whitelist
 
-There is no chess engine. `GameController.select` and `commitMove` consult a hardcoded `legalMovesFor(Piece)` function that mirrors `playable.jsx:14-25`. For this slice, only the knight on e4 returns a non-empty list — its 8 destination squares. Anything not in that list is a silent no-op.
+There is no chess engine. `GameController._legalMovesFor(Piece)` returns the **current puzzle's** `legalMoves` list when the tapped piece sits on that puzzle's `tappableSquare`, else an empty list (a silent no-op). Each puzzle whitelists one rescue square plus a few decoys.
 
-A move to `(5,5)` = f6 wins. Any other landing transitions to `failed` and is *not* a win, even if the move would be chess-legal.
+A move to the puzzle's `rescueTo` wins. Any other whitelisted landing transitions to `failed` and is *not* a win, even if the move would be chess-legal.
+
+See **Phase 12 — Puzzle sequencing** below for the multi-puzzle model.
 
 ## Coordinate convention
 
@@ -80,18 +85,30 @@ This matches `primitives.jsx` exactly to keep cross-referencing trivial.
 
 Animation controllers are owned by the widgets that play them. The controller does not orchestrate animation timing beyond the commit pause.
 
+## Phase 12 — Puzzle sequencing
+
+The single puzzle became a curated 5-puzzle sequence. Motion (Phase 11) and the D4 palette are untouched.
+
+- **`Puzzle` model** (`lib/core/models/puzzle.dart`) carries per-puzzle data: `id`, `title`, `statusText`, `pieces`, `tappableSquare`, `legalMoves`, `rescueTo`, `rescueNotation`, `dangerHint`, `failureHint`, `successExplanation`, `threatenedKing`, `isPrototype`.
+- **`PuzzleLibrary.all`** (`lib/core/models/puzzle_library.dart`) holds the five puzzles hardcoded in Dart. Puzzle 1 is the real canonical rescue; 2–5 are `isPrototype: true` placeholders (block-the-file, capture-the-checker, seal-the-diagonal, win-the-queen). All keep the king stationary so the failed-flash (on `threatenedKing`) stays correct.
+- **`GameController`** holds `_index`, the puzzle list, and a session-only `Set<String> _completed`. `onPrimaryAction()` routes the footer button: `rescued` → `nextPuzzle()` (or `startOver()` on the last), otherwise `reset()` (retry/restart the current puzzle, reusing the Phase 11 settle animation).
+- **Puzzle transition** is a board-level `AnimatedSwitcher` in `RescueScreen` keyed by `currentPuzzle.id` (240ms crossfade). Same key = in-place update so in-puzzle `AnimatedPositioned` moves still animate; key change = crossfade to the next board in `danger`. No new motion tokens.
+- **Counter** `PUZZLE n/5` lives in the status pill (`StatusBar.counter`).
+
 ## What is intentionally out of scope
 
-- Multiple puzzles, puzzle progression, puzzle library.
+- Persistence (completion is in-memory, session-only).
 - A real legal-move generator (knight moves, slider pieces, check detection).
 - Settings, sound, music, themes, accessibility toggles, locale.
 - Tests. The success criterion is felt, not asserted. Tests come once the loop is locked.
 - Splash screens, app icons beyond Flutter defaults.
+- Accounts, backend, multiplayer, monetization, analytics, menus.
 
-## Where the slice expects to grow
+## Where the prototype expects to grow
 
-- **More puzzles** → `puzzle.dart` becomes a list; `GameController` takes a `Puzzle` in its constructor.
-- **Real engine** → replace the `legalMovesFor` whitelist with a `LegalMoveService` that wraps a pure-Dart engine. The board widget's API does not change.
+- **Persistence** → swap the in-memory `_completed` set for a local store (e.g. `shared_preferences`); the controller API stays the same.
+- **More puzzles** → append to `PuzzleLibrary.all`; nothing else changes.
+- **Real engine** → replace the per-puzzle `legalMoves` whitelist with a `LegalMoveService` wrapping a pure-Dart engine. The board widget's API does not change.
 - **Daily cadence (D5)** → a new feature folder `features/daily/` consumes the controller through a daily-puzzle provider.
 
 ## Run recipe

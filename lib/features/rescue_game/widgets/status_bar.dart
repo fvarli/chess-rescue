@@ -4,10 +4,16 @@ import '../../../core/theme/app_theme.dart';
 import '../game_state.dart';
 
 class StatusBar extends StatelessWidget {
-  const StatusBar({super.key, required this.state, required this.message});
+  const StatusBar({
+    super.key,
+    required this.state,
+    required this.message,
+    required this.counter,
+  });
 
   final GameState state;
   final String message;
+  final String counter; // e.g. 'PUZZLE 2/5'
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,7 @@ class StatusBar extends StatelessWidget {
           ),
           const SizedBox(width: 14),
           Text(
-            'LIVE DEMO',
+            counter,
             style: AppText.mono.copyWith(
               color: AppColors.textMuted,
               fontSize: 9.5,
