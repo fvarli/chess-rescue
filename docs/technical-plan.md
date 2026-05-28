@@ -94,6 +94,7 @@ The single puzzle became a curated 5-puzzle sequence. Motion (Phase 11) and the 
 - **`GameController`** holds `_index`, the puzzle list, and a session-only `Set<String> _completed`. `onPrimaryAction()` routes the footer button: `rescued` → `nextPuzzle()` (or `startOver()` on the last), otherwise `reset()` (retry/restart the current puzzle, reusing the Phase 11 settle animation).
 - **Puzzle transition** is a board-level `AnimatedSwitcher` in `RescueScreen` keyed by `currentPuzzle.id` (240ms crossfade). Same key = in-place update so in-puzzle `AnimatedPositioned` moves still animate; key change = crossfade to the next board in `danger`. No new motion tokens.
 - **Counter** `PUZZLE n/5` lives in the status pill (`StatusBar.counter`).
+- **Puzzle authoring & quality** conventions (rescue archetypes, the design rubric, and why P2–P5 are prototype placeholders) live in `docs/puzzle-design.md`.
 
 ## What is intentionally out of scope
 

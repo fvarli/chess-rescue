@@ -3,16 +3,28 @@ import 'puzzle.dart';
 import 'square.dart';
 
 // Curated rescue sequence. Puzzle 1 is the real canonical rescue; puzzles
-// 2–5 are handcrafted prototype placeholders (isPrototype: true) that reuse
-// the same emotional loop. No engine — every puzzle whitelists its moves and
-// has exactly one correct rescue (marked * in comments).
+// 2–5 are handcrafted prototype placeholders (isPrototype: true) — board-legal
+// and emotionally readable, but not engine-validated. Every puzzle whitelists
+// its moves and has exactly one correct rescue (marked * in comments).
+//
+// Design rubric (see docs/puzzle-design.md): clear danger · one believable
+// rescue · 2–5 plausible decoys · concise danger hint · soft failure hint ·
+// satisfying success explanation. All five keep the king stationary so the
+// danger glow and failure flash stay anchored to a meaningful square.
 class PuzzleLibrary {
   PuzzleLibrary._();
 
   static const List<Puzzle> all = [_p1, _p2, _p3, _p4, _p5];
 
-  // ── Puzzle 1 — Knight rescue (REAL). Nf6+ breaks Qg2#.
-  // Transcribed from docs/components/primitives.jsx:180-210.
+  // ── Puzzle 1 — Knight rescue (REAL).
+  // Archetype: COUNTER-CHECK (zwischenzug). Black threatens Qg2#. Instead of
+  // defending, white plays Nf6+ — the knight on f6 checks the black king on
+  // g8, forcing black to answer the check, so the threatened mate never lands.
+  // Why it saves: you seize the initiative by checking back.
+  // Decoys: the knight's other forward/side squares — plausible "reposition
+  // the knight" tries that ignore the tempo and lose to Qg2#.
+  // Transcribed from docs/components/primitives.jsx:180-210; decoys trimmed to
+  // a clean set (the original self-capture onto f2 was removed).
   static const Puzzle _p1 = Puzzle(
     id: 'p1-knight-rescue',
     title: 'Knight rescue',
@@ -148,13 +160,10 @@ class PuzzleLibrary {
     tappableSquare: Square(4, 3), // e4
     legalMoves: [
       Square(5, 5), // f6 *
-      Square(3, 5), // d6
-      Square(2, 4), // c5
-      Square(2, 2), // c3
-      Square(3, 1), // d2
-      Square(5, 1), // f2
-      Square(6, 2), // g3
       Square(6, 4), // g5
+      Square(6, 2), // g3
+      Square(2, 4), // c5
+      Square(3, 5), // d6
     ],
     rescueTo: Square(5, 5), // f6
     rescueNotation: 'Nf6+',
@@ -164,11 +173,16 @@ class PuzzleLibrary {
     threatenedKing: Square(6, 0), // g1
   );
 
-  // ── Puzzle 2 — Take the checker (PROTOTYPE). Knight on f3 checks g1; gxf3.
+  // ── Puzzle 2 — Take the checker (PROTOTYPE).
+  // Archetype: CAPTURE THE ATTACKER (minor piece). The black knight on f3
+  // checks the king on g1. The humble g2 pawn captures it: gxf3.
+  // Why it saves: removing the checker ends the check outright.
+  // Decoys: the g-pawn's two pushes (g3, g4) — they advance but leave the
+  // knight checking. (Two decoys is the pawn's natural maximum here.)
   static const Puzzle _p2 = Puzzle(
     id: 'p2-take-the-checker',
     title: 'Take the checker',
-    statusText: '▮ Active threat · Nf3+',
+    statusText: '▮ In check · Nf3+',
     pieces: [
       Piece(
         id: 'wK',
@@ -250,7 +264,7 @@ class PuzzleLibrary {
     ],
     tappableSquare: Square(6, 1), // g2
     legalMoves: [
-      Square(5, 2), // f3 * (captures knight)
+      Square(5, 2), // f3 * (captures the knight)
       Square(6, 2), // g3
       Square(6, 3), // g4
     ],
@@ -263,12 +277,17 @@ class PuzzleLibrary {
     isPrototype: true,
   );
 
-  // ── Puzzle 3 — Block the file (PROTOTYPE). Queen on g5 down the open
-  // g-file; Ng3 interposes.
+  // ── Puzzle 3 — Block the file (PROTOTYPE).
+  // Archetype: INTERPOSE ON A FILE. The black queen on g5 checks the king on
+  // g1 down the open g-file. The knight on e2 jumps to g3, standing between
+  // them: Ng3.
+  // Why it saves: a body in the line breaks the check.
+  // Decoys: the knight's other squares (c3, d4, f4, c1) — they move but leave
+  // the file open.
   static const Puzzle _p3 = Puzzle(
     id: 'p3-block-the-file',
     title: 'Block the file',
-    statusText: '▮ Active threat · Qg1#',
+    statusText: '▮ In check · Qg5+',
     pieces: [
       Piece(
         id: 'wK',
@@ -358,12 +377,17 @@ class PuzzleLibrary {
     isPrototype: true,
   );
 
-  // ── Puzzle 4 — Seal the diagonal (PROTOTYPE). Queen on a7 down the
-  // a7–g1 diagonal; Be3 interposes.
+  // ── Puzzle 4 — Seal the diagonal (PROTOTYPE).
+  // Archetype: INTERPOSE ON A DIAGONAL. The black queen on a7 checks the king
+  // on g1 along the open a7–g1 diagonal. The bishop on c1 steps to e3, sitting
+  // on that diagonal: Be3.
+  // Why it saves: the bishop seals the line between queen and king.
+  // Decoys: the bishop's other diagonal squares (d2, f4, g5, b2, a3) — d2 is
+  // tempting (it's on the way) but stops short of the diagonal.
   static const Puzzle _p4 = Puzzle(
     id: 'p4-seal-the-diagonal',
     title: 'Seal the diagonal',
-    statusText: '▮ Active threat · Qg1#',
+    statusText: '▮ In check · Qa7+',
     pieces: [
       Piece(
         id: 'wK',
@@ -454,12 +478,19 @@ class PuzzleLibrary {
     isPrototype: true,
   );
 
-  // ── Puzzle 5 — Win the queen (PROTOTYPE). Queen on h3 threatens Qxg2#;
-  // Rxh3 removes the attacker.
+  // ── Puzzle 5 — Win the queen (PROTOTYPE).
+  // Archetype: CAPTURE THE ATTACKER (the queen) / win tempo. The black queen
+  // has crashed the back rank — Qe1+ checks the king on g1 along rank 1 (f1 is
+  // empty). The rook on e3 is the only white piece eyeing e1, so Rxe1 captures
+  // the checking queen: you escape check and win the queen at once.
+  // Why it saves: the single most valuable attacker is removed with check
+  // resolved.
+  // Decoys: other rook moves (e2, e4, d3, f3) — they reposition but leave the
+  // queen giving check.
   static const Puzzle _p5 = Puzzle(
     id: 'p5-win-the-queen',
     title: 'Win the queen',
-    statusText: '▮ Active threat · Qg2#',
+    statusText: '▮ In check · Qe1+',
     pieces: [
       Piece(
         id: 'wK',
@@ -472,7 +503,7 @@ class PuzzleLibrary {
         id: 'wR',
         type: PieceType.rook,
         color: PieceColor.light,
-        file: 5,
+        file: 4,
         rank: 2,
       ),
       Piece(
@@ -507,8 +538,8 @@ class PuzzleLibrary {
         id: 'bQ',
         type: PieceType.queen,
         color: PieceColor.dark,
-        file: 7,
-        rank: 2,
+        file: 4,
+        rank: 0,
       ),
       Piece(
         id: 'bP-f7',
@@ -532,19 +563,19 @@ class PuzzleLibrary {
         rank: 6,
       ),
     ],
-    tappableSquare: Square(5, 2), // f3
+    tappableSquare: Square(4, 2), // e3
     legalMoves: [
-      Square(7, 2), // h3 * (captures queen)
-      Square(6, 2), // g3
-      Square(4, 2), // e3
-      Square(5, 3), // f4
-      Square(5, 4), // f5
+      Square(4, 0), // e1 * (captures the queen)
+      Square(4, 1), // e2
+      Square(4, 3), // e4
+      Square(3, 2), // d3
+      Square(5, 2), // f3
     ],
-    rescueTo: Square(7, 2), // h3
-    rescueNotation: 'Rxh3',
-    dangerHint: 'The attacker is exposed.',
-    failureHint: 'The queen still looms.',
-    successExplanation: 'ROOK TAKES H3 · WINS THE QUEEN',
+    rescueTo: Square(4, 0), // e1
+    rescueNotation: 'Rxe1',
+    dangerHint: 'The queen has crashed the back rank.',
+    failureHint: 'The queen still gives check.',
+    successExplanation: 'ROOK TAKES E1 · WINS THE QUEEN',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );
