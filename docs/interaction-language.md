@@ -80,6 +80,16 @@ The single puzzle is now a curated 5-puzzle sequence. The emotional loop is unch
 
 Puzzle 1 is the real canonical rescue (Nf6+). Puzzles 2–5 are clearly-marked prototype placeholders (capture the checker, block the file, seal the diagonal, win the queen) — all framed "Save the king," all keeping the king stationary so the failure flash stays meaningful.
 
+## Phase 14 — Local progress
+
+Progress is remembered between sessions (offline, on-device only).
+
+- **`N SAVED` badge** — top-right of the status row, small and dim (matches the `PUZZLE n/5` counter). It shows how many kings you've saved this session and appears only once `count > 0`. Pure motivation; never an action target during play.
+- **Restore on launch** — the app reopens to the puzzle you left off on, always in the `danger` state (never mid-rescue/fail). The `N SAVED` count is restored too.
+- **Hidden reset (debug)** — long-press the `N SAVED` badge to wipe progress: back to Puzzle 1 in `danger`, the badge disappears, and a medium haptic confirms. No dialog, no settings screen — the visible reset is the feedback.
+
+Only durable progress is saved (current puzzle + completed ids), and only on rescue, on next/start-over, and on reset. Transient selection/rescue/fail state is never persisted.
+
 ## Haptics
 
 The slice uses Flutter's built-in `HapticFeedback`, accessed through `lib/core/haptics.dart` so the tactile vocabulary stays consistent:

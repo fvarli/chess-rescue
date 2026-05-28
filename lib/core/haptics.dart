@@ -21,4 +21,7 @@ class Haptics {
 
   // Footer button press on tap-down (not on action complete).
   static void tapButton() => HapticFeedback.selectionClick();
+
+  // Debug reset-progress long-press acknowledgment.
+  static void resetProgress() => HapticFeedback.mediumImpact();
 }

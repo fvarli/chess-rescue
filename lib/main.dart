@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'core/storage/progress_store.dart';
 import 'core/theme/app_theme.dart';
 import 'features/rescue_game/rescue_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(
@@ -14,11 +15,14 @@ void main() {
       systemNavigationBarColor: AppColors.bg,
     ),
   );
-  runApp(const ChessRescueApp());
+  final store = await ProgressStore.create();
+  runApp(ChessRescueApp(store: store));
 }
 
 class ChessRescueApp extends StatelessWidget {
-  const ChessRescueApp({super.key});
+  const ChessRescueApp({super.key, required this.store});
+
+  final ProgressStore store;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class ChessRescueApp extends StatelessWidget {
       title: 'Chess Rescue',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
-      home: const RescueScreen(),
+      home: RescueScreen(store: store),
     );
   }
 }

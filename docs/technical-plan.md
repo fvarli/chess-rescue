@@ -96,9 +96,19 @@ The single puzzle became a curated 5-puzzle sequence. Motion (Phase 11) and the 
 - **Counter** `PUZZLE n/5` lives in the status pill (`StatusBar.counter`).
 - **Puzzle authoring & quality** conventions (rescue archetypes, the design rubric, and why P2–P5 are prototype placeholders) live in `docs/puzzle-design.md`.
 
+## Phase 14 — Local progress
+
+Progress now persists locally (offline only — no accounts/backend).
+
+- **`ProgressStore`** (`lib/core/storage/progress_store.dart`) is a tiny wrapper over `shared_preferences`. It persists exactly two things: the current puzzle index (`cr_puzzle_index`) and the set of completed puzzle ids (`cr_completed_ids`). Async `create()` loads once; `puzzleIndex` / `completedIds` are then read synchronously; `save()` / `clear()` write.
+- **Injection is top-down:** `main()` is async — it builds the store and passes it `ChessRescueApp → RescueScreen → GameController(store:)`. Widgets only forward the reference; no persistence logic lives in UI.
+- **Restore:** the controller's constructor reads the store, adds the completed ids (filtered to known puzzles), and `_loadPuzzle(clampedIndex)` — which always sets `state = danger`. Transient `selected`/`rescued`/`failed`/in-flight state is never persisted, so a relaunch always resumes the saved puzzle in `danger`.
+- **Save triggers (only three):** on rescue (after adding the id), on next/start-over, and on reset-progress. `_persist()` is fire-and-forget via `unawaited`.
+- **Progress display:** a small dim mono `N SAVED` badge top-right of the status row (`SavedBadge`), shown when `completedCount > 0`. The `PUZZLE n/5` counter stays in the pill.
+- **Reset (debug):** long-press the `SavedBadge` → `GameController.resetProgress()` clears `_completed`, returns to puzzle 1 in `danger`, fires a haptic, and clears the store. No settings screen, no confirmation.
+
 ## What is intentionally out of scope
 
-- Persistence (completion is in-memory, session-only).
 - A real legal-move generator (knight moves, slider pieces, check detection).
 - Settings, sound, music, themes, accessibility toggles, locale.
 - Tests. The success criterion is felt, not asserted. Tests come once the loop is locked.
@@ -107,7 +117,7 @@ The single puzzle became a curated 5-puzzle sequence. Motion (Phase 11) and the 
 
 ## Where the prototype expects to grow
 
-- **Persistence** → swap the in-memory `_completed` set for a local store (e.g. `shared_preferences`); the controller API stays the same.
+- **Persistence** → done in Phase 14 via `ProgressStore` (`shared_preferences`). To persist more (e.g. best times, per-puzzle stats), extend that store; the injection path stays the same.
 - **More puzzles** → append to `PuzzleLibrary.all`; nothing else changes.
 - **Real engine** → replace the per-puzzle `legalMoves` whitelist with a `LegalMoveService` wrapping a pure-Dart engine. The board widget's API does not change.
 - **Daily cadence (D5)** → a new feature folder `features/daily/` consumes the controller through a daily-puzzle provider.

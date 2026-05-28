@@ -7,16 +7,24 @@ import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
 import '../../core/models/puzzle_library.dart';
 import '../../core/models/square.dart';
+import '../../core/storage/progress_store.dart';
 import '../../core/theme/motion.dart';
 import 'game_state.dart';
 
 class GameController extends ChangeNotifier {
-  GameController({List<Puzzle>? puzzles})
-    : _puzzles = puzzles ?? PuzzleLibrary.all {
-    _loadPuzzle(0);
+  GameController({List<Puzzle>? puzzles, ProgressStore? store})
+    : _puzzles = puzzles ?? PuzzleLibrary.all,
+      _store = store {
+    if (store != null) {
+      final known = {for (final p in _puzzles) p.id};
+      _completed.addAll(store.completedIds.where(known.contains));
+    }
+    final restored = (store?.puzzleIndex ?? 0).clamp(0, _puzzles.length - 1);
+    _loadPuzzle(restored);
   }
 
   final List<Puzzle> _puzzles;
+  final ProgressStore? _store;
   int _index = 0;
   final Set<String> _completed = {};
 
@@ -153,6 +161,9 @@ class GameController extends ChangeNotifier {
       _state = GameState.rescued;
       _statusMsg = '◐ Attack broken · ${puzzle.rescueNotation}';
       Haptics.rescue();
+      notifyListeners();
+      _persist();
+      return;
     } else {
       _state = GameState.failed;
       _statusMsg = '▮ Still trapped';
@@ -167,11 +178,11 @@ class GameController extends ChangeNotifier {
       case GameState.rescued:
         if (hasNext) {
           _loadPuzzle(_index + 1);
-          notifyListeners();
         } else {
           _loadPuzzle(0); // start over; _completed is preserved for the session
-          notifyListeners();
         }
+        notifyListeners();
+        _persist();
         break;
       case GameState.failed:
       case GameState.danger:
@@ -179,6 +190,22 @@ class GameController extends ChangeNotifier {
         reset();
         break;
     }
+  }
+
+  // Persist the durable progress (current index + completed ids). Transient
+  // game state is never saved. Fire-and-forget; null store = no persistence.
+  void _persist() {
+    unawaited(_store?.save(puzzleIndex: _index, completedIds: _completed));
+  }
+
+  // Hidden debug action — wipe local progress and return to the first puzzle.
+  Future<void> resetProgress() async {
+    if (_commitInFlight || _resetInFlight) return;
+    _completed.clear();
+    _loadPuzzle(0);
+    Haptics.resetProgress();
+    notifyListeners();
+    await _store?.clear();
   }
 
   // Retry / restart the CURRENT puzzle with the Phase 11 settle animation.

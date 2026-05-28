@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
 import 'game_controller.dart';
@@ -7,10 +8,13 @@ import 'game_state.dart';
 import 'widgets/board_widget.dart';
 import 'widgets/footer_button.dart';
 import 'widgets/headline_text.dart';
+import 'widgets/saved_badge.dart';
 import 'widgets/status_bar.dart';
 
 class RescueScreen extends StatefulWidget {
-  const RescueScreen({super.key});
+  const RescueScreen({super.key, required this.store});
+
+  final ProgressStore store;
 
   @override
   State<RescueScreen> createState() => _RescueScreenState();
@@ -22,7 +26,7 @@ class _RescueScreenState extends State<RescueScreen> {
   @override
   void initState() {
     super.initState();
-    _game = GameController();
+    _game = GameController(store: widget.store);
   }
 
   @override
@@ -78,14 +82,21 @@ class _RescueScreenState extends State<RescueScreen> {
                       child: Column(
                         children: [
                           const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: StatusBar(
-                              state: _game.state,
-                              message: _game.statusMsg,
-                              counter:
-                                  'PUZZLE ${_game.puzzleNumber}/${_game.puzzleCount}',
-                            ),
+                          Row(
+                            children: [
+                              StatusBar(
+                                state: _game.state,
+                                message: _game.statusMsg,
+                                counter:
+                                    'PUZZLE ${_game.puzzleNumber}/${_game.puzzleCount}',
+                              ),
+                              const Spacer(),
+                              if (_game.completedCount > 0)
+                                SavedBadge(
+                                  count: _game.completedCount,
+                                  onReset: _game.resetProgress,
+                                ),
+                            ],
                           ),
                           const SizedBox(height: 30),
                           HeadlineText(
