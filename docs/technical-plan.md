@@ -107,6 +107,18 @@ Progress now persists locally (offline only — no accounts/backend).
 - **Progress display:** a small dim mono `N SAVED` badge top-right of the status row (`SavedBadge`), shown when `completedCount > 0`. The `PUZZLE n/5` counter stays in the pill.
 - **Reset (debug):** long-press the `SavedBadge` → `GameController.resetProgress()` clears `_completed`, returns to puzzle 1 in `danger`, fires a haptic, and clears the store. No settings screen, no confirmation.
 
+## Phase 15 — First-run experience
+
+A brand-new player gets a *light-touch* cold open — the normal game, gently biased toward understanding. No onboarding screens, no chrome stripping, no delayed reveals.
+
+- **Flag:** `ProgressStore.onboardingSeen` (`cr_onboarding_seen`). The controller's `_onboarding` is `true` only when a store exists and the flag is unset. `isOnboarding` gates all first-run treatments.
+- **Lifecycle:** `onboardingSeen` is persisted at the **first rescue** (so it never re-triggers), but `_onboarding` stays `true` in memory through that rescued screen and flips `false` only when the player advances off puzzle 1 (`onPrimaryAction`). `resetProgress()` re-arms it (debug long-press = "cleared storage").
+- **Three onboarding-only nudges** (everything else stays normal — counter, footer, badge all visible):
+  1. **Focus cue** — a soft breathing accent glow on `currentPuzzle.tappableSquare` during the opening danger state (`BoardWidget.focusSquare`), reusing the danger-pulse rhythm; fades out (`focusCueFade`) on selection.
+  2. **Copy** — `HintText.onboarding` swaps the instructional hints for evocative ones (danger "One move saves the game.", selected "Find the rescue.", failed "The king is still trapped."); rescued keeps its normal explanation.
+  3. **Held first rescue** — `BoardWidget.extendedSettle` lengthens the rescue glow's settle by `MotionTokens.firstRescueSettleExtra` (the bloom stays fixed; `bloomEnd` is computed from the live `_rescueBloom.duration`). No CTA delay.
+- **Additive motion tokens only:** `firstRescueSettleExtra`, `focusCueFade`, `focusCueAlphaMin/Max`, `focusCueFillAlpha`. Existing tokens unchanged.
+
 ## What is intentionally out of scope
 
 - A real legal-move generator (knight moves, slider pieces, check detection).

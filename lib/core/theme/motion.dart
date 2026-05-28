@@ -85,6 +85,15 @@ class MotionTokens {
   static const Duration resetOverlayFade = Duration(milliseconds: 200);
   static const Duration resetSettle = Duration(milliseconds: 320);
 
+  // — First-run (onboarding) only. Additive; existing motion unchanged.
+  // A slightly longer rescue settle so the first survival lingers.
+  static const Duration firstRescueSettleExtra = Duration(milliseconds: 400);
+  // Soft focus cue on the rescuing piece during the opening danger state.
+  static const Duration focusCueFade = Duration(milliseconds: 200);
+  static const double focusCueAlphaMin = 0.22;
+  static const double focusCueAlphaMax = 0.46;
+  static const double focusCueFillAlpha = 0.08;
+
   // — Curves
   static const Curve standard = Curves.easeOutCubic;
   static const Curve slide = Curves.easeInOutCubic;

@@ -90,6 +90,16 @@ Progress is remembered between sessions (offline, on-device only).
 
 Only durable progress is saved (current puzzle + completed ids), and only on rescue, on next/start-over, and on reset. Transient selection/rescue/fail state is never persisted.
 
+## Phase 15 — First-run experience
+
+The very first launch is a *light-touch cold open*: the normal game, gently biased toward understanding. The player should feel "I entered a dangerous position," not "the game is introducing itself." The full interface stays visible — only three subtle nudges differ, and they vanish forever after the first survival.
+
+- **Focus cue** — a soft, breathing accent glow draws the eye to the rescuing piece during the opening danger state. It is a focus, not an arrow; it fades out the instant you tap the piece. This teaches the tap without "now tap this" copy.
+- **Minimal copy** — the hint reads "One move saves the game." (danger) → "Find the rescue." (selected) → "The king is still trapped." (on a wrong move). "Rescued." and its explanation are unchanged.
+- **A held first survival** — the first rescue's glow settles a beat longer than usual, so the moment lingers. Nothing else is slowed; no UI is delayed.
+
+After the first rescue is survived, the flag is set and the cold open never returns — relaunches resume the saved puzzle in `danger` with the normal copy and no focus cue. The debug reset (long-press SAVED badge) re-arms it for testing.
+
 ## Haptics
 
 The slice uses Flutter's built-in `HapticFeedback`, accessed through `lib/core/haptics.dart` so the tactile vocabulary stays consistent:

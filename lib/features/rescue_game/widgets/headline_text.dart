@@ -61,6 +61,7 @@ class HintText extends StatelessWidget {
     required this.dangerHint,
     required this.failureHint,
     required this.successExplanation,
+    this.onboarding = false,
   });
 
   final GameState state;
@@ -69,20 +70,46 @@ class HintText extends StatelessWidget {
   final String failureHint;
   final String successExplanation;
 
+  // First-run only: evocative, non-instructional copy for the cold open.
+  // Rescued falls through to the normal explanation.
+  final bool onboarding;
+
   @override
   Widget build(BuildContext context) {
-    final (text, style) = switch (state) {
-      GameState.rescued => (
-        successExplanation,
-        AppText.mono.copyWith(color: AppColors.rescue, letterSpacing: 2.1),
-      ),
-      GameState.failed => (failureHint, AppText.body),
-      GameState.selected => ('Tap a highlighted square to move.', AppText.body),
-      GameState.danger => (
-        hasSelection ? 'Tap a highlighted square to move.' : dangerHint,
-        AppText.body,
-      ),
-    };
+    final (text, style) = onboarding
+        ? switch (state) {
+            GameState.rescued => (
+              successExplanation,
+              AppText.mono.copyWith(
+                color: AppColors.rescue,
+                letterSpacing: 2.1,
+              ),
+            ),
+            GameState.failed => ('The king is still trapped.', AppText.body),
+            GameState.selected => ('Find the rescue.', AppText.body),
+            GameState.danger => (
+              hasSelection ? 'Find the rescue.' : 'One move saves the game.',
+              AppText.body,
+            ),
+          }
+        : switch (state) {
+            GameState.rescued => (
+              successExplanation,
+              AppText.mono.copyWith(
+                color: AppColors.rescue,
+                letterSpacing: 2.1,
+              ),
+            ),
+            GameState.failed => (failureHint, AppText.body),
+            GameState.selected => (
+              'Tap a highlighted square to move.',
+              AppText.body,
+            ),
+            GameState.danger => (
+              hasSelection ? 'Tap a highlighted square to move.' : dangerHint,
+              AppText.body,
+            ),
+          };
     // Hint fades in *after* the headline settles. Implemented as an
     // AnimatedSwitcher whose switchInCurve waits, then eases.
     return AnimatedSwitcher(

@@ -120,6 +120,10 @@ class _RescueScreenState extends State<RescueScreen> {
                               commitInFlight: _game.commitInFlight,
                               resetInFlight: _game.resetInFlight,
                               onTapSquare: _game.handleSquare,
+                              focusSquare: _game.isOnboarding
+                                  ? puzzle.tappableSquare
+                                  : null,
+                              extendedSettle: _game.isOnboarding,
                             ),
                           ),
                           const SizedBox(height: 28),
@@ -129,6 +133,7 @@ class _RescueScreenState extends State<RescueScreen> {
                             dangerHint: puzzle.dangerHint,
                             failureHint: puzzle.failureHint,
                             successExplanation: puzzle.successExplanation,
+                            onboarding: _game.isOnboarding,
                           ),
                           const Spacer(),
                           FooterButton(

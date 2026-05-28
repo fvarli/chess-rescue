@@ -23,6 +23,8 @@ class BoardWidget extends StatefulWidget {
     required this.commitInFlight,
     required this.resetInFlight,
     required this.onTapSquare,
+    this.focusSquare,
+    this.extendedSettle = false,
   });
 
   final double size;
@@ -35,6 +37,11 @@ class BoardWidget extends StatefulWidget {
   final bool commitInFlight;
   final bool resetInFlight;
   final void Function(int file, int rank) onTapSquare;
+
+  // First-run only: a soft focus cue on this square during the opening danger
+  // state (null disables it), and a slightly longer rescue settle.
+  final Square? focusSquare;
+  final bool extendedSettle;
 
   @override
   State<BoardWidget> createState() => _BoardWidgetState();
@@ -83,7 +90,12 @@ class _BoardWidgetState extends State<BoardWidget>
 
     _rescueBloom = AnimationController(
       vsync: this,
-      duration: MotionTokens.rescueBloom + MotionTokens.rescueSettle,
+      duration:
+          MotionTokens.rescueBloom +
+          MotionTokens.rescueSettle +
+          (widget.extendedSettle
+              ? MotionTokens.firstRescueSettleExtra
+              : Duration.zero),
     );
     _rescueBreath = AnimationController(
       vsync: this,
@@ -273,6 +285,7 @@ class _BoardWidgetState extends State<BoardWidget>
                 _buildDangerGlow(),
                 _buildFailedFlash(),
                 _buildRescueGlow(),
+                _buildFocusCue(),
                 if (widget.selected != null) _buildSelectedRing(),
                 ..._buildLegalDots(),
                 ..._buildPieces(),
@@ -435,9 +448,13 @@ class _BoardWidgetState extends State<BoardWidget>
     if (widget.state != GameState.rescued) return const SizedBox.shrink();
     final origin = _squareOrigin(widget.rescueTo.file, widget.rescueTo.rank);
 
-    final bloomTotal = (MotionTokens.rescueBloom + MotionTokens.rescueSettle)
-        .inMilliseconds
-        .toDouble();
+    // Use the live controller duration so the bloom stays fixed at
+    // rescueBloom ms and only the settle phase stretches on first run.
+    final bloomTotal =
+        (_rescueBloom.duration ??
+                (MotionTokens.rescueBloom + MotionTokens.rescueSettle))
+            .inMilliseconds
+            .toDouble();
     final bloomEnd = MotionTokens.rescueBloom.inMilliseconds / bloomTotal;
     final overlayFade = widget.resetInFlight ? 0.0 : 1.0;
 
@@ -513,6 +530,53 @@ class _BoardWidgetState extends State<BoardWidget>
           ),
         );
       },
+    );
+  }
+
+  // First-run only: a soft breathing accent glow drawing the eye to the
+  // rescuing piece. Fades out gently the moment a piece is selected.
+  Widget _buildFocusCue() {
+    final fs = widget.focusSquare;
+    if (fs == null) return const SizedBox.shrink();
+    final visible = widget.state == GameState.danger && widget.selected == null;
+    final origin = _squareOrigin(fs.file, fs.rank);
+    return Positioned(
+      left: origin.dx,
+      top: origin.dy,
+      width: _sq,
+      height: _sq,
+      child: IgnorePointer(
+        child: AnimatedOpacity(
+          opacity: visible ? 1.0 : 0.0,
+          duration: MotionTokens.focusCueFade,
+          curve: MotionTokens.standard,
+          child: AnimatedBuilder(
+            animation: _dangerPulseValue,
+            builder: (context, _) {
+              final t = _dangerPulseValue.value;
+              final glow = _lerp(
+                MotionTokens.focusCueAlphaMin,
+                MotionTokens.focusCueAlphaMax,
+                t,
+              );
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(
+                    alpha: MotionTokens.focusCueFillAlpha,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.accent.withValues(alpha: glow),
+                      blurRadius: _sq * 0.6,
+                      spreadRadius: _sq * 0.02,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 

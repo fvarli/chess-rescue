@@ -19,6 +19,7 @@ class GameController extends ChangeNotifier {
       final known = {for (final p in _puzzles) p.id};
       _completed.addAll(store.completedIds.where(known.contains));
     }
+    _onboarding = (store != null) && !store.onboardingSeen;
     final restored = (store?.puzzleIndex ?? 0).clamp(0, _puzzles.length - 1);
     _loadPuzzle(restored);
   }
@@ -27,6 +28,7 @@ class GameController extends ChangeNotifier {
   final ProgressStore? _store;
   int _index = 0;
   final Set<String> _completed = {};
+  bool _onboarding = false;
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -43,6 +45,10 @@ class GameController extends ChangeNotifier {
   bool get hasNext => _index < _puzzles.length - 1;
   int get completedCount => _completed.length;
   bool get allComplete => _completed.length == _puzzles.length;
+
+  // First-run only. Stays true through the first rescued screen, then ends
+  // when the player advances off the first puzzle.
+  bool get isOnboarding => _onboarding;
 
   // — Game state
   List<Piece> get pieces => _pieces;
@@ -161,6 +167,9 @@ class GameController extends ChangeNotifier {
       _state = GameState.rescued;
       _statusMsg = '◐ Attack broken · ${puzzle.rescueNotation}';
       Haptics.rescue();
+      // Mark the first rescue survived so the cold open never re-triggers,
+      // but keep _onboarding true in memory through this rescued screen.
+      if (_onboarding) unawaited(_store?.setOnboardingSeen());
       notifyListeners();
       _persist();
       return;
@@ -176,6 +185,7 @@ class GameController extends ChangeNotifier {
   void onPrimaryAction() {
     switch (_state) {
       case GameState.rescued:
+        _onboarding = false; // first run ends as the player moves on
         if (hasNext) {
           _loadPuzzle(_index + 1);
         } else {
@@ -202,6 +212,8 @@ class GameController extends ChangeNotifier {
   Future<void> resetProgress() async {
     if (_commitInFlight || _resetInFlight) return;
     _completed.clear();
+    _onboarding =
+        _store != null; // re-arm the cold open (cleared-storage parity)
     _loadPuzzle(0);
     Haptics.resetProgress();
     notifyListeners();
