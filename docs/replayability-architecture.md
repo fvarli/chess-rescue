@@ -154,8 +154,12 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
 
 ## Implementation roadmap (each sub-phase independently shippable; runtime never changes)
 
-- **19B** — `Archetype` enum; refactor the 5 puzzles into `PuzzleTemplate`s tagged by
-  archetype (identity variation; zero behavior change). Author archetype copy.
+- **19B — DONE.** `RescueArchetype` enum (`lib/core/models/rescue_archetype.dart`) +
+  `PuzzleTemplate` (`lib/core/models/puzzle_template.dart`). The 5 puzzles are now
+  `PuzzleLibrary.templates` (archetype-tagged); `PuzzleLibrary.all` is derived via the
+  identity `toPuzzle()` seam → same 5 `Puzzle` instances, same order, zero behavior
+  change. `GameController` is untouched. `toPuzzle()` is the seam 19C replaces with
+  variation application.
 - **19C** — `Variation` + pure `applyVariation()` (mirror + offset first);
   per-instance validity re-check; snapshot tests.
 - **19D** — `readabilityScore()` validator + a **debug-only** instance gallery to

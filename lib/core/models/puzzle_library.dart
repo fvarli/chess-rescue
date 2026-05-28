@@ -1,5 +1,7 @@
 import 'piece.dart';
 import 'puzzle.dart';
+import 'puzzle_template.dart';
+import 'rescue_archetype.dart';
 import 'square.dart';
 
 // Curated rescue sequence. Puzzle 1 is the real canonical rescue; puzzles
@@ -14,7 +16,29 @@ import 'square.dart';
 class PuzzleLibrary {
   PuzzleLibrary._();
 
-  static const List<Puzzle> all = [_p1, _p2, _p3, _p4, _p5];
+  // The archetype-tagged templates (Phase 19A architecture). Each wraps the
+  // existing const puzzle; toPuzzle() is identity in 19B (the variation seam
+  // for 19C). See docs/replayability-architecture.md.
+  static const List<PuzzleTemplate> templates = [
+    PuzzleTemplate(archetype: RescueArchetype.counterCheck, puzzle: _p1),
+    PuzzleTemplate(
+      archetype: RescueArchetype.captureAttackerMinor,
+      puzzle: _p2,
+    ),
+    PuzzleTemplate(archetype: RescueArchetype.blockFile, puzzle: _p3),
+    PuzzleTemplate(archetype: RescueArchetype.sealDiagonal, puzzle: _p4),
+    PuzzleTemplate(
+      archetype: RescueArchetype.captureAttackerHeavy,
+      puzzle: _p5,
+    ),
+  ];
+
+  // The runtime sequence GameController consumes. Identity conversion over the
+  // const templates → the same 5 Puzzle instances, same order (19B is
+  // behavior-preserving).
+  static final List<Puzzle> all = templates
+      .map((t) => t.toPuzzle())
+      .toList(growable: false);
 
   // ── Puzzle 1 — Knight rescue (REAL).
   // Archetype: COUNTER-CHECK (zwischenzug). Black threatens Qg2#. Instead of
