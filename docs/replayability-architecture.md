@@ -68,10 +68,10 @@ fresh rescues.
 
 | Transform | Effect | Why it's safe |
 |---|---|---|
-| **Mirror (horizontal)** | `file → 7 − file` for every piece/square | left/right feel flips; rescue stays valid (e.g. Nf6+ → its mirror) |
-| **Board offset** | translate the whole cluster by `(dx, dy)` | same rescue in a new board region; today everything hugs g1 |
-| **Decoy swap** | choose a different believable decoy set from the pool | changes texture, not the rescue |
-| **Pawn-density** | add/remove a couple of context pawns | changes clutter feel within limits |
+| **Mirror (horizontal)** — *shipped* | `file → 7 − file` for every piece/square | left/right feel flips; rescue stays valid (e.g. Nf6+ → its mirror) |
+| **Board offset** — *deferred (Phase 23A)* | translate the whole cluster by `(dx, dy)` | current positions are corner-to-corner → no vertical offset, only P5/B3/B4 horizontally; revisit with compact templates (small / centering-preferred) |
+| **Decoy swap** — *next (Phase 23B)* | choose a different believable decoy set from the pool | changes texture, not the rescue; honesty is authoring-vetted (gate is piece-type-blind) — subtle (move-dots only) |
+| **Pawn-density / scenery** — *Phase 23C* | add/remove a couple of context pawns | changes clutter feel within limits; needs a new lane-/functional-square check (readability is blocker-blind) — the visible freshness lever |
 
 **Forbidden:** unreadable clutter, hidden tactical-only moves, multi-line calc
 trees, engine-only correctness, random chaos.
@@ -263,6 +263,21 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   (single `Random(seed)`), length-5 guaranteed (orientation/base fallback), no procedural
   generation. Covered by `test/session_composer_test.dart` (expansion-pool group: cap,
   coverage of all 4 families, pacing, determinism, seed-0 lock).
+- **Phase 23A — DONE (design only). Translation-free variation; offset deferred.**
+  Measuring real board spans: every position is corner-to-corner (white king rank 1 ↔ black
+  king rank 8), so **no template can offset vertically** and only P5/B3/B4 can offset
+  horizontally-left — rigid offset barely freshens current content. **Offset is deferred**
+  until compact, offset-friendly templates exist (then translations stay small /
+  centering-preferred). Phase 23 instead pursues **decoy-set variation** and **context-pawn /
+  scenery variation** — author-vetted pools selected deterministically by a `textureSeed`
+  (0 = canonical anchor), composing orthogonally with mirror. Key findings: the readability
+  gate is **pure geometry (blocker- and piece-type-blind)**, so (a) **decoy honesty is an
+  authoring guarantee, not auto-verifiable** (pools must exclude resolving moves — e.g. B3
+  `f3`, B4 `g4`), and (b) **scenery needs a new check** (no pawn on the attacker→king lane or
+  on `tappable`/`rescue`/`legalMove` squares; pawn-rank plausibility) since readability won't
+  catch it. Sequencing: **23B** decoy preview-only → **23C** scenery (+ the new validation) →
+  **23D** runtime wiring (texture 0 stays the anchor). Decoy freshness is subtle (move-dots
+  only); scenery is the visible lever.
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).
