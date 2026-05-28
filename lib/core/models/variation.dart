@@ -27,6 +27,10 @@ class Variation {
   );
 }
 
+/// The base (family) id for any instance — strips the `#variation` suffix.
+/// A mirror counts as the same rescue family as its base (Phase 21 persistence).
+String canonicalPuzzleId(String id) => id.split('#').first;
+
 /// Mirror flips files (`file → 7 - file`) and preserves rank. Offset (dx/dy) is
 /// reserved and must stay zero until the offset phase.
 Square transformSquare(Square s, Variation v) {

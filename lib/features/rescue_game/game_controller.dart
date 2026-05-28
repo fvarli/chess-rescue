@@ -7,16 +7,19 @@ import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
 import '../../core/models/puzzle_library.dart';
 import '../../core/models/square.dart';
+import '../../core/models/variation.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/motion.dart';
 import 'game_state.dart';
 
 class GameController extends ChangeNotifier {
-  GameController({List<Puzzle>? puzzles, ProgressStore? store})
-    : _puzzles = puzzles ?? PuzzleLibrary.all,
-      _store = store {
+  GameController({ProgressStore? store}) : _store = store {
+    _seed = store?.sessionSeed ?? 0;
+    _puzzles = PuzzleLibrary.session(_seed);
     if (store != null) {
-      final known = {for (final p in _puzzles) p.id};
+      // _completed holds canonical (family) ids; every session's family set is
+      // the base ids, so old saves (base ids) restore cleanly.
+      final known = {for (final p in _puzzles) canonicalPuzzleId(p.id)};
       _completed.addAll(store.completedIds.where(known.contains));
     }
     _onboarding = (store != null) && !store.onboardingSeen;
@@ -24,8 +27,9 @@ class GameController extends ChangeNotifier {
     _loadPuzzle(restored);
   }
 
-  final List<Puzzle> _puzzles;
   final ProgressStore? _store;
+  late int _seed;
+  late List<Puzzle> _puzzles;
   int _index = 0;
   final Set<String> _completed = {};
   bool _onboarding = false;
@@ -45,6 +49,9 @@ class GameController extends ChangeNotifier {
   bool get hasNext => _index < _puzzles.length - 1;
   int get completedCount => _completed.length;
   bool get allComplete => _completed.length == _puzzles.length;
+
+  // Current session seed (Phase 21). 0 = canonical authored session.
+  int get sessionSeed => _seed;
 
   // First-run only. Stays true through the first rescued screen, then ends
   // when the player advances off the first puzzle.
@@ -163,7 +170,7 @@ class GameController extends ChangeNotifier {
     _selected = null;
     _commitInFlight = false;
     if (isRescue) {
-      _completed.add(puzzle.id);
+      _completed.add(canonicalPuzzleId(puzzle.id));
       _state = GameState.rescued;
       _statusMsg = '◐ Attack broken';
       Haptics.rescue();
@@ -189,7 +196,11 @@ class GameController extends ChangeNotifier {
         if (hasNext) {
           _loadPuzzle(_index + 1);
         } else {
-          _loadPuzzle(0); // start over; _completed is preserved for the session
+          // Session complete → rotate to the next curated session (Phase 21).
+          _seed += 1;
+          _completed.clear();
+          _puzzles = PuzzleLibrary.session(_seed);
+          _loadPuzzle(0);
         }
         notifyListeners();
         _persist();
@@ -202,15 +213,25 @@ class GameController extends ChangeNotifier {
     }
   }
 
-  // Persist the durable progress (current index + completed ids). Transient
-  // game state is never saved. Fire-and-forget; null store = no persistence.
+  // Persist the durable progress (session seed + index + canonical completed
+  // ids). Transient game state is never saved. Fire-and-forget; null store =
+  // no persistence.
   void _persist() {
-    unawaited(_store?.save(puzzleIndex: _index, completedIds: _completed));
+    unawaited(
+      _store?.save(
+        sessionSeed: _seed,
+        puzzleIndex: _index,
+        completedIds: _completed,
+      ),
+    );
   }
 
-  // Hidden debug action — wipe local progress and return to the first puzzle.
+  // Hidden debug action — wipe local progress, return to the canonical first
+  // session, and re-arm the cold open.
   Future<void> resetProgress() async {
     if (_commitInFlight || _resetInFlight) return;
+    _seed = 0;
+    _puzzles = PuzzleLibrary.session(0);
     _completed.clear();
     _onboarding =
         _store != null; // re-arm the cold open (cleared-storage parity)

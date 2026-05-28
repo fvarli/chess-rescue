@@ -50,8 +50,7 @@ class _RescueScreenState extends State<RescueScreen> {
           final sequenceComplete =
               isRescued && _game.allComplete && !_game.hasNext;
           final buttonLabel = switch (_game.state) {
-            GameState.rescued =>
-              _game.hasNext ? 'Next puzzle  ↦' : 'Start over  ↻',
+            GameState.rescued => _game.hasNext ? 'Next puzzle  ↦' : 'Again  ↻',
             GameState.failed => 'Try again  ↺',
             _ => 'Reset',
           };

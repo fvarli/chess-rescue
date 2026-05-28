@@ -2,6 +2,7 @@ import 'piece.dart';
 import 'puzzle.dart';
 import 'puzzle_template.dart';
 import 'rescue_archetype.dart';
+import 'session_composer.dart';
 import 'square.dart';
 import 'variation.dart';
 
@@ -41,12 +42,18 @@ class PuzzleLibrary {
       .map((t) => t.toPuzzle())
       .toList(growable: false);
 
-  // Phase 19C preview only — horizontal-mirror variants of each template.
-  // NOT consumed by the runtime; exposed for tests/inspection and future
-  // session composition (19E). See docs/replayability-architecture.md.
+  // Phase 19C preview — horizontal-mirror variants of each template (used by
+  // the debug gallery and as composer candidates).
   static final List<Puzzle> mirrorVariants = templates
       .map((t) => t.toPuzzle(Variation.mirror))
       .toList(growable: false);
+
+  // The runtime session for a given seed (Phase 21). Seed 0 is the canonical
+  // authored session (preserves the onboarding cold open + first impression);
+  // seeds >= 1 are deterministic, paced composed sessions (mirror variants).
+  static List<Puzzle> session(int seed) => seed == 0
+      ? all
+      : SessionComposer.compose(templates: templates, seed: seed);
 
   // ── Puzzle 1 — Knight rescue (REAL).
   // Archetype: COUNTER-CHECK (zwischenzug). Black threatens Qg2#. Instead of

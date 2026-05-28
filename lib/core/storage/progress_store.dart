@@ -10,6 +10,7 @@ class ProgressStore {
 
   final SharedPreferences _prefs;
 
+  static const String _kSessionSeed = 'cr_session_seed';
   static const String _kIndex = 'cr_puzzle_index';
   static const String _kCompleted = 'cr_completed_ids';
   static const String _kOnboarding = 'cr_onboarding_seen';
@@ -17,8 +18,12 @@ class ProgressStore {
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
 
+  // Current session seed (Phase 21). Absent on old saves → 0 (canonical session).
+  int get sessionSeed => _prefs.getInt(_kSessionSeed) ?? 0;
+
   int get puzzleIndex => _prefs.getInt(_kIndex) ?? 0;
 
+  // Canonical (base) ids completed in the current session.
   Set<String> get completedIds =>
       (_prefs.getStringList(_kCompleted) ?? const <String>[]).toSet();
 
@@ -26,9 +31,11 @@ class ProgressStore {
   bool get onboardingSeen => _prefs.getBool(_kOnboarding) ?? false;
 
   Future<void> save({
+    required int sessionSeed,
     required int puzzleIndex,
     required Set<String> completedIds,
   }) async {
+    await _prefs.setInt(_kSessionSeed, sessionSeed);
     await _prefs.setInt(_kIndex, puzzleIndex);
     await _prefs.setStringList(_kCompleted, completedIds.toList());
   }
@@ -38,6 +45,7 @@ class ProgressStore {
   }
 
   Future<void> clear() async {
+    await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
     await _prefs.remove(_kCompleted);
     await _prefs.remove(_kOnboarding);

@@ -217,8 +217,24 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   can ship without stale notation. Persistence is untouched (no `#mirror` id reaches
   `ProgressStore`); how a `#mirror` completion maps to its base is deferred to that
   opt-in phase.
+- **Phase 20 — DONE.** Geometry-safe emotional copy (see "Copy is decoupled from
+  geometry"). Unblocked the runtime opt-in.
+- **Phase 21 — DONE (runtime wired).** `SessionComposer` now drives the live game via
+  `PuzzleLibrary.session(seed)`: **seed 0 = the canonical authored session** (preserves
+  the onboarding cold open + first impression), **seed ≥ 1 = composed sessions** (mirror
+  variants, paced). `GameController` holds a persisted `sessionSeed`; completing a session
+  rotates to the next (seed+1, fresh curated session) — a subtle endless loop, footer
+  "Again ↻". **Persistence identity = canonical family:** `canonicalPuzzleId(id)` strips
+  the `#variation` suffix, so a mirror counts as the same rescue as its base; `_completed`
+  stores canonical ids (old base-id saves restore unchanged — no migration). SAVED climbs
+  0→5 per session. Covered by `test/runtime_session_test.dart` (restore, round-trip,
+  driven completion→rotate, canonical counting). Variety is mirror-only for now; offsets +
+  more templates deepen it later. (Cross-version note: composer output is deterministic
+  within a version; a mid-session resume could shift if the composer changes across an
+  update — self-heals next completion.)
 - **19F** — author more templates per archetype; tune readability thresholds.
-- **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer.
+- **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
+  (`seed = f(date)`).
 
 ## Constraints honored
 
