@@ -64,10 +64,12 @@ Chess is the medium. Relief is the product.
 > Art direction + the icon/feature-graphic/screenshot concepts live in `brand-direction.md`
 > (recommended icon: the abstract coral→mint "knight-leap").
 
-- **App icon:** 512×512 PNG (32-bit). ⚠️ **Blocker:** current launcher is the default Flutter
-  logo — needs real branded art.
-- **Feature graphic:** 1024×500 PNG/JPG.
-- **Phone screenshots:** 2–8, 16:9 or 9:16. Capture the four signature states:
+- **App icon:** 512×512 PNG (32-bit) → `assets/store/play-icon-512.png` ✅ (launcher icon "The
+  Trajectory" also wired into the app; default Flutter logo replaced).
+- **Feature graphic:** 1024×500 → `assets/store/feature-graphic-1024x500.png` ✅ **(text-free v1)**;
+  add the wordmark overlay in a design tool (see `store-assets-spec.md` → text-overlay spec).
+- **Phone screenshots:** 2–8, 9:16 (1080×2400) — capture pending (see `screenshot-workflow.md`).
+  Capture the signature states:
   1. danger (king glowing, threat named), 2. a piece selected (move dots fanned out),
   3. rescued (mint breath), 4. completion ("The board is quiet now." + SAVED badge).
 

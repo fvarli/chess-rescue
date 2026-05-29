@@ -17,18 +17,24 @@ gets you cleanly to **closed**.
 
 | # | Item | State | Owner |
 |---|---|---|---|
-| 1 | **Real launcher icon** (replace default Flutter logo) | 🎨 spec ready (`store-assets-spec.md` §27A — "The Trajectory") — needs render | render + wire |
+| 1 | **Real launcher icon** (replace default Flutter logo) | ✅ **rendered + wired** — "The Trajectory" (`assets/app_icon/`, adaptive icon generated) | done (refine vector later, optional) |
 | 2 | **Privacy-policy URL** (host `privacy-policy.md`) | ❌ BLOCKER | host + paste URL |
 | 3 | **Store listing** (title, short/full desc from metadata draft) | ⬜ todo | fill placeholders |
-| 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 spec ready (`store-assets-spec.md` §27C) — needs capture | capture on device |
-| 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 spec ready (`store-assets-spec.md` §27B) — needs render | render |
+| 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 workflow ready (`screenshot-workflow.md`) — capture pending | capture on device |
+| 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 **v1 rendered** (`assets/store/feature-graphic-1024x500.png`, text-free) — add wordmark overlay | design-tool type pass |
 | 6 | **Data Safety form** (none collected/shared) | ⬜ Console | use metadata draft |
 | 7 | **Content rating** questionnaire (expect Everyone) | ⬜ Console | — |
 | — | Release signing + keystore | ✅ done | — |
 | — | `versionCode`/`versionName` set (1 / 1.0.0) | ✅ done | — |
 | — | Zero permissions / offline / no data | ✅ done | — |
 
-### Replacing the launcher icon (recipe for when art exists)
+### Replacing the launcher icon — ✅ DONE (Phase 28)
+Icon "The Trajectory" is rendered by `tool/generate_store_assets.dart` and wired via
+`flutter_launcher_icons` (config in `pubspec.yaml`). To re-render after a tweak:
+`dart run tool/generate_store_assets.dart && dart run flutter_launcher_icons`. (Generic recipe
+kept below for reference.)
+
+### Generic icon recipe (reference)
 1. Add a 1024×1024 source PNG (e.g. `assets/branding/icon.png`).
 2. `dart pub add --dev flutter_launcher_icons` and add a `flutter_launcher_icons:` block
    (android true, `image_path`, optional `adaptive_icon_background`/`_foreground`).

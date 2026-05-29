@@ -3,4 +3,5 @@
     <!-- D4 background (AppColors.bg). Used for the launch window so there is no
          white flash before the dark Flutter UI draws. -->
     <color name="launchBackground">#FF0D0E12</color>
+	<color name="ic_launcher_background">#0D0E12</color>
 </resources>
