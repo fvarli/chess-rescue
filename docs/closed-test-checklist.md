@@ -20,7 +20,7 @@ gets you cleanly to **closed**.
 | 1 | **Real launcher icon** (replace default Flutter logo) | ✅ **rendered + wired** — "The Trajectory" (`assets/app_icon/`, adaptive icon generated) | done (refine vector later, optional) |
 | 2 | **Privacy-policy URL** (host `privacy-policy.md`) | ❌ BLOCKER | host + paste URL |
 | 3 | **Store listing** (title, short/full desc from metadata draft) | ⬜ todo | fill placeholders |
-| 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 workflow ready (`screenshot-workflow.md`) — capture pending | capture on device |
+| 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 **harness ready** (`screenshot-capture.md` — deterministic, < 10 min) — capture + composite pending | capture on device |
 | 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 **v1 rendered** (`assets/store/feature-graphic-1024x500.png`, text-free) — add wordmark overlay | design-tool type pass |
 | 6 | **Data Safety form** (none collected/shared) | ⬜ Console | use metadata draft |
 | 7 | **Content rating** questionnaire (expect Everyone) | ⬜ Console | — |

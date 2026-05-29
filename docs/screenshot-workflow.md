@@ -1,5 +1,9 @@
 # Screenshot Capture Workflow — Chess Rescue
 
+> **Fast path (recommended):** use the **screenshot harness** — see `screenshot-capture.md`. It
+> drives the real UI into all 6 states deterministically (raw frames in < 10 min). This doc is the
+> general/manual capture + **compositing** reference (used either way for the headline bands).
+
 How to capture the Play Store phone screenshots. The **narrative, headlines, and composition**
 are specced in `store-assets-spec.md §27C`; this doc is the *capture + compositing* recipe.
 (Raw captures can't be produced here — there's no GUI/emulator to drive — so this is a manual

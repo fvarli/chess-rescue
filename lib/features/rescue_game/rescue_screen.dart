@@ -15,9 +15,14 @@ import 'widgets/saved_badge.dart';
 import 'widgets/status_bar.dart';
 
 class RescueScreen extends StatefulWidget {
-  const RescueScreen({super.key, required this.store});
+  const RescueScreen({super.key, required this.store, this.controller});
 
   final ProgressStore? store;
+
+  /// Optional injected controller — a debug/testing seam used by the Phase-29
+  /// screenshot harness to render a pre-driven game state. When null (the
+  /// shipping path via main.dart), the screen creates and owns its own.
+  final GameController? controller;
 
   @override
   State<RescueScreen> createState() => _RescueScreenState();
@@ -25,16 +30,18 @@ class RescueScreen extends StatefulWidget {
 
 class _RescueScreenState extends State<RescueScreen> {
   late final GameController _game;
+  late final bool _ownsController;
 
   @override
   void initState() {
     super.initState();
-    _game = GameController(store: widget.store);
+    _game = widget.controller ?? GameController(store: widget.store);
+    _ownsController = widget.controller == null;
   }
 
   @override
   void dispose() {
-    _game.dispose();
+    if (_ownsController) _game.dispose();
     super.dispose();
   }
 
