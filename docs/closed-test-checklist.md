@@ -4,10 +4,11 @@ The runbook to take Chess Rescue from "builds locally" to a **Google Play closed
 Companion docs (don't duplicate — follow the links):
 - `play-store-checklist.md` — master store-readiness + internal-testing checklist.
 - `release-candidate-notes.md` — what's in this RC + verification results.
-- `play-store-metadata-draft.md` — listing copy / Data Safety answers.
+- `play-store-metadata-draft.md` — **finalized** listing copy (EN/TR/ES short + full).
 - `brand-direction.md` — brand strategy + art direction.
 - `store-assets-spec.md` — **production spec** for the icon (The Trajectory), feature graphic (FG-1), and the 6-screen screenshot system (headlines + composition).
-- `privacy-policy.md` — hostable policy text.
+- `privacy-policy.md` — privacy index + hosting plan; host pages `privacy-policy-{en,tr,es}.md`.
+- `play-console-data-safety.md` — exact Data Safety + content-rating answers.
 - `android-layout-qa.md` — on-device layout/QA matrix.
 
 Track order on Play: **internal → closed → production.** Do an internal test first; this list
@@ -18,12 +19,12 @@ gets you cleanly to **closed**.
 | # | Item | State | Owner |
 |---|---|---|---|
 | 1 | **Real launcher icon** (replace default Flutter logo) | ✅ **rendered + wired** — "The Trajectory" (`assets/app_icon/`, adaptive icon generated) | done (refine vector later, optional) |
-| 2 | **Privacy-policy URL** (host `privacy-policy.md`) | ❌ BLOCKER | host + paste URL |
-| 3 | **Store listing** (title, short/full desc from metadata draft) | ⬜ todo | fill placeholders |
+| 2 | **Privacy-policy URL** | 🎨 **content host-ready (EN/TR/ES)** (`privacy-policy.md` hub) — deploy + paste URL | host + paste URL (last hard blocker) |
+| 3 | **Store listing** (title, short/full, EN/TR/ES) | ✅ **finalized** (`play-store-metadata-draft.md`) — paste; fill email/URL | paste into Console |
 | 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 **harness ready** (`screenshot-capture.md` — deterministic, < 10 min) — capture + composite pending | capture on device |
 | 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 **v1 rendered** (`assets/store/feature-graphic-1024x500.png`, text-free) — add wordmark overlay | design-tool type pass |
-| 6 | **Data Safety form** (none collected/shared) | ⬜ Console | use metadata draft |
-| 7 | **Content rating** questionnaire (expect Everyone) | ⬜ Console | — |
+| 6 | **Data Safety form** (none collected/shared) | ✅ **answers ready** (`play-console-data-safety.md`) | fill Console form |
+| 7 | **Content rating** questionnaire (expect Everyone) | ✅ **answers ready** (`play-console-data-safety.md`) | fill Console form |
 | — | Release signing + keystore | ✅ done | — |
 | — | `versionCode`/`versionName` set (1 / 1.0.0) | ✅ done | — |
 | — | Zero permissions / offline / no data | ✅ done | — |

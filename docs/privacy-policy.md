@@ -1,51 +1,35 @@
-# Privacy Policy — Chess Rescue
+# Privacy Policy — index & hosting plan
 
-_Last updated: `<DATE — e.g. 2026-05-29>`_
+Chess Rescue needs **one publicly hosted privacy-policy URL** for Google Play (required even for a
+zero-data app). The host-ready content lives in three language files; this doc is the publishing hub.
 
-This is a **draft** intended to be published at a public URL (e.g. a GitHub Pages page,
-a Google Site, or any static host) and linked from the Google Play Console listing.
-Google Play requires a privacy policy URL for every app, even one that collects no data.
+## Host-ready pages (content)
 
-> Replace every `<placeholder>` before publishing.
+- 🇬🇧 English — `privacy-policy-en.md` (canonical)
+- 🇹🇷 Türkçe — `privacy-policy-tr.md`
+- 🇪🇸 Español — `privacy-policy-es.md`
 
----
+All three say the same thing (app reality): offline; no account/ads/analytics/network; no runtime
+permissions; progress stored on-device only. Publisher: **Lunexa Games**. Before publishing,
+replace the `<support email>` placeholder and set the "Last updated" date.
 
-Chess Rescue ("the app") is a single-player, offline puzzle game published by
-`<Lunexa Games / your developer name>`. We respect your privacy. This policy explains what
-the app does — and, more importantly, what it does **not** do — with your information.
+## Suggested URL structure (UseLunexa site)
 
-## Data we collect
+Confirm the real domain (`<uselunexa-domain>` is a placeholder):
 
-**None.** Chess Rescue does **not** collect, store off-device, transmit, sell, or share any
-personal or sensitive user data. Specifically, the app has:
+- Canonical: `https://<uselunexa-domain>/chess-rescue/privacy`
+- Localized: `…/privacy/en` · `…/privacy/tr` · `…/privacy/es`
 
-- **No accounts or sign-in.**
-- **No analytics, tracking, or advertising.**
-- **No network requests** — the app is fully offline; all content ships inside the app.
-- **No third-party SDKs that collect data.**
+(A single page with a language switcher works too — Play only requires the URL to resolve.)
 
-## Data stored on your device
+## Manual deploy (the only human steps)
 
-The app saves a small amount of **game progress on your device only** (your current puzzle,
-which rescues you've completed, and whether you've seen the intro), using Android's standard
-local app-storage. This information **never leaves your device** and is not accessible to us
-or anyone else. You can erase it at any time by clearing the app's storage or uninstalling
-the app, via your device Settings.
+1. Publish the 3 pages on the UseLunexa site (GitHub Pages / Netlify / Google Sites / existing CMS;
+   render the Markdown as HTML). Set `<support email>` + the "Last updated" date; confirm publisher.
+2. Confirm each URL is **publicly reachable** (Play validates it on submission).
+3. **Play Console linking:** Store settings → **Privacy policy** → paste the canonical URL. If you
+   add `tr-TR` / `es-ES` store locales, set each locale listing's privacy URL to the matching
+   language page. One global URL is required; per-locale URLs are optional but tidy.
 
-## Permissions
-
-The app requests **no Android runtime permissions**.
-
-## Children
-
-The app is suitable for all ages. Because it collects no data, it does not knowingly collect
-information from children.
-
-## Changes
-
-If this policy changes, the updated version will be posted at this URL with a new "Last
-updated" date.
-
-## Contact
-
-Questions about this policy: `<support email>`.
+See `play-store-checklist.md` / `closed-test-checklist.md` for where this fits in the launch flow,
+and `play-console-data-safety.md` for the Data Safety answers that must match this policy.

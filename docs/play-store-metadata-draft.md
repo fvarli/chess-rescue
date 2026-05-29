@@ -1,8 +1,10 @@
-# Play Store Metadata — Draft
+# Play Store Metadata — Finalized
 
-Draft listing copy for the Google Play Console. **Not for submission as-is** — fill the
-`<placeholders>` and capture the graphics first (see `closed-test-checklist.md`). Tone is
-seeded from `product-vision.md`: relief, calm, "not a chess trainer."
+Finalized listing copy for the Google Play Console (Phase 30). Paste as-is; only fill the two
+remaining placeholders — `<support email>` and the hosted privacy URL — and add graphics
+(`closed-test-checklist.md`). Data Safety answers live in `play-console-data-safety.md`; privacy
+text + hosting in `privacy-policy.md`. Tone seeded from `product-vision.md`: relief, calm, "not a
+chess trainer." Copy intentionally **motivates, not describes** (see store-copy-voice guidance).
 
 ## Identity
 
@@ -49,15 +51,64 @@ Chess is the medium. Relief is the product.
   no shared data). Complete the IARC questionnaire in the Console.
 - **Target audience:** general; optionally mark family-friendly.
 
-## Data Safety form (answers)
+## Data Safety + content rating
 
-- **Data collected:** None.
-- **Data shared:** None.
-- **Encryption in transit / data deletion:** N/A (no data leaves the device).
-- **On-device storage only:** game progress via local app storage; user can clear via system
-  Settings or uninstall.
-- **Permissions:** none (release manifest declares no runtime permissions).
-- **Privacy policy URL:** `<host docs/privacy-policy.md and paste the URL>`
+Exact Console answers in **`play-console-data-safety.md`** (summary: no data collected/shared,
+no permissions, no ads, no IAP, rating Everyone/PEGI 3).
+
+- **Privacy policy URL:** `https://<uselunexa-domain>/chess-rescue/privacy` (host
+  `privacy-policy-en.md`; per-locale `…/privacy/tr`, `…/privacy/es` — see `privacy-policy.md`).
+
+## Localized listings (EN / TR / ES)
+
+Match the privacy-policy languages. Short ≤80 chars; full = faithful translation of the EN body.
+
+- **TR title:** `Chess Rescue` · **TR short:** `Tek hamle şahı kurtarır. Sakin, çevrimdışı, 90 saniyelik bir kurtarış.`
+- **ES title:** `Chess Rescue` · **ES short:** `Un movimiento salva al rey. Un ritual de rescate tranquilo y sin conexión.`
+
+**TR full description:**
+```
+Chess Rescue, tek bir duyguyla ilgili sakin, çevrimdışı bir bulmaca oyunudur: kaybedilmiş
+görünen bir konumu kurtarmanın rahatlığı.
+
+Bu bir satranç eğitmeni değildir. Açılış yok, puan yok, rakip yok, saat yok. Her bulmaca sizi
+görünür bir tehlikenin içine bırakır — şahınız tehdit altındadır — ve tek bir hamle ister:
+kurtarış. Onu bulun, oynayın; tahta sessiz bir rahatlama nefesiyle yanıt verir. Kaçırırsanız,
+kayıp ekranı ve utanç yoktur — yalnızca yumuşak bir sıfırlama ve yeni bir deneme.
+
+Gününüzdeki küçük bir mücadele istediğiniz gibi gitmediğinde, 90 saniyelik bir ritüel. Kaybedilmiş
+görünen bir konumun bazen tek bir hamlelik uzaklıkta kurtarıldığını hatırlatır.
+
+• Tek hamle, tek kurtarış, tek duygu — tekrar tekrar.
+• Tasarım gereği nazik: başarısızlık sakince sıfırlanır.
+• Tamamen çevrimdışı. Hesap yok, reklam yok, takip yok, ağ yok.
+• Satranç bilgisi gerekmez — tehlikeyi görebiliyorsanız, hamleyi bulabilirsiniz.
+• Asla rastgele hissettirmeden taze kalan kısa seanslar.
+
+Satranç araçtır. Ürün rahatlamadır.
+```
+
+**ES full description:**
+```
+Chess Rescue es un juego de rompecabezas tranquilo y sin conexión sobre una sola sensación: el
+alivio de salvar una posición que parecía perdida.
+
+No es un entrenador de ajedrez. Sin aperturas, sin puntuaciones, sin rivales, sin relojes. Cada
+rompecabezas te coloca en peligro visible — tu rey está amenazado — y pide un solo movimiento: el
+rescate. Encuéntralo, confírmalo y el tablero responde con un tranquilo respiro de alivio. Si
+fallas, no hay pantalla de derrota ni vergüenza: solo un reinicio suave y otro intento.
+
+Un ritual de 90 segundos para cuando una pequeña batalla de tu día no salió como querías. Un
+recordatorio de que una posición que parece perdida a veces está a un movimiento de ser rescatada.
+
+• Un movimiento, un rescate, una sensación — una y otra vez.
+• Amable por diseño: el fallo simplemente se reinicia, con calma.
+• Totalmente sin conexión. Sin cuentas, sin anuncios, sin seguimiento, sin red.
+• No se requieren conocimientos de ajedrez: si ves el peligro, puedes encontrar el movimiento.
+• Sesiones cortas que se mantienen frescas sin sentirse nunca aleatorias.
+
+El ajedrez es el medio. El alivio es el producto.
+```
 
 ## Graphics required (capture before listing — see closed-test-checklist.md)
 
