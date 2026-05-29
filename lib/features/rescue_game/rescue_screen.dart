@@ -102,14 +102,20 @@ class _RescueScreenState extends State<RescueScreen> {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              StatusBar(
-                                state: _game.state,
-                                message: _game.statusMsg,
-                                counter:
-                                    'PUZZLE ${_game.puzzleNumber}/${_game.puzzleCount}',
+                              // Expanded caps the pill to (width − badge) so a
+                              // long status message ellipsizes instead of
+                              // clipping the right edge; the badge stays pinned
+                              // right and fully visible.
+                              Expanded(
+                                child: StatusBar(
+                                  state: _game.state,
+                                  message: _game.statusMsg,
+                                  counter:
+                                      'PUZZLE ${_game.puzzleNumber}/${_game.puzzleCount}',
+                                ),
                               ),
-                              const Spacer(),
-                              if (_game.completedCount > 0)
+                              if (_game.completedCount > 0) ...[
+                                const SizedBox(width: 12),
                                 SavedBadge(
                                   count: _game.completedCount,
                                   // Debug-only affordance: inert in release.
@@ -118,6 +124,7 @@ class _RescueScreenState extends State<RescueScreen> {
                                       : null,
                                   complete: _game.allComplete,
                                 ),
+                              ],
                             ],
                           ),
                           const SizedBox(height: 30),

@@ -88,9 +88,9 @@ class MotionTokens {
   static const Duration firstRescueSettleExtra = Duration(milliseconds: 400);
   // Soft focus cue on the rescuing piece during the opening danger state.
   static const Duration focusCueFade = Duration(milliseconds: 200);
-  static const double focusCueAlphaMin = 0.22;
-  static const double focusCueAlphaMax = 0.46;
-  static const double focusCueFillAlpha = 0.08;
+  static const double focusCueAlphaMin = 0.30;
+  static const double focusCueAlphaMax = 0.58;
+  static const double focusCueFillAlpha = 0.10;
 
   // — Curves
   static const Curve standard = Curves.easeOutCubic;
