@@ -129,8 +129,14 @@ claude-temp/
 # -------------------------
 exports/
 renders/
-screenshots/
 recordings/
+
+# Generated/debug screenshots
+screenshots/
+
+# Store assets must be tracked
+!assets/store/screenshots/
+!assets/store/screenshots/**
 
 # Keep docs tracked
 !docs/
