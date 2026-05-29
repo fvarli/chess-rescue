@@ -61,6 +61,9 @@ Chess is the medium. Relief is the product.
 
 ## Graphics required (capture before listing — see closed-test-checklist.md)
 
+> Art direction + the icon/feature-graphic/screenshot concepts live in `brand-direction.md`
+> (recommended icon: the abstract coral→mint "knight-leap").
+
 - **App icon:** 512×512 PNG (32-bit). ⚠️ **Blocker:** current launcher is the default Flutter
   logo — needs real branded art.
 - **Feature graphic:** 1024×500 PNG/JPG.
