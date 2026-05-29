@@ -1,7 +1,9 @@
 # Play Store Checklist
 
 Submission readiness for Chess Rescue. See `release-build.md` for build/signing
-and `versioning-notes.md` for version bumps.
+and `versioning-notes.md` for version bumps. To actually launch a closed test, follow
+`closed-test-checklist.md` (the go-to-test runbook); `release-candidate-notes.md` records the
+current RC; listing copy/assets live in `play-store-metadata-draft.md` + `privacy-policy.md`.
 
 ## App identity
 
@@ -28,7 +30,7 @@ and `versioning-notes.md` for version bumps.
 
 ## Signing & artifact
 
-- [ ] Upload keystore created + `android/key.properties` set (release-build.md §1).
+- [x] Upload keystore created + `android/key.properties` set (release-build.md §1) — done; release AAB is upload-key signed.
 - [ ] Enroll in Play App Signing.
 - [ ] Upload **AAB**: `flutter build appbundle --release`.
 - [ ] `versionCode` increased since last upload.
