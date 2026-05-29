@@ -315,6 +315,18 @@ plus an automatically-rejected bad one. That is the whole system in miniature.
   `test/runtime_texture_test.dart` (seed-0 untextured, determinism, clean bookends, ≤2
   textured middles, rescue/copy preserved, no occupied legal-move squares, canonical ids,
   ≥6 distinct sessions). Texture is now fully live.
+- **Phase 24 — DONE (QA & tuning: no behavior change).** Audited live sessions over seeds
+  1–50. Measured: **expansion families/session** {0: 10%, 1: 32%, 2: 58%}, E≈1.5 (always
+  ≥3/5 canonical); **textured boards/session** ≈ uniform 0–2 (bookends never textured);
+  **mirror count** ∈ [1,4] with only **12%** at 4 (< the 20% tuning trigger); **floor seeds**
+  (0 expansion & 0 texture) = **2%** (< 5% trigger, and each still has a mirror mix);
+  **50/50 distinct sessions**; opener always `captureAttackerMinor`, finale always a canonical
+  interpose, 5 distinct archetypes, no back-to-back. Verdict: the composer is already
+  **fresh-but-authored** — no trigger fired, **no tuning applied** (we optimize for curated
+  coherence, not maximum variety). Locked the objective invariants in
+  `test/session_quality_test.dart` (mirror balance, ≤2 expansion / ≥3 canonical, ≤2 textured
+  middle-only, opener/finale archetype + untextured bookends, 5 distinct archetypes, seed-0
+  lock).
 - **19F** — author more templates per archetype; tune readability thresholds.
 - **Later** — optional daily-seed session (D5 cadence); reuses the seeded composer
   (`seed = f(date)`).
