@@ -5,6 +5,24 @@ Capture all 6 Play Store phone frames using the **screenshot harness**, which dr
 bands (copy in `store-assets-spec.md §27C`) are composited afterward in a design tool — this doc
 gets you the faithful **raw frames** fast. Companion: `screenshot-workflow.md` (general/compositing).
 
+## Automated export (recommended — Linux desktop, one command)
+
+One command renders all 6 frames **with their §27C headline bands baked in** and writes Play-ready
+**1080×2400** PNGs to `assets/store/screenshots/final/` — no manual swiping, no separate compositing:
+
+```sh
+flutter run -t lib/debug/screenshot_harness.dart -d linux --dart-define=SHOT_EXPORT=true
+```
+
+It drives each state, captures via `RepaintBoundary.toImage(pixelRatio: 3.0)`, prints
+`SHOT_EXPORT_DONE`, and exits. Output: `01-hook.png … 06-everyday-comeback.png`. Overrides:
+`--dart-define=SHOT_OUT=<dir>` (output dir) and `--dart-define=INTER_TTF=<path>` (a real Inter
+`.ttf` for type fidelity — falls back to the engine's system sans if absent; **never bundled into
+the app**). Debug-only entrypoint; absent from any release build.
+
+The manual on-device flow below stays available — e.g. to capture on a specific phone, or to hand
+raw frames to a designer for custom band compositing.
+
 ## 1. Boot a 1080×2400 device
 
 Use a real phone or an emulator at **1080×2400** (9:16), e.g. a Pixel-class AVD. Portrait.

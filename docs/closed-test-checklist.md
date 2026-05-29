@@ -21,7 +21,7 @@ gets you cleanly to **closed**.
 | 1 | **Real launcher icon** (replace default Flutter logo) | ✅ **rendered + wired** — "The Trajectory" (`assets/app_icon/`, adaptive icon generated) | done (refine vector later, optional) |
 | 2 | **Privacy-policy URL** | 🎨 **page implemented in `lunexa-web`** (mirrors RPS Duel → `https://uselunexa.com/privacy/chess-rescue`; source copy in its `seo/content.ts`) — deploy site + paste URL | deploy + paste URL (last hard blocker) |
 | 3 | **Store listing** (title, short/full, EN/TR/ES) | ✅ **finalized + email/URL filled** (`play-store-metadata-draft.md`; support `hello@uselunexa.com`, privacy URL set) — paste as-is | paste into Console |
-| 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 **harness ready** (`screenshot-capture.md` — deterministic, < 10 min) — capture + composite pending | capture on device |
+| 4 | **≥ 2 phone screenshots** (6-screen system) | ✅ **all 6 exported, bands baked** — `assets/store/screenshots/final/01..06-*.png`, 1080×2400 (automated `--dart-define=SHOT_EXPORT` route, see `screenshot-capture.md`) | upload to Console |
 | 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 **v1 rendered** (`assets/store/feature-graphic-1024x500.png`, text-free) — add wordmark overlay | design-tool type pass |
 | 6 | **Data Safety form** (none collected/shared) | ✅ **answers ready** (`play-console-data-safety.md`) | fill Console form |
 | 7 | **Content rating** questionnaire (expect Everyone) | ✅ **answers ready** (`play-console-data-safety.md`) | fill Console form |
@@ -125,10 +125,10 @@ system app-storage / uninstall) · permissions **none**.
 - App icon (Play 512²): `assets/store/play-icon-512.png` ✅
 - Feature graphic 1024×500: `assets/store/feature-graphic-1024x500.png` ✅ (text-free v1; wordmark
   overlay is an optional polish pass)
-- Phone screenshots: `assets/store/screenshots/` is **EMPTY** — capture **≥ 2** at 1080×2400 via the
-  `screenshot-capture.md` harness before the listing can be published.
+- Phone screenshots: ✅ **all 6 exported at 1080×2400**, headline bands baked in —
+  `assets/store/screenshots/final/{01-hook,02-danger,03-one-move,04-rescue,05-completion,06-everyday-comeback}.png`
+  (regenerate via the `--dart-define=SHOT_EXPORT` route in `screenshot-capture.md`).
 
-**Remaining true blockers before the listing can go live** (both manual, neither is code):
+**Remaining true blocker before the listing can go live** (manual, not code):
 1. **Deploy** the privacy page in `lunexa-web` and confirm `https://uselunexa.com/privacy/chess-rescue`
    is publicly reachable (Play validates it on submission).
-2. **Capture ≥ 2 phone screenshots** (harness ready).
