@@ -14,6 +14,7 @@ class ProgressStore {
   static const String _kIndex = 'cr_puzzle_index';
   static const String _kCompleted = 'cr_completed_ids';
   static const String _kOnboarding = 'cr_onboarding_seen';
+  static const String _kIntroSeen = 'cr_intro_seen';
 
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
@@ -30,6 +31,11 @@ class ProgressStore {
   // First-run flag. False until the player survives their first rescue.
   bool get onboardingSeen => _prefs.getBool(_kOnboarding) ?? false;
 
+  // First-run intro overlay flag. False until the player taps "Start rescue"
+  // on the one-time intro. Kept separate from onboardingSeen (which flips on
+  // the first rescue and drives the focus cue) so the cue survives the intro.
+  bool get introSeen => _prefs.getBool(_kIntroSeen) ?? false;
+
   Future<void> save({
     required int sessionSeed,
     required int puzzleIndex,
@@ -44,10 +50,15 @@ class ProgressStore {
     await _prefs.setBool(_kOnboarding, true);
   }
 
+  Future<void> setIntroSeen() async {
+    await _prefs.setBool(_kIntroSeen, true);
+  }
+
   Future<void> clear() async {
     await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
     await _prefs.remove(_kCompleted);
     await _prefs.remove(_kOnboarding);
+    await _prefs.remove(_kIntroSeen);
   }
 }

@@ -11,6 +11,7 @@ import 'game_state.dart';
 import 'widgets/board_widget.dart';
 import 'widgets/footer_button.dart';
 import 'widgets/headline_text.dart';
+import 'widgets/intro_overlay.dart';
 import 'widgets/saved_badge.dart';
 import 'widgets/status_bar.dart';
 
@@ -177,6 +178,20 @@ class _RescueScreenState extends State<RescueScreen> {
                     );
                   },
                 ),
+              ),
+              // First-run intro overlay (topmost). Cross-fades out when its CTA
+              // dismisses it, revealing the danger cold open underneath with the
+              // focus cue intact. Absent when there's no store (harness/degraded).
+              AnimatedSwitcher(
+                duration: MotionTokens.gradientTransition,
+                switchInCurve: MotionTokens.standard,
+                switchOutCurve: Curves.easeIn,
+                child: _game.showIntro
+                    ? IntroOverlay(
+                        key: const ValueKey('intro'),
+                        onStart: _game.dismissIntro,
+                      )
+                    : const SizedBox.shrink(),
               ),
             ],
           );

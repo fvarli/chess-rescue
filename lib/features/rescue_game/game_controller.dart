@@ -23,6 +23,9 @@ class GameController extends ChangeNotifier {
       _completed.addAll(store.completedIds.where(known.contains));
     }
     _onboarding = (store != null) && !store.onboardingSeen;
+    // First-run intro overlay gate. No store (degraded boot / screenshot
+    // harness) → never show it. Independent of _onboarding by design.
+    _introSeen = store?.introSeen ?? true;
     final restored = (store?.puzzleIndex ?? 0).clamp(0, _puzzles.length - 1);
     _loadPuzzle(restored);
   }
@@ -33,6 +36,7 @@ class GameController extends ChangeNotifier {
   int _index = 0;
   final Set<String> _completed = {};
   bool _onboarding = false;
+  late bool _introSeen;
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -56,6 +60,19 @@ class GameController extends ChangeNotifier {
   // First-run only. Stays true through the first rescued screen, then ends
   // when the player advances off the first puzzle.
   bool get isOnboarding => _onboarding;
+
+  // First-run intro overlay: shown once before the first-ever puzzle, then
+  // dismissed by its CTA. Orthogonal to puzzle progression and to onboarding.
+  bool get showIntro => !_introSeen;
+
+  // Called by the intro overlay's "Start rescue" CTA. Persists "seen" and
+  // reveals the (already-built) danger cold open. Touches no puzzle state.
+  void dismissIntro() {
+    if (_introSeen) return;
+    _introSeen = true;
+    notifyListeners();
+    unawaited(_store?.setIntroSeen());
+  }
 
   // — Game state
   List<Piece> get pieces => _pieces;
@@ -235,6 +252,7 @@ class GameController extends ChangeNotifier {
     _completed.clear();
     _onboarding =
         _store != null; // re-arm the cold open (cleared-storage parity)
+    _introSeen = _store == null; // re-arm the intro overlay for testing
     _loadPuzzle(0);
     Haptics.resetProgress();
     notifyListeners();
