@@ -16,7 +16,7 @@ no account/ads/analytics/network, no runtime permissions, progress stored locall
   account and no off-device data; on-device progress is removed by uninstalling or clearing the
   app's storage in system Settings.
 - **Permissions:** none (the release `AndroidManifest.xml` declares no `<uses-permission>`).
-- **Privacy policy URL:** the hosted page (see `privacy-policy.md` → publishing plan).
+- **Privacy policy URL:** `https://uselunexa.com/privacy/chess-rescue` (see `privacy-policy.md`).
 
 ## App content
 

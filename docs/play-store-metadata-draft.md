@@ -56,8 +56,9 @@ Chess is the medium. Relief is the product.
 Exact Console answers in **`play-console-data-safety.md`** (summary: no data collected/shared,
 no permissions, no ads, no IAP, rating Everyone/PEGI 3).
 
-- **Privacy policy URL:** `https://<uselunexa-domain>/chess-rescue/privacy` (host
-  `privacy-policy-en.md`; per-locale `…/privacy/tr`, `…/privacy/es` — see `privacy-policy.md`).
+- **Privacy policy URL:** `https://uselunexa.com/privacy/chess-rescue` (live page implemented in
+  the `lunexa-web` repo, mirrors RPS Duel; per-locale `…/tr/privacy/chess-rescue`,
+  `…/es/privacy/chess-rescue` — see `privacy-policy.md`).
 
 ## Localized listings (EN / TR / ES)
 
