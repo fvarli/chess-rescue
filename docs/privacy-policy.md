@@ -10,8 +10,9 @@ zero-data app). The host-ready content lives in three language files; this doc i
 - 🇪🇸 Español — `privacy-policy-es.md`
 
 All three say the same thing (app reality): offline; no account/ads/analytics/network; no runtime
-permissions; progress stored on-device only. Publisher: **Lunexa Games**. Before publishing,
-replace the `<support email>` placeholder and set the "Last updated" date.
+permissions; progress stored on-device only. Publisher: **Lunexa Games**. Contact is
+`hello@uselunexa.com` and "Last updated" is 2026-05-29 (the live page in `lunexa-web` is the source
+of truth; these drafts are kept aligned).
 
 ## Hosted URL (UseLunexa site)
 

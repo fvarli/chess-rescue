@@ -20,7 +20,7 @@ gets you cleanly to **closed**.
 |---|---|---|---|
 | 1 | **Real launcher icon** (replace default Flutter logo) | ✅ **rendered + wired** — "The Trajectory" (`assets/app_icon/`, adaptive icon generated) | done (refine vector later, optional) |
 | 2 | **Privacy-policy URL** | 🎨 **page implemented in `lunexa-web`** (mirrors RPS Duel → `https://uselunexa.com/privacy/chess-rescue`; source copy in its `seo/content.ts`) — deploy site + paste URL | deploy + paste URL (last hard blocker) |
-| 3 | **Store listing** (title, short/full, EN/TR/ES) | ✅ **finalized** (`play-store-metadata-draft.md`) — paste; fill email/URL | paste into Console |
+| 3 | **Store listing** (title, short/full, EN/TR/ES) | ✅ **finalized + email/URL filled** (`play-store-metadata-draft.md`; support `hello@uselunexa.com`, privacy URL set) — paste as-is | paste into Console |
 | 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 **harness ready** (`screenshot-capture.md` — deterministic, < 10 min) — capture + composite pending | capture on device |
 | 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 **v1 rendered** (`assets/store/feature-graphic-1024x500.png`, text-free) — add wordmark overlay | design-tool type pass |
 | 6 | **Data Safety form** (none collected/shared) | ✅ **answers ready** (`play-console-data-safety.md`) | fill Console form |
@@ -88,3 +88,47 @@ knight cold open.
 
 Promote to production, or submit for full review, until closed-test feedback is in and the
 blocker gate is fully green.
+
+## Final upload package (RC1) — exact values
+
+The copy-paste sheet for the submission session. Verified **RC1, 2026-05-29**: `dart format` 0
+changed · `flutter analyze` "No issues found!" · **76/76 tests pass** · release AAB built.
+
+**Upload artifact**
+- AAB: `build/app/outputs/bundle/release/app-release.aab` — **40.1 MB** (40,056,575 bytes)
+- versionCode **1** / versionName **1.0.0** (first upload; bump versionCode ≥ 2 for any re-upload)
+- Release-signed via `android/key.properties` (Play App Signing: let Google manage the app key)
+
+**App identity**
+- Title: `Chess Rescue` · Package: `com.lunexa.games.chessrescue`
+- Developer / publisher: **Lunexa Games** · Category: **Games → Puzzle** (alt: Casual)
+- Contains ads: **No** · In-app purchases: **No** · Permissions: **none** (offline)
+
+**Store listing copy** (full text in `play-store-metadata-draft.md` — paste as-is)
+- Short (EN, 65 chars): `One move saves the king. A calm, offline 90-second rescue ritual.`
+- Short (TR): `Tek hamle şahı kurtarır. Sakin, çevrimdışı, 90 saniyelik bir kurtarış.`
+- Short (ES): `Un movimiento salva al rey. Un ritual de rescate tranquilo y sin conexión.`
+- Full (EN/TR/ES): see `play-store-metadata-draft.md`
+
+**Privacy & contact**
+- Privacy policy URL: `https://uselunexa.com/privacy/chess-rescue`
+  (per-locale: `…/tr/privacy/chess-rescue`, `…/es/privacy/chess-rescue`)
+- Support email: `hello@uselunexa.com`
+
+**Data Safety** (`play-console-data-safety.md`): collects **No** data · shares **No** data ·
+encryption-in-transit **N/A** (no network) · deletion request **N/A** (on-device only; clear via
+system app-storage / uninstall) · permissions **none**.
+
+**Content rating**: questionnaire answers all "no" → expect **Everyone / PEGI 3**.
+
+**Graphics**
+- App icon (Play 512²): `assets/store/play-icon-512.png` ✅
+- Feature graphic 1024×500: `assets/store/feature-graphic-1024x500.png` ✅ (text-free v1; wordmark
+  overlay is an optional polish pass)
+- Phone screenshots: `assets/store/screenshots/` is **EMPTY** — capture **≥ 2** at 1080×2400 via the
+  `screenshot-capture.md` harness before the listing can be published.
+
+**Remaining true blockers before the listing can go live** (both manual, neither is code):
+1. **Deploy** the privacy page in `lunexa-web` and confirm `https://uselunexa.com/privacy/chess-rescue`
+   is publicly reachable (Play validates it on submission).
+2. **Capture ≥ 2 phone screenshots** (harness ready).

@@ -1,10 +1,11 @@
 # Play Store Metadata — Finalized
 
-Finalized listing copy for the Google Play Console (Phase 30). Paste as-is; only fill the two
-remaining placeholders — `<support email>` and the hosted privacy URL — and add graphics
-(`closed-test-checklist.md`). Data Safety answers live in `play-console-data-safety.md`; privacy
-text + hosting in `privacy-policy.md`. Tone seeded from `product-vision.md`: relief, calm, "not a
-chess trainer." Copy intentionally **motivates, not describes** (see store-copy-voice guidance).
+Finalized listing copy for the Google Play Console (Phase 30). Paste as-is — support email
+(`hello@uselunexa.com`) and the privacy URL (`https://uselunexa.com/privacy/chess-rescue`) are now
+filled; only add graphics (`closed-test-checklist.md`). Data Safety answers live in
+`play-console-data-safety.md`; privacy text + hosting in `privacy-policy.md`. Tone seeded from
+`product-vision.md`: relief, calm, "not a chess trainer." Copy intentionally **motivates, not
+describes** (see store-copy-voice guidance).
 
 ## Identity
 
@@ -127,5 +128,5 @@ El ajedrez es el medio. El alivio es el producto.
 
 ## Contact
 
-- **Support email:** `<support email>`
+- **Support email:** `hello@uselunexa.com`
 - **Website (optional):** `<url>`

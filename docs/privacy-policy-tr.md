@@ -39,4 +39,4 @@ yayımlanacaktır.
 
 ## İletişim
 
-Bu politikayla ilgili sorularınız için: `<destek e-postası>`.
+Bu politikayla ilgili sorularınız için: `hello@uselunexa.com`.

@@ -41,4 +41,4 @@ Si esta política cambia, la versión actualizada se publicará en esta URL con 
 
 ## Contacto
 
-Preguntas sobre esta política: `<correo de soporte>`.
+Preguntas sobre esta política: `hello@uselunexa.com`.

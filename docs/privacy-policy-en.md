@@ -40,4 +40,4 @@ date.
 
 ## Contact
 
-Questions about this policy: `<support email>`.
+Questions about this policy: `hello@uselunexa.com`.
