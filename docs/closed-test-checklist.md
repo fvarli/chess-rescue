@@ -5,7 +5,8 @@ Companion docs (don't duplicate — follow the links):
 - `play-store-checklist.md` — master store-readiness + internal-testing checklist.
 - `release-candidate-notes.md` — what's in this RC + verification results.
 - `play-store-metadata-draft.md` — listing copy / Data Safety answers.
-- `brand-direction.md` — icon / screenshot / feature-graphic art direction + specs.
+- `brand-direction.md` — brand strategy + art direction.
+- `store-assets-spec.md` — **production spec** for the icon (The Trajectory), feature graphic (FG-1), and the 6-screen screenshot system (headlines + composition).
 - `privacy-policy.md` — hostable policy text.
 - `android-layout-qa.md` — on-device layout/QA matrix.
 
@@ -16,11 +17,11 @@ gets you cleanly to **closed**.
 
 | # | Item | State | Owner |
 |---|---|---|---|
-| 1 | **Real launcher icon** (replace default Flutter logo) | 🎨 spec ready (`brand-direction.md`) — needs render | render + wire |
+| 1 | **Real launcher icon** (replace default Flutter logo) | 🎨 spec ready (`store-assets-spec.md` §27A — "The Trajectory") — needs render | render + wire |
 | 2 | **Privacy-policy URL** (host `privacy-policy.md`) | ❌ BLOCKER | host + paste URL |
 | 3 | **Store listing** (title, short/full desc from metadata draft) | ⬜ todo | fill placeholders |
-| 4 | **≥ 2 phone screenshots** (danger / selected / rescued / complete) | 🎨 spec ready (`brand-direction.md` §3) — needs capture | capture on device |
-| 5 | **Feature graphic** 1024×500 | 🎨 spec ready (`brand-direction.md` §4) — needs render | render |
+| 4 | **≥ 2 phone screenshots** (6-screen system) | 🎨 spec ready (`store-assets-spec.md` §27C) — needs capture | capture on device |
+| 5 | **Feature graphic** 1024×500 (FG-1) | 🎨 spec ready (`store-assets-spec.md` §27B) — needs render | render |
 | 6 | **Data Safety form** (none collected/shared) | ⬜ Console | use metadata draft |
 | 7 | **Content rating** questionnaire (expect Everyone) | ⬜ Console | — |
 | — | Release signing + keystore | ✅ done | — |

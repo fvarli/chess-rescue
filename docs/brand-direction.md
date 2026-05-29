@@ -112,6 +112,10 @@ Typography: Inter Tight, ≤2 weights; tagline dimmed; no third font. Emotional 
 
 ## 5. Final recommended direction
 
+> **LOCKED (Phase 27): the icon is "The Trajectory"** — the leap-*arc* variant of "The Leap"
+> (coral node → knight's-elbow bend → mint landing bloom). Full production spec, feature-graphic
+> winner (FG-1), and finalized screenshot copy are in **`store-assets-spec.md`**.
+
 - **Icon:** Concept 1 **"The Leap"** (abstract knight-leap, coral→mint, dark field); Concept 5 as
   the 48px fallback if the dog-leg muddies.
 - **Screenshots:** the 6-beat narrative; beats 1–3 are the store-preview hook.
