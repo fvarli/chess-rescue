@@ -1,0 +1,9 @@
+# Flutter l10n code-generator config.
+# Reads ARB files in arb-dir and produces an `AppL10n` class in output-dir.
+# The generated source lives in `lib/l10n/gen/` so it's part of the package
+# (importable + analyzable). `flutter pub get` runs the generator.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppL10n
+output-dir: lib/l10n/gen

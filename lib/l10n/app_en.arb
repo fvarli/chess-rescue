@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Chess Rescue",
+  "@appTitle": {
+    "description": "Application title shown in OS task-switcher chrome and accessibility surfaces."
+  }
+}

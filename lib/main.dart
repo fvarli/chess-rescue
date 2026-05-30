@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'core/storage/progress_store.dart';
 import 'core/theme/app_theme.dart';
 import 'features/rescue_game/rescue_screen.dart';
+import 'l10n/gen/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,16 @@ class ChessRescueApp extends StatelessWidget {
       title: 'Chess Rescue',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      // Localization scaffolding (Phase C1). Strings live in lib/l10n/*.arb and
+      // the generated AppL10n class. Real string extraction lands in C2.
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
+      // Device language → tr or es when matched; everything else falls to en.
+      localeResolutionCallback: (device, supported) {
+        final code = device?.languageCode;
+        if (code == 'tr' || code == 'es') return Locale(code!);
+        return const Locale('en');
+      },
       // Board-dominant single screen — clamp accessibility text scaling so the
       // fixed composition stays stable (no scroll by design).
       builder: (context, child) => MediaQuery.withClampedTextScaling(
