@@ -18,5 +18,50 @@
   "footerAgain": "Tekrar  ↻",
   "footerTryAgain": "Tekrar dene  ↺",
   "footerReset": "Sıfırla",
-  "puzzleCounter": "BULMACA {current}/{total}"
+  "puzzleCounter": "BULMACA {current}/{total}",
+
+  "puzzleP1StatusText": "▮ Aktif tehdit",
+  "puzzleP1DangerHint": "Hamlelerini görmek için beyaz bir taşa dokun.",
+  "puzzleP1FailureHint": "Bu hamle saldırıyı kırmıyor. Bir şah çekişi ara.",
+  "puzzleP1SuccessExplanation": "AT GERİ VURUR",
+
+  "puzzleP2StatusText": "▮ Şahta",
+  "puzzleP2DangerHint": "Şah çeken bir adım ötede.",
+  "puzzleP2FailureHint": "At hâlâ şah çekiyor.",
+  "puzzleP2SuccessExplanation": "ŞAH KALKTI",
+
+  "puzzleP3StatusText": "▮ Dikeyde şah",
+  "puzzleP3DangerHint": "Doğrudan dikey üzerinden şah.",
+  "puzzleP3FailureHint": "Bu şahı kapatmıyor.",
+  "puzzleP3SuccessExplanation": "DİKEY KAPANDI",
+
+  "puzzleP4StatusText": "▮ Çaprazda şah",
+  "puzzleP4DangerHint": "Uzun çapraz tehdit altında.",
+  "puzzleP4FailureHint": "Çapraz hâlâ açık.",
+  "puzzleP4SuccessExplanation": "ÇAPRAZ KAPANDI",
+
+  "puzzleP5StatusText": "▮ Yatayda şah",
+  "puzzleP5DangerHint": "Vezir arka sıraya daldı.",
+  "puzzleP5FailureHint": "Vezir hâlâ şah çekiyor.",
+  "puzzleP5SuccessExplanation": "VEZİR DÜŞER",
+
+  "puzzleA4StatusText": "▮ Kapıda kıstırıldı",
+  "puzzleA4DangerHint": "Atın köşeye sıkıştı ve kapı tehdit altında.",
+  "puzzleA4FailureHint": "Bu kaçar ama hiçbir şeye vurmaz. Bir şah çekişiyle karşılık ver.",
+  "puzzleA4SuccessExplanation": "AT ÖZGÜRLEŞİR",
+
+  "puzzleB1StatusText": "▮ Hat açık",
+  "puzzleB1DangerHint": "Çapraz dolu ve şah açıkta.",
+  "puzzleB1FailureHint": "Bu yolu kesmiyor. Hatta bir taş feda et.",
+  "puzzleB1SuccessExplanation": "ŞAH İÇİN BİR BEDEN",
+
+  "puzzleB3StatusText": "▮ Tek taşla ayakta",
+  "puzzleB3DangerHint": "Bir savunucu tüm saldırıyı ayakta tutuyor.",
+  "puzzleB3FailureHint": "Saldırı hâlâ ayakta. Desteğini söküp at.",
+  "puzzleB3SuccessExplanation": "DESTEK GİTTİ",
+
+  "puzzleB4StatusText": "▮ Şahta",
+  "puzzleB4DangerHint": "Şahtasın — ama aynı şekilde yanıt verebilirsin.",
+  "puzzleB4FailureHint": "Bu şahı kırmıyor. Kendi şah çekişinle karşılık ver.",
+  "puzzleB4SuccessExplanation": "ŞAHA ŞAH"
 }

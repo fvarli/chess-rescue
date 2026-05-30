@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
+import '../../core/models/puzzle_l10n.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
@@ -57,6 +58,7 @@ class _RescueScreenState extends State<RescueScreen> {
           final l = AppL10n.of(context)!;
           final isRescued = _game.state == GameState.rescued;
           final puzzle = _game.currentPuzzle;
+          final puzzleCopy = puzzleCopyFor(puzzle, l);
           final sequenceComplete =
               isRescued && _game.allComplete && !_game.hasNext;
           final buttonLabel = switch (_game.state) {
@@ -64,6 +66,13 @@ class _RescueScreenState extends State<RescueScreen> {
               _game.hasNext ? l.footerNextPuzzle : l.footerAgain,
             GameState.failed => l.footerTryAgain,
             _ => l.footerReset,
+          };
+          // Status pill message: localized per-puzzle copy for danger/selected;
+          // the controller's transient hardcoded messages for failed/rescued
+          // ("▮ Still trapped" / "◐ Attack broken") stay EN — out of C3 scope.
+          final statusMessage = switch (_game.state) {
+            GameState.danger || GameState.selected => puzzleCopy.statusText,
+            _ => _game.statusMsg,
           };
           return Stack(
             fit: StackFit.expand,
@@ -113,7 +122,7 @@ class _RescueScreenState extends State<RescueScreen> {
                               Expanded(
                                 child: StatusBar(
                                   state: _game.state,
-                                  message: _game.statusMsg,
+                                  message: statusMessage,
                                   counter: l.puzzleCounter(
                                     _game.puzzleNumber,
                                     _game.puzzleCount,
@@ -165,9 +174,9 @@ class _RescueScreenState extends State<RescueScreen> {
                           HintText(
                             state: _game.state,
                             hasSelection: _game.selected != null,
-                            dangerHint: puzzle.dangerHint,
-                            failureHint: puzzle.failureHint,
-                            successExplanation: puzzle.successExplanation,
+                            dangerHint: puzzleCopy.dangerHint,
+                            failureHint: puzzleCopy.failureHint,
+                            successExplanation: puzzleCopy.successExplanation,
                             onboarding: _game.isOnboarding,
                             complete: sequenceComplete,
                           ),

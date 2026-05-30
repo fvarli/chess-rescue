@@ -18,5 +18,50 @@
   "footerAgain": "Otra vez  ↻",
   "footerTryAgain": "Intenta de nuevo  ↺",
   "footerReset": "Reiniciar",
-  "puzzleCounter": "PUZLE {current}/{total}"
+  "puzzleCounter": "PUZLE {current}/{total}",
+
+  "puzzleP1StatusText": "▮ Amenaza activa",
+  "puzzleP1DangerHint": "Toca una pieza blanca para ver sus movimientos.",
+  "puzzleP1FailureHint": "Ese movimiento no rompe el ataque. Busca un jaque.",
+  "puzzleP1SuccessExplanation": "EL CABALLO CONTRAATACA",
+
+  "puzzleP2StatusText": "▮ En jaque",
+  "puzzleP2DangerHint": "El atacante está a un paso.",
+  "puzzleP2FailureHint": "El caballo sigue dando jaque.",
+  "puzzleP2SuccessExplanation": "EL JAQUE SE FUE",
+
+  "puzzleP3StatusText": "▮ Jaque en la columna",
+  "puzzleP3DangerHint": "Jaque directo por la columna.",
+  "puzzleP3FailureHint": "Eso no bloquea el jaque.",
+  "puzzleP3SuccessExplanation": "LA COLUMNA QUEDA SELLADA",
+
+  "puzzleP4StatusText": "▮ Jaque en la diagonal",
+  "puzzleP4DangerHint": "La diagonal larga está cargada.",
+  "puzzleP4FailureHint": "La diagonal sigue abierta.",
+  "puzzleP4SuccessExplanation": "LA DIAGONAL QUEDA CERRADA",
+
+  "puzzleP5StatusText": "▮ Jaque en la fila",
+  "puzzleP5DangerHint": "La dama ha caído sobre la última fila.",
+  "puzzleP5FailureHint": "La dama sigue dando jaque.",
+  "puzzleP5SuccessExplanation": "LA DAMA CAE",
+
+  "puzzleA4StatusText": "▮ Acorralado en la entrada",
+  "puzzleA4DangerHint": "Tu caballo está acorralado y la entrada está bajo fuego.",
+  "puzzleA4FailureHint": "Eso escapa pero no golpea nada. Responde con un jaque.",
+  "puzzleA4SuccessExplanation": "EL CABALLO SE LIBERA",
+
+  "puzzleB1StatusText": "▮ La línea está abierta",
+  "puzzleB1DangerHint": "La diagonal está cargada y el rey queda expuesto.",
+  "puzzleB1FailureHint": "Eso no se interpone. Sacrifica una pieza en la línea.",
+  "puzzleB1SuccessExplanation": "UN CUERPO POR EL REY",
+
+  "puzzleB3StatusText": "▮ Sostenido por una sola pieza",
+  "puzzleB3DangerHint": "Un defensor sostiene todo el ataque.",
+  "puzzleB3FailureHint": "El ataque sigue en pie. Arranca su apoyo.",
+  "puzzleB3SuccessExplanation": "EL APOYO CAYÓ",
+
+  "puzzleB4StatusText": "▮ En jaque",
+  "puzzleB4DangerHint": "Estás en jaque — pero puedes responder con la misma moneda.",
+  "puzzleB4FailureHint": "Eso no rompe el jaque. Responde con tu propio jaque.",
+  "puzzleB4SuccessExplanation": "JAQUE CONTRA JAQUE"
 }

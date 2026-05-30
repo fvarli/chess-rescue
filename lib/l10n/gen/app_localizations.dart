@@ -212,6 +212,222 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'PUZZLE {current}/{total}'**
   String puzzleCounter(int current, int total);
+
+  /// P1 knight rescue — danger-state status pill message.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Active threat'**
+  String get puzzleP1StatusText;
+
+  /// P1 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a white piece to see its moves.'**
+  String get puzzleP1DangerHint;
+
+  /// P1 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'That move doesn\'t break the attack. Look for a check.'**
+  String get puzzleP1FailureHint;
+
+  /// P1 success explanation (mono caps).
+  ///
+  /// In en, this message translates to:
+  /// **'THE KNIGHT STRIKES BACK'**
+  String get puzzleP1SuccessExplanation;
+
+  /// P2 take-the-checker — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ In check'**
+  String get puzzleP2StatusText;
+
+  /// P2 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The checker sits one step away.'**
+  String get puzzleP2DangerHint;
+
+  /// P2 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The knight still gives check.'**
+  String get puzzleP2FailureHint;
+
+  /// P2 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'THE CHECKER IS GONE'**
+  String get puzzleP2SuccessExplanation;
+
+  /// P3 block-the-file — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Checked on the file'**
+  String get puzzleP3StatusText;
+
+  /// P3 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Checked straight down the file.'**
+  String get puzzleP3DangerHint;
+
+  /// P3 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t block the check.'**
+  String get puzzleP3FailureHint;
+
+  /// P3 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'THE FILE IS SEALED'**
+  String get puzzleP3SuccessExplanation;
+
+  /// P4 seal-the-diagonal — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Checked on the diagonal'**
+  String get puzzleP4StatusText;
+
+  /// P4 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The long diagonal is loaded.'**
+  String get puzzleP4DangerHint;
+
+  /// P4 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The diagonal is still open.'**
+  String get puzzleP4FailureHint;
+
+  /// P4 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'THE DIAGONAL IS CLOSED'**
+  String get puzzleP4SuccessExplanation;
+
+  /// P5 win-the-queen — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Checked on the rank'**
+  String get puzzleP5StatusText;
+
+  /// P5 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The queen has crashed the back rank.'**
+  String get puzzleP5DangerHint;
+
+  /// P5 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The queen still gives check.'**
+  String get puzzleP5FailureHint;
+
+  /// P5 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'THE QUEEN FALLS'**
+  String get puzzleP5SuccessExplanation;
+
+  /// A4 the-breakaway — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Hunted at the gate'**
+  String get puzzleA4StatusText;
+
+  /// A4 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your knight is cornered and the gate is under fire.'**
+  String get puzzleA4DangerHint;
+
+  /// A4 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'That slips away but strikes nothing. Hit back with a check.'**
+  String get puzzleA4FailureHint;
+
+  /// A4 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'THE KNIGHT BREAKS FREE'**
+  String get puzzleA4SuccessExplanation;
+
+  /// B1 the-martyr — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ The line is open'**
+  String get puzzleB1StatusText;
+
+  /// B1 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The diagonal is loaded and the king stands bare.'**
+  String get puzzleB1DangerHint;
+
+  /// B1 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t stand in the way. Throw a body on the line.'**
+  String get puzzleB1FailureHint;
+
+  /// B1 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'A BODY FOR THE KING'**
+  String get puzzleB1SuccessExplanation;
+
+  /// B3 remove-the-defender — status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Held up by one piece'**
+  String get puzzleB3StatusText;
+
+  /// B3 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'One defender is propping up the whole attack.'**
+  String get puzzleB3DangerHint;
+
+  /// B3 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The attack still stands. Tear out its support.'**
+  String get puzzleB3FailureHint;
+
+  /// B3 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'THE PROP IS GONE'**
+  String get puzzleB3SuccessExplanation;
+
+  /// B4 the-cross-check — status pill (independent of P2 to allow translator variation).
+  ///
+  /// In en, this message translates to:
+  /// **'▮ In check'**
+  String get puzzleB4StatusText;
+
+  /// B4 danger hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in check — but you can answer in kind.'**
+  String get puzzleB4DangerHint;
+
+  /// B4 failure hint.
+  ///
+  /// In en, this message translates to:
+  /// **'That doesn\'t break the check. Answer with a check of your own.'**
+  String get puzzleB4FailureHint;
+
+  /// B4 success explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'CHECK MEETS CHECK'**
+  String get puzzleB4SuccessExplanation;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
