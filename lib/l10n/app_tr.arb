@@ -1,4 +1,22 @@
 {
   "@@locale": "tr",
-  "appTitle": "Chess Rescue"
+  "appTitle": "Chess Rescue",
+  "introTitle": "Tek hamle şahı kurtarır.",
+  "introBody": "Her tahta tehlikeyle başlar.\nKurtarışı bul. Rahatlamayı hisset.",
+  "introSecondary": "Süre yok. Ders yok. Yalnızca çıkış yolu.",
+  "introCta": "Kurtarışa başla",
+  "headlineSaveTheKing": "Şahı kurtar.",
+  "headlineWhereWillItGo": "Nereye gidecek?",
+  "headlineRescued": "Kurtarıldı.",
+  "headlineNotTheMove": "Bu hamle değil.",
+  "hintOnboardingOneMoveSaves": "Tek hamle oyunu kurtarır.",
+  "hintOnboardingFindRescue": "Kurtarışı bul.",
+  "hintOnboardingStillTrapped": "Şah hâlâ tuzakta.",
+  "hintTapHighlightedSquare": "Hamle için vurgulanan kareye dokun.",
+  "completionFootnote": "Tahta artık sakin.",
+  "footerNextPuzzle": "Sıradaki bulmaca  ↦",
+  "footerAgain": "Tekrar  ↻",
+  "footerTryAgain": "Tekrar dene  ↺",
+  "footerReset": "Sıfırla",
+  "puzzleCounter": "BULMACA {current}/{total}"
 }

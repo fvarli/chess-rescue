@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
+import '../../../l10n/gen/app_localizations.dart';
 
 // One-time, first-run intro. A calm, premium single screen that frames the
 // emotional premise (danger → one move → relief) before the first puzzle, then
@@ -14,6 +15,7 @@ class IntroOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppL10n.of(context)!;
     // Opaque background absorbs stray taps so the board behind stays inert.
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -40,7 +42,7 @@ class IntroOverlay extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'One move saves the king.',
+                      t.introTitle,
                       textAlign: TextAlign.center,
                       style: AppText.headline.copyWith(
                         fontSize: 28,
@@ -49,18 +51,18 @@ class IntroOverlay extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Every board begins in danger.\nFind the rescue. Feel the relief.',
+                      t.introBody,
                       textAlign: TextAlign.center,
                       style: AppText.body.copyWith(fontSize: 15, height: 1.5),
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      'No timers. No lessons. Just the way out.',
+                      t.introSecondary,
                       textAlign: TextAlign.center,
                       style: AppText.body.copyWith(color: AppColors.textMuted),
                     ),
                     const SizedBox(height: 40),
-                    _StartRescueButton(onTap: onStart),
+                    _StartRescueButton(label: t.introCta, onTap: onStart),
                   ],
                 ),
               ),
@@ -75,8 +77,9 @@ class IntroOverlay extends StatelessWidget {
 // Mint "way out" CTA, mirroring the rescued FooterButton's language
 // (rounded pill, rescue fill, soft glow, immediate press-in).
 class _StartRescueButton extends StatefulWidget {
-  const _StartRescueButton({required this.onTap});
+  const _StartRescueButton({required this.label, required this.onTap});
 
+  final String label;
   final VoidCallback onTap;
 
   @override
@@ -113,7 +116,7 @@ class _StartRescueButtonState extends State<_StartRescueButton> {
             ],
           ),
           child: Text(
-            'Start rescue',
+            widget.label,
             style: AppText.button.copyWith(color: AppColors.onRescue),
           ),
         ),

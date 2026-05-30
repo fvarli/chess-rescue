@@ -1,4 +1,22 @@
 {
   "@@locale": "es",
-  "appTitle": "Chess Rescue"
+  "appTitle": "Chess Rescue",
+  "introTitle": "Un movimiento salva al rey.",
+  "introBody": "Cada tablero comienza en peligro.\nEncuentra el rescate. Siente el alivio.",
+  "introSecondary": "Sin cronómetros. Sin lecciones. Solo la salida.",
+  "introCta": "Comenzar rescate",
+  "headlineSaveTheKing": "Salva al rey.",
+  "headlineWhereWillItGo": "¿Adónde irá?",
+  "headlineRescued": "Rescatado.",
+  "headlineNotTheMove": "No es el movimiento.",
+  "hintOnboardingOneMoveSaves": "Un movimiento salva la partida.",
+  "hintOnboardingFindRescue": "Encuentra el rescate.",
+  "hintOnboardingStillTrapped": "El rey sigue atrapado.",
+  "hintTapHighlightedSquare": "Toca una casilla resaltada para mover.",
+  "completionFootnote": "El tablero está tranquilo ahora.",
+  "footerNextPuzzle": "Siguiente puzle  ↦",
+  "footerAgain": "Otra vez  ↻",
+  "footerTryAgain": "Intenta de nuevo  ↺",
+  "footerReset": "Reiniciar",
+  "puzzleCounter": "PUZLE {current}/{total}"
 }

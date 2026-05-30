@@ -1,7 +1,102 @@
 {
   "@@locale": "en",
+
   "appTitle": "Chess Rescue",
   "@appTitle": {
     "description": "Application title shown in OS task-switcher chrome and accessibility surfaces."
+  },
+
+  "introTitle": "One move saves the king.",
+  "@introTitle": {
+    "description": "Intro overlay headline."
+  },
+
+  "introBody": "Every board begins in danger.\nFind the rescue. Feel the relief.",
+  "@introBody": {
+    "description": "Intro overlay body — two short sentences on separate lines."
+  },
+
+  "introSecondary": "No timers. No lessons. Just the way out.",
+  "@introSecondary": {
+    "description": "Intro overlay tertiary supporting line."
+  },
+
+  "introCta": "Start rescue",
+  "@introCta": {
+    "description": "Intro overlay mint CTA button label."
+  },
+
+  "headlineSaveTheKing": "Save the king.",
+  "@headlineSaveTheKing": {
+    "description": "Danger-state headline shown when no piece is selected."
+  },
+
+  "headlineWhereWillItGo": "Where will it go?",
+  "@headlineWhereWillItGo": {
+    "description": "Headline shown when a piece is selected (selected state, or danger with a selection)."
+  },
+
+  "headlineRescued": "Rescued.",
+  "@headlineRescued": {
+    "description": "Headline shown after a successful rescue."
+  },
+
+  "headlineNotTheMove": "Not the move.",
+  "@headlineNotTheMove": {
+    "description": "Headline shown after a failed move."
+  },
+
+  "hintOnboardingOneMoveSaves": "One move saves the game.",
+  "@hintOnboardingOneMoveSaves": {
+    "description": "First-run danger hint shown when no piece is selected."
+  },
+
+  "hintOnboardingFindRescue": "Find the rescue.",
+  "@hintOnboardingFindRescue": {
+    "description": "First-run hint shown when a piece is selected (or selected state)."
+  },
+
+  "hintOnboardingStillTrapped": "The king is still trapped.",
+  "@hintOnboardingStillTrapped": {
+    "description": "First-run hint shown after a failed attempt."
+  },
+
+  "hintTapHighlightedSquare": "Tap a highlighted square to move.",
+  "@hintTapHighlightedSquare": {
+    "description": "Post-onboarding hint shown when a piece is selected."
+  },
+
+  "completionFootnote": "The board is quiet now.",
+  "@completionFootnote": {
+    "description": "Quiet footnote shown beneath the success line on session completion."
+  },
+
+  "footerNextPuzzle": "Next puzzle  ↦",
+  "@footerNextPuzzle": {
+    "description": "Footer CTA after a rescue when the session has a next puzzle."
+  },
+
+  "footerAgain": "Again  ↻",
+  "@footerAgain": {
+    "description": "Footer CTA after a rescue when the session is complete (rotates to the next session)."
+  },
+
+  "footerTryAgain": "Try again  ↺",
+  "@footerTryAgain": {
+    "description": "Footer CTA shown after a failed move."
+  },
+
+  "footerReset": "Reset",
+  "@footerReset": {
+    "description": "Footer CTA shown in danger/selected states (resets the current puzzle)."
+  },
+
+  "puzzleCounter": "PUZZLE {current}/{total}",
+  "@puzzleCounter": {
+    "description": "Status pill counter — current puzzle number and total in the session.",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
   }
 }

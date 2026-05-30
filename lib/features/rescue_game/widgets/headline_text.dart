@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../game_state.dart';
 
 class HeadlineText extends StatelessWidget {
@@ -14,11 +15,12 @@ class HeadlineText extends StatelessWidget {
   final GameState state;
   final bool hasSelection;
 
-  String get _text => switch (state) {
-    GameState.rescued => 'Rescued.',
-    GameState.failed => 'Not the move.',
-    GameState.selected => 'Where will it go?',
-    GameState.danger => hasSelection ? 'Where will it go?' : 'Save the king.',
+  String _textFor(AppL10n t) => switch (state) {
+    GameState.rescued => t.headlineRescued,
+    GameState.failed => t.headlineNotTheMove,
+    GameState.selected => t.headlineWhereWillItGo,
+    GameState.danger =>
+      hasSelection ? t.headlineWhereWillItGo : t.headlineSaveTheKing,
   };
 
   Color get _color =>
@@ -26,6 +28,8 @@ class HeadlineText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppL10n.of(context)!;
+    final text = _textFor(t);
     final duration = state == GameState.rescued
         ? MotionTokens.rescueHeadlineFade
         : MotionTokens.headlineFade;
@@ -43,9 +47,12 @@ class HeadlineText extends StatelessWidget {
           child: SlideTransition(position: offset, child: child),
         );
       },
+      // ValueKey(text) preserves the "no animation when state changes but text
+      // is identical" behaviour (e.g. selected ↔ danger+selection both say
+      // "Where will it go?").
       child: Text(
-        _text,
-        key: ValueKey(_text),
+        text,
+        key: ValueKey(text),
         style: AppText.headline.copyWith(color: _color),
         textAlign: TextAlign.center,
       ),
@@ -81,6 +88,7 @@ class HintText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppL10n.of(context)!;
     final (text, style) = onboarding
         ? switch (state) {
             GameState.rescued => (
@@ -90,10 +98,12 @@ class HintText extends StatelessWidget {
                 letterSpacing: 2.1,
               ),
             ),
-            GameState.failed => ('The king is still trapped.', AppText.body),
-            GameState.selected => ('Find the rescue.', AppText.body),
+            GameState.failed => (t.hintOnboardingStillTrapped, AppText.body),
+            GameState.selected => (t.hintOnboardingFindRescue, AppText.body),
             GameState.danger => (
-              hasSelection ? 'Find the rescue.' : 'One move saves the game.',
+              hasSelection
+                  ? t.hintOnboardingFindRescue
+                  : t.hintOnboardingOneMoveSaves,
               AppText.body,
             ),
           }
@@ -106,12 +116,9 @@ class HintText extends StatelessWidget {
               ),
             ),
             GameState.failed => (failureHint, AppText.body),
-            GameState.selected => (
-              'Tap a highlighted square to move.',
-              AppText.body,
-            ),
+            GameState.selected => (t.hintTapHighlightedSquare, AppText.body),
             GameState.danger => (
-              hasSelection ? 'Tap a highlighted square to move.' : dangerHint,
+              hasSelection ? t.hintTapHighlightedSquare : dangerHint,
               AppText.body,
             ),
           };
@@ -124,7 +131,7 @@ class HintText extends StatelessWidget {
               Text(text, style: style, textAlign: TextAlign.center),
               const SizedBox(height: 6),
               Text(
-                'The board is quiet now.',
+                t.completionFootnote,
                 style: AppText.body.copyWith(color: AppColors.textMuted),
                 textAlign: TextAlign.center,
               ),

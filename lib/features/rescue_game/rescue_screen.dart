@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
+import '../../l10n/gen/app_localizations.dart';
 import 'game_controller.dart';
 import 'game_state.dart';
 import 'widgets/board_widget.dart';
@@ -53,14 +54,16 @@ class _RescueScreenState extends State<RescueScreen> {
       body: ListenableBuilder(
         listenable: _game,
         builder: (context, _) {
+          final l = AppL10n.of(context)!;
           final isRescued = _game.state == GameState.rescued;
           final puzzle = _game.currentPuzzle;
           final sequenceComplete =
               isRescued && _game.allComplete && !_game.hasNext;
           final buttonLabel = switch (_game.state) {
-            GameState.rescued => _game.hasNext ? 'Next puzzle  ↦' : 'Again  ↻',
-            GameState.failed => 'Try again  ↺',
-            _ => 'Reset',
+            GameState.rescued =>
+              _game.hasNext ? l.footerNextPuzzle : l.footerAgain,
+            GameState.failed => l.footerTryAgain,
+            _ => l.footerReset,
           };
           return Stack(
             fit: StackFit.expand,
@@ -111,8 +114,10 @@ class _RescueScreenState extends State<RescueScreen> {
                                 child: StatusBar(
                                   state: _game.state,
                                   message: _game.statusMsg,
-                                  counter:
-                                      'PUZZLE ${_game.puzzleNumber}/${_game.puzzleCount}',
+                                  counter: l.puzzleCounter(
+                                    _game.puzzleNumber,
+                                    _game.puzzleCount,
+                                  ),
                                 ),
                               ),
                               if (_game.completedCount > 0) ...[

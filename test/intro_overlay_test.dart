@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chess_rescue/core/storage/progress_store.dart';
 import 'package:chess_rescue/features/rescue_game/game_controller.dart';
 import 'package:chess_rescue/features/rescue_game/rescue_screen.dart';
+import 'package:chess_rescue/l10n/gen/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -97,7 +98,13 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       SharedPreferences.setMockInitialValues({});
       final store = await ProgressStore.create();
-      await tester.pumpWidget(MaterialApp(home: RescueScreen(store: store)));
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppL10n.localizationsDelegates,
+          supportedLocales: AppL10n.supportedLocales,
+          home: RescueScreen(store: store),
+        ),
+      );
       await tester.pump();
 
       expect(find.text('One move saves the king.'), findsOneWidget);
@@ -120,7 +127,13 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
       final store = await ProgressStore.create();
-      await tester.pumpWidget(MaterialApp(home: RescueScreen(store: store)));
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppL10n.localizationsDelegates,
+          supportedLocales: AppL10n.supportedLocales,
+          home: RescueScreen(store: store),
+        ),
+      );
       await tester.pump();
 
       expect(find.text('Start rescue'), findsNothing);

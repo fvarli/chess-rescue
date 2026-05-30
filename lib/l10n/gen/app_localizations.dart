@@ -104,6 +104,114 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Chess Rescue'**
   String get appTitle;
+
+  /// Intro overlay headline.
+  ///
+  /// In en, this message translates to:
+  /// **'One move saves the king.'**
+  String get introTitle;
+
+  /// Intro overlay body — two short sentences on separate lines.
+  ///
+  /// In en, this message translates to:
+  /// **'Every board begins in danger.\nFind the rescue. Feel the relief.'**
+  String get introBody;
+
+  /// Intro overlay tertiary supporting line.
+  ///
+  /// In en, this message translates to:
+  /// **'No timers. No lessons. Just the way out.'**
+  String get introSecondary;
+
+  /// Intro overlay mint CTA button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Start rescue'**
+  String get introCta;
+
+  /// Danger-state headline shown when no piece is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the king.'**
+  String get headlineSaveTheKing;
+
+  /// Headline shown when a piece is selected (selected state, or danger with a selection).
+  ///
+  /// In en, this message translates to:
+  /// **'Where will it go?'**
+  String get headlineWhereWillItGo;
+
+  /// Headline shown after a successful rescue.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescued.'**
+  String get headlineRescued;
+
+  /// Headline shown after a failed move.
+  ///
+  /// In en, this message translates to:
+  /// **'Not the move.'**
+  String get headlineNotTheMove;
+
+  /// First-run danger hint shown when no piece is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'One move saves the game.'**
+  String get hintOnboardingOneMoveSaves;
+
+  /// First-run hint shown when a piece is selected (or selected state).
+  ///
+  /// In en, this message translates to:
+  /// **'Find the rescue.'**
+  String get hintOnboardingFindRescue;
+
+  /// First-run hint shown after a failed attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'The king is still trapped.'**
+  String get hintOnboardingStillTrapped;
+
+  /// Post-onboarding hint shown when a piece is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a highlighted square to move.'**
+  String get hintTapHighlightedSquare;
+
+  /// Quiet footnote shown beneath the success line on session completion.
+  ///
+  /// In en, this message translates to:
+  /// **'The board is quiet now.'**
+  String get completionFootnote;
+
+  /// Footer CTA after a rescue when the session has a next puzzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next puzzle  ↦'**
+  String get footerNextPuzzle;
+
+  /// Footer CTA after a rescue when the session is complete (rotates to the next session).
+  ///
+  /// In en, this message translates to:
+  /// **'Again  ↻'**
+  String get footerAgain;
+
+  /// Footer CTA shown after a failed move.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again  ↺'**
+  String get footerTryAgain;
+
+  /// Footer CTA shown in danger/selected states (resets the current puzzle).
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get footerReset;
+
+  /// Status pill counter — current puzzle number and total in the session.
+  ///
+  /// In en, this message translates to:
+  /// **'PUZZLE {current}/{total}'**
+  String puzzleCounter(int current, int total);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
