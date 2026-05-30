@@ -263,10 +263,8 @@ Each row = one Claude Code session, one PR, one commit.
 | C2 | `feat(l10n): extract intro overlay + headline + hint strings to ARB` | A | C1 |
 | C3 | `feat(l10n): localize per-puzzle copy (statusText/dangerHint/failureHint/successExplanation)` | A | C2 |
 | C4 | `feat(l10n): device-locale resolution + en fallback` | A | C2 |
-| V1 | `feat(visual): bundle Inter TTFs + declare fonts in pubspec` | B | — |
-| V2 | `feat(visual): refine piece painter (gradient, inner shadow, outline)` | B | — |
-| V3 | `feat(visual): board texture overlay + deeper checker contrast + vignette` | B | — |
-| V4 | `feat(visual): rescue bloom ring + failure rim-flash` | B | — |
+| V1 | `feat(visual): premium visual foundation (Inter + piece gradient + board grain/vignette)` | B | — |
+| V2 | `feat(visual): rescue bloom ring + failure rim-flash` | B | V1 |
 | Co1 | `feat(content): introduce Episode model + EpisodeLibrary` | C | — |
 | Co2 | `feat(content): author Episode 1 (First Rescues, 10 puzzles)` | C | Co1 |
 | Co3 | `feat(content): author Episode 2 (Heroic Counters, 10 puzzles)` | C | Co1 |

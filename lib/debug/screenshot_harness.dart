@@ -19,6 +19,7 @@ import 'package:flutter/services.dart' show FontLoader;
 import '../core/theme/app_theme.dart';
 import '../features/rescue_game/game_controller.dart';
 import '../features/rescue_game/rescue_screen.dart';
+import '../l10n/gen/app_localizations.dart';
 
 /// Flip to `false` for the clean capture. The verification chip also requires
 /// `kDebugMode`, so it can never appear in a release build.
@@ -218,6 +219,11 @@ class _HarnessApp extends StatelessWidget {
       title: 'Chess Rescue — Screenshot Harness (debug)',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      // RescueScreen calls AppL10n.of(context)! since C2; without the
+      // delegates here the harness would throw a null check on the inner
+      // tree. Default test locale → English copy.
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
       // Mirror main.dart's clamped text scaling so captures match the real app.
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         maxScaleFactor: 1.35,
@@ -403,6 +409,10 @@ class _ExportApp extends StatelessWidget {
       title: 'Chess Rescue — Screenshot Export (debug)',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      // RescueScreen calls AppL10n.of(context)! since C2; the delegates
+      // resolve EN strings inside the embedded screen.
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
       home: const _ExportRunner(),
     );
   }

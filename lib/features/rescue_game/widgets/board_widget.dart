@@ -282,6 +282,11 @@ class _BoardWidgetState extends State<BoardWidget>
               children: [
                 _buildSquares(),
                 _buildGridLines(),
+                // V1 surface polish: tiled grain → "made of something" read.
+                _buildGrainOverlay(),
+                // V1 depth polish: soft inner vignette deepens the edges
+                // without dimming the centre (where the action lives).
+                _buildInnerVignette(),
                 _buildDangerGlow(),
                 _buildFailedFlash(),
                 _buildRescueGlow(),
@@ -291,6 +296,48 @@ class _BoardWidgetState extends State<BoardWidget>
                 ..._buildPieces(),
                 _buildTapLayer(),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // V1 surface polish — a tiled, low-alpha grain that lifts the checker from
+  // "flat colour blocks" to "made of something." Sits above the squares /
+  // grid lines but beneath every gameplay overlay (danger glow, rescue glow,
+  // focus cue, pieces) so it never competes with the action.
+  Widget _buildGrainOverlay() {
+    return const Positioned.fill(
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: 0.55,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/textures/board-grain.png'),
+                repeat: ImageRepeat.repeat,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // V1 depth polish — soft inner vignette that deepens the board edges at
+  // ~6 % alpha and is fully transparent through the center 55 % of the
+  // board, so danger glow / mint bloom continue to dominate.
+  Widget _buildInnerVignette() {
+    return const Positioned.fill(
+      child: IgnorePointer(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.center,
+              radius: 0.95,
+              colors: [Color(0x00000000), Color(0x14000000)],
+              stops: [0.55, 1.0],
             ),
           ),
         ),

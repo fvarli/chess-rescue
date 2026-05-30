@@ -56,10 +56,26 @@ class _PiecePainter extends CustomPainter {
         ? AppColors.pieceLightStroke
         : AppColors.pieceDarkStroke;
 
+    // V1 polish: soft vertical gradient over the silhouette gives the piece a
+    // calm volume cue (top highlight → body color). Bézier shapes are
+    // identity-preserved. Light pieces get a slight white-bias top + ~10%
+    // darker bottom; dark pieces get a ~14% lighter top + body bottom so the
+    // gradient reads even on a dark board.
+    final topColor = isLight
+        ? Color.lerp(fillColor, Colors.white, 0.06)!
+        : Color.lerp(fillColor, Colors.white, 0.14)!;
+    final bottomColor = isLight
+        ? Color.lerp(fillColor, Colors.black, 0.10)!
+        : fillColor;
+
     final fill = Paint()
-      ..color = fillColor
       ..style = PaintingStyle.fill
-      ..isAntiAlias = true;
+      ..isAntiAlias = true
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [topColor, bottomColor],
+      ).createShader(const Rect.fromLTRB(0, 0, 100, 100));
 
     final stroke = Paint()
       ..color = strokeColor

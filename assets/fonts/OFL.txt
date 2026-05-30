@@ -1,0 +1,31 @@
+Inter — typography family
+=========================
+
+Copyright (c) 2016 The Inter Project Authors
+  (https://github.com/rsms/inter)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+Canonical URL: https://openfontlicense.org
+
+PERMITTED USES
+- Use the fonts, including for commercial purposes.
+- Study how the fonts work and adapt them.
+- Redistribute the fonts in original or modified form, including bundled with
+  software, provided this license is preserved alongside the font binaries.
+
+RESTRICTIONS
+- The fonts may NOT be sold by themselves.
+- The reserved name "Inter" may NOT be used to endorse or promote derived
+  works.
+- This license notice must be preserved in any redistribution of the font
+  files (whether or not the binary is modified).
+
+Full license text:
+  https://openfontlicense.org/open-font-license-official-text/
+
+In this repository:
+  Inter-Regular.ttf, Inter-Medium.ttf, Inter-SemiBold.ttf, Inter-Bold.ttf
+  are bundled and declared in pubspec.yaml as the family `Inter`. The app
+  loads them via Flutter's standard font-asset pipeline; the in-app theme
+  (`lib/core/theme/app_theme.dart`) references `fontFamily: 'Inter'` for
+  display copy and falls back to the platform monospace for micro-labels.
