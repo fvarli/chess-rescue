@@ -194,6 +194,10 @@ class GameController extends ChangeNotifier {
       // Mark the first rescue survived so the cold open never re-triggers,
       // but keep _onboarding true in memory through this rescued screen.
       if (_onboarding) unawaited(_store?.setOnboardingSeen());
+      // Bump the lifetime counter (Home's "Total rescues" line) independently
+      // of the per-session completed-ids set, which clears when a session
+      // rotates.
+      unawaited(_store?.incrementLifetimeSaved());
       notifyListeners();
       _persist();
       return;

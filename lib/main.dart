@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'core/storage/progress_store.dart';
 import 'core/theme/app_theme.dart';
-import 'features/rescue_game/rescue_screen.dart';
+import 'features/home/home_screen.dart';
 import 'l10n/app_language_mode.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'l10n/language_scope.dart';
@@ -82,7 +82,9 @@ class _ChessRescueAppState extends State<ChessRescueApp> {
           maxScaleFactor: 1.35,
           child: child!,
         ),
-        home: RescueScreen(store: widget.store),
+        // P1 — Home is the new root surface; HomeScreen pushes RescueScreen
+        // when the player taps Continue / Start.
+        home: HomeScreen(store: widget.store),
       ),
     );
   }

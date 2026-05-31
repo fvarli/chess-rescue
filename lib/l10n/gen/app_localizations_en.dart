@@ -202,4 +202,23 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get settingsDone => 'Done';
+
+  @override
+  String get homeCurrentRun => 'Current run';
+
+  @override
+  String homeRescueCounter(int current, int total) {
+    return 'Rescue $current / $total';
+  }
+
+  @override
+  String homeTotalRescues(int count) {
+    return 'Total rescues: $count';
+  }
+
+  @override
+  String get homeContinue => 'Continue  ↦';
+
+  @override
+  String get homeStart => 'Start  ↦';
 }

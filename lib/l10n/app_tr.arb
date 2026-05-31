@@ -70,5 +70,11 @@
   "settingsLanguageEnglish": "İngilizce",
   "settingsLanguageTurkish": "Türkçe",
   "settingsLanguageSpanish": "İspanyolca",
-  "settingsDone": "Bitti"
+  "settingsDone": "Bitti",
+
+  "homeCurrentRun": "Mevcut seri",
+  "homeRescueCounter": "Kurtarış {current} / {total}",
+  "homeTotalRescues": "Toplam kurtarış: {count}",
+  "homeContinue": "Devam et  ↦",
+  "homeStart": "Başla  ↦"
 }

@@ -464,6 +464,36 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Done'**
   String get settingsDone;
+
+  /// Eyebrow label above the session counter on Home. Renders uppercase via AppText.mono — frames the count below as belonging to the current run, not the whole game.
+  ///
+  /// In en, this message translates to:
+  /// **'Current run'**
+  String get homeCurrentRun;
+
+  /// Session-local rescue counter shown beneath the 'Current run' eyebrow on Home.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescue {current} / {total}'**
+  String homeRescueCounter(int current, int total);
+
+  /// Lifetime rescue count on Home (independent of the current session).
+  ///
+  /// In en, this message translates to:
+  /// **'Total rescues: {count}'**
+  String homeTotalRescues(int count);
+
+  /// Home CTA for returning players (introSeen=true).
+  ///
+  /// In en, this message translates to:
+  /// **'Continue  ↦'**
+  String get homeContinue;
+
+  /// Home CTA for first-time players (introSeen=false).
+  ///
+  /// In en, this message translates to:
+  /// **'Start  ↦'**
+  String get homeStart;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

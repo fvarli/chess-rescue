@@ -194,5 +194,27 @@
   "settingsLanguageSpanish": "Spanish",
   "@settingsLanguageSpanish": { "description": "Picker option that forces the app into Spanish." },
   "settingsDone": "Done",
-  "@settingsDone": { "description": "Dismisses the language picker sheet." }
+  "@settingsDone": { "description": "Dismisses the language picker sheet." },
+
+  "homeCurrentRun": "Current run",
+  "@homeCurrentRun": { "description": "Eyebrow label above the session counter on Home. Renders uppercase via AppText.mono — frames the count below as belonging to the current run, not the whole game." },
+  "homeRescueCounter": "Rescue {current} / {total}",
+  "@homeRescueCounter": {
+    "description": "Session-local rescue counter shown beneath the 'Current run' eyebrow on Home.",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "homeTotalRescues": "Total rescues: {count}",
+  "@homeTotalRescues": {
+    "description": "Lifetime rescue count on Home (independent of the current session).",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "homeContinue": "Continue  ↦",
+  "@homeContinue": { "description": "Home CTA for returning players (introSeen=true)." },
+  "homeStart": "Start  ↦",
+  "@homeStart": { "description": "Home CTA for first-time players (introSeen=false)." }
 }

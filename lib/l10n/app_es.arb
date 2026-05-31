@@ -70,5 +70,11 @@
   "settingsLanguageEnglish": "Inglés",
   "settingsLanguageTurkish": "Turco",
   "settingsLanguageSpanish": "Español",
-  "settingsDone": "Listo"
+  "settingsDone": "Listo",
+
+  "homeCurrentRun": "Racha actual",
+  "homeRescueCounter": "Rescate {current} / {total}",
+  "homeTotalRescues": "Rescates totales: {count}",
+  "homeContinue": "Continuar  ↦",
+  "homeStart": "Comenzar  ↦"
 }

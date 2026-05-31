@@ -199,4 +199,23 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get settingsDone => 'Bitti';
+
+  @override
+  String get homeCurrentRun => 'Mevcut seri';
+
+  @override
+  String homeRescueCounter(int current, int total) {
+    return 'Kurtarış $current / $total';
+  }
+
+  @override
+  String homeTotalRescues(int count) {
+    return 'Toplam kurtarış: $count';
+  }
+
+  @override
+  String get homeContinue => 'Devam et  ↦';
+
+  @override
+  String get homeStart => 'Başla  ↦';
 }

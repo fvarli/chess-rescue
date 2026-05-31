@@ -75,18 +75,27 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
     }
 
+    Future<void> openRescue(WidgetTester tester, String continueLabel) async {
+      // P1 added Home as the new root surface; drive into RescueScreen first.
+      await tester.tap(find.text(continueLabel));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+    }
+
     testWidgets('persisted Turkish mode renders Turkish headline', (
       tester,
     ) async {
       useLargePhoneViewport(tester);
       SharedPreferences.setMockInitialValues({
         'flutter.cr_language_mode': 'tr',
-        // intro already seen so the rescue screen is visible immediately
+        // intro already seen so the rescue screen renders immediately after
+        // tapping Continue
         'flutter.cr_intro_seen': true,
       });
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
+      await openRescue(tester, 'Devam et  ↦');
       expect(find.text('Şahı kurtar.'), findsOneWidget);
     });
 
@@ -105,6 +114,7 @@ void main() {
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
+      await openRescue(tester, 'Continue  ↦');
       expect(find.text('Save the king.'), findsOneWidget);
     });
 
@@ -119,6 +129,7 @@ void main() {
         final store = await ProgressStore.create();
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
+        await openRescue(tester, 'Continue  ↦');
         expect(find.text('Save the king.'), findsOneWidget);
 
         // Reach the LanguageScope from any element below ChessRescueApp.

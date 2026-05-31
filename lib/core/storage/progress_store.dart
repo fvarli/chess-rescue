@@ -16,6 +16,7 @@ class ProgressStore {
   static const String _kOnboarding = 'cr_onboarding_seen';
   static const String _kIntroSeen = 'cr_intro_seen';
   static const String _kLanguageMode = 'cr_language_mode';
+  static const String _kLifetimeSaved = 'cr_lifetime_saved';
 
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
@@ -43,6 +44,11 @@ class ProgressStore {
   // [AppLanguageMode] at the wiring layer (main.dart).
   String get languageMode => _prefs.getString(_kLanguageMode) ?? 'system';
 
+  // Lifetime rescue count across every session. Independent of the per-session
+  // completed-ids set (which clears when a session rotates). Drives the Home
+  // screen's "Total rescues" line.
+  int get lifetimeSaved => _prefs.getInt(_kLifetimeSaved) ?? 0;
+
   Future<void> save({
     required int sessionSeed,
     required int puzzleIndex,
@@ -65,6 +71,10 @@ class ProgressStore {
     await _prefs.setString(_kLanguageMode, mode);
   }
 
+  Future<void> incrementLifetimeSaved() async {
+    await _prefs.setInt(_kLifetimeSaved, lifetimeSaved + 1);
+  }
+
   Future<void> clear() async {
     await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
@@ -72,5 +82,6 @@ class ProgressStore {
     await _prefs.remove(_kOnboarding);
     await _prefs.remove(_kIntroSeen);
     await _prefs.remove(_kLanguageMode);
+    await _prefs.remove(_kLifetimeSaved);
   }
 }
