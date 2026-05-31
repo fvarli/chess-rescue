@@ -95,5 +95,11 @@
   "episodeLockedLabel": "Açmak için önceki bölümü bitir.",
   "episodeCompleteFooter": "Bölüm tamamlandı  ↦",
   "episodeCompleteToast": "Bölüm tamamlandı. Sıradaki kurtarış açıldı.",
-  "episodeTrilogyCompleteToast": "Üçleme tamamlandı. Master ve Sonsuz açıldı."
+  "episodeTrilogyCompleteToast": "Üçleme tamamlandı. Master ve Sonsuz açıldı.",
+  "episodeSheetCompleteEyebrow": "✓ BÖLÜM TAMAMLANDI",
+  "episodeSheetTrilogyEyebrow": "✓ ÜÇLEME TAMAMLANDI",
+  "episodeSheetEpisodeLabel": "Bölüm {number}",
+  "episodeSheetRescuesCount": "{count} kurtarış tamamlandı",
+  "episodeSheetTrilogyUnlock": "Master ve Sonsuz açıldı",
+  "episodeSheetContinue": "Devam et"
 }

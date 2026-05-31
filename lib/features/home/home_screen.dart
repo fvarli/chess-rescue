@@ -79,6 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleEpisodeCompleted(Episode justCompletedEp) {
+    // G1.1 — the EpisodeCompletionSheet on RescueScreen has already delivered
+    // the celebration. Home's job after the pop is just auto-focus + persist
+    // + light a brief mint glow on the newly unlocked card.
     final next = EpisodeLibrary.nextAfter(justCompletedEp);
     if (next == null) {
       setState(() {});
@@ -94,18 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       setState(() => _newlyUnlockedId = null);
     });
-    final l = AppL10n.of(context)!;
-    final msg = justCompletedEp.id == EpisodeLibrary.ep3.id
-        ? l.episodeTrilogyCompleteToast
-        : l.episodeCompleteToast;
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-      ),
-    );
   }
 
   void _showLockedSnack(String label) {
@@ -140,35 +131,50 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.bg,
       body: DecoratedBox(
         decoration: const BoxDecoration(
+          // G1.5 — radius 1.1 → 1.35 and stops [0, 0.85] → [0, 1.0] so the
+          // backdrop coral haze reaches further down the screen, ending at
+          // the viewport edge instead of fading to solid black at 85%.
           gradient: RadialGradient(
             center: Alignment(0, -0.4),
-            radius: 1.1,
+            radius: 1.35,
             colors: [AppColors.backdropDanger, AppColors.bg],
-            stops: [0.0, 0.85],
+            stops: [0.0, 1.0],
           ),
         ),
         child: SafeArea(
           child: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Spacer(),
-                    const _ThreatenedKingHero(key: ValueKey('home-king-hero')),
-                    const SizedBox(height: 24),
-                    Text(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // G1.5 — weighted spacers pull the eye to the hero block on
+                  // first render; hero side heavier than progress-card side.
+                  const Spacer(flex: 13),
+                  const _ThreatenedKingHero(key: ValueKey('home-king-hero')),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: Text(
                       t.appTitle,
                       textAlign: TextAlign.center,
+                      // G1.5 — letter-spacing −0.22 → −0.6 sculpts the title
+                      // slightly more, gives it logo-weight on Home.
                       style: AppText.headline.copyWith(
                         fontSize: 34,
                         fontWeight: FontWeight.w700,
                         height: 1.1,
+                        letterSpacing: -0.6,
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    Text(
+                  ),
+                  // G1.5 — title-tagline gap 14 → 18 dp so the tagline reads
+                  // as a sub-heading, not a continuation of the title. (22dp
+                  // was nicer but pushed Spanish locale into overflow on the
+                  // 800dp test viewport; 18dp is the headroom-safe ceiling.)
+                  const SizedBox(height: 18),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: Text(
                       t.homeTagline,
                       textAlign: TextAlign.center,
                       style: AppText.body.copyWith(
@@ -177,16 +183,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 1.35,
                       ),
                     ),
-                    const Spacer(),
-                    _EpisodeStrip(
-                      focused: _focused,
-                      completedIds: completedIds,
-                      newlyUnlockedId: _newlyUnlockedId,
-                      onTapEpisode: _setFocus,
-                      onTapLocked: () => _showLockedSnack(t.episodeLockedLabel),
-                    ),
-                    const SizedBox(height: 18),
-                    _EpisodeProgressCard(
+                  ),
+                  const Spacer(flex: 10),
+                  _EpisodeCardList(
+                    focused: _focused,
+                    completedIds: completedIds,
+                    newlyUnlockedId: _newlyUnlockedId,
+                    onTapEpisode: _setFocus,
+                    onTapLocked: () => _showLockedSnack(t.episodeLockedLabel),
+                  ),
+                  const SizedBox(height: 18),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: _EpisodeProgressCard(
                       episode: _focused,
                       title: _titleFor(_focused, t),
                       tagline: _taglineFor(_focused, t),
@@ -201,14 +210,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? t.episodeBestRun(bestEndless)
                           : null,
                     ),
-                    const SizedBox(height: 28),
-                    _PrimaryCta(
+                  ),
+                  const SizedBox(height: 28),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: _PrimaryCta(
                       label: ctaLabel,
                       onTap: () => _openRescue(context),
                     ),
-                    const Spacer(),
-                  ],
-                ),
+                  ),
+                  const Spacer(),
+                ],
               ),
               const Positioned(
                 top: 12,
@@ -266,7 +278,11 @@ class _ThreatenedKingHeroState extends State<_ThreatenedKingHero>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-  static const double _kingSize = 110;
+  // G1.5 — 110 → 118 dp gives the silhouette more presence in the briefing
+  // composition while staying under the 800dp test viewport's vertical
+  // budget (122 was 0.5px over on Spanish locale). Still ~33% of a 360dp
+  // viewport, well under dominant.
+  static const double _kingSize = 118;
   static const Piece _king = Piece(
     id: 'home-hero-king',
     type: PieceType.king,
@@ -326,8 +342,8 @@ class _ThreatenedKingHeroState extends State<_ThreatenedKingHero>
   }
 }
 
-class _EpisodeStrip extends StatelessWidget {
-  const _EpisodeStrip({
+class _EpisodeCardList extends StatefulWidget {
+  const _EpisodeCardList({
     required this.focused,
     required this.completedIds,
     required this.newlyUnlockedId,
@@ -341,34 +357,122 @@ class _EpisodeStrip extends StatelessWidget {
   final ValueChanged<Episode> onTapEpisode;
   final VoidCallback onTapLocked;
 
+  static const double cardWidth = 120;
+  // Trimmed from 132 → 116 so the 5-card Home composition fits the
+  // 800dp test-viewport vertical budget across all locales (Spanish was
+  // overflowing by 21px at 132). Eyebrow + 2-line title + progress row
+  // still fits with comfortable padding.
+  static const double cardHeight = 116;
+  static const double gap = 12;
+  static const double listPaddingHorizontal = 28;
+
+  @override
+  State<_EpisodeCardList> createState() => _EpisodeCardListState();
+}
+
+class _EpisodeCardListState extends State<_EpisodeCardList> {
+  final ScrollController _scroll = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _centerOn(widget.focused, animate: false);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _EpisodeCardList old) {
+    super.didUpdateWidget(old);
+    if (old.focused.id != widget.focused.id) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _centerOn(widget.focused, animate: true);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _centerOn(Episode ep, {required bool animate}) {
+    final index = EpisodeLibrary.all.indexOf(ep);
+    if (index < 0 || !_scroll.hasClients) return;
+    final viewport = _scroll.position.viewportDimension;
+    final raw =
+        _EpisodeCardList.listPaddingHorizontal +
+        index * (_EpisodeCardList.cardWidth + _EpisodeCardList.gap) +
+        _EpisodeCardList.cardWidth / 2 -
+        viewport / 2;
+    final target = raw.clamp(
+      _scroll.position.minScrollExtent,
+      _scroll.position.maxScrollExtent,
+    );
+    if (animate) {
+      _scroll.animateTo(
+        target,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeInOutCubic,
+      );
+    } else {
+      _scroll.jumpTo(target);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      key: const ValueKey('home-episode-strip'),
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        for (final ep in EpisodeLibrary.all)
-          _EpisodeChip(
-            episode: ep,
-            progress: EpisodeLibrary.progressFor(ep, completedIds),
-            isFocused: ep.id == focused.id,
-            isNewlyUnlocked: ep.id == newlyUnlockedId,
-            onTap: () {
-              final p = EpisodeLibrary.progressFor(ep, completedIds);
-              if (!p.isUnlocked) {
-                onTapLocked();
-                return;
-              }
-              onTapEpisode(ep);
-            },
-          ),
-      ],
+    // SingleChildScrollView + Row is intentional over ListView.builder: the
+    // 5-episode roster is small + bounded, eager build keeps test-finders
+    // discovering off-screen cards by ValueKey, and the horizontal-scroll
+    // peek affordance still works identically.
+    return SizedBox(
+      key: const ValueKey('home-episode-card-list'),
+      height: _EpisodeCardList.cardHeight,
+      child: SingleChildScrollView(
+        controller: _scroll,
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(
+          horizontal: _EpisodeCardList.listPaddingHorizontal,
+        ),
+        child: Row(
+          children: [
+            for (var i = 0; i < EpisodeLibrary.all.length; i++) ...[
+              if (i > 0) const SizedBox(width: _EpisodeCardList.gap),
+              () {
+                final ep = EpisodeLibrary.all[i];
+                final progress = EpisodeLibrary.progressFor(
+                  ep,
+                  widget.completedIds,
+                );
+                return _EpisodeCard(
+                  episode: ep,
+                  progress: progress,
+                  isFocused: ep.id == widget.focused.id,
+                  isNewlyUnlocked: ep.id == widget.newlyUnlockedId,
+                  onTap: () {
+                    if (!progress.isUnlocked) {
+                      widget.onTapLocked();
+                      return;
+                    }
+                    widget.onTapEpisode(ep);
+                  },
+                );
+              }(),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _EpisodeChip extends StatelessWidget {
-  const _EpisodeChip({
+class _EpisodeCard extends StatelessWidget {
+  const _EpisodeCard({
     required this.episode,
     required this.progress,
     required this.isFocused,
@@ -382,19 +486,24 @@ class _EpisodeChip extends StatelessWidget {
   final bool isNewlyUnlocked;
   final VoidCallback onTap;
 
-  static const double _size = 44;
   static const Duration _pulseDuration = Duration(milliseconds: 1500);
 
   @override
   Widget build(BuildContext context) {
-    final glyph = _resolveGlyph();
-    final bg = isFocused ? AppColors.danger : AppColors.surface;
+    final t = AppL10n.of(context)!;
+    final title = _titleFor(episode, t);
+
+    final bg = isFocused ? AppColors.surface2 : AppColors.surface;
     final border = isFocused
         ? AppColors.danger
-        : (progress.isUnlocked ? AppColors.hairline : AppColors.hairline);
-    final fg = isFocused
+        : (progress.isComplete && episode.kind == EpisodeKind.canonical
+              ? AppColors.rescue.withValues(alpha: 0.30)
+              : AppColors.hairline);
+    final borderWidth = isFocused ? 2.0 : 1.5;
+    final eyebrowColor = isFocused ? AppColors.danger : AppColors.textMuted;
+    final titleColor = progress.isUnlocked
         ? AppColors.text
-        : (progress.isUnlocked ? AppColors.text : AppColors.textMuted);
+        : AppColors.textMuted.withValues(alpha: 0.55);
 
     return GestureDetector(
       onTap: onTap,
@@ -402,44 +511,113 @@ class _EpisodeChip extends StatelessWidget {
         tween: Tween<double>(begin: isNewlyUnlocked ? 1.0 : 0.0, end: 0.0),
         duration: _pulseDuration,
         curve: Curves.easeOut,
-        builder: (context, t, _) => Container(
-          key: ValueKey('home-episode-chip-${episode.number}'),
-          width: _size,
-          height: _size,
-          decoration: BoxDecoration(
-            color: bg,
-            shape: BoxShape.circle,
-            border: Border.all(color: border, width: 1.5),
-            boxShadow: t > 0
-                ? [
-                    BoxShadow(
-                      color: AppColors.rescue.withValues(alpha: 0.4 * t),
-                      blurRadius: 12 * t,
-                      spreadRadius: 2 * t,
-                    ),
-                  ]
-                : null,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            glyph,
-            style: AppText.mono.copyWith(
-              color: fg,
-              fontSize: 13,
-              letterSpacing: 0,
+        builder: (context, glow, _) {
+          return Container(
+            key: ValueKey('home-episode-card-${episode.number}'),
+            width: _EpisodeCardList.cardWidth,
+            height: _EpisodeCardList.cardHeight,
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: border, width: borderWidth),
+              boxShadow: glow > 0
+                  ? [
+                      BoxShadow(
+                        color: AppColors.rescue.withValues(alpha: 0.4 * glow),
+                        blurRadius: 14 * glow,
+                        spreadRadius: 2 * glow,
+                      ),
+                    ]
+                  : null,
             ),
-          ),
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.episodeBadge(episode.number),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.mono.copyWith(
+                    color: eyebrowColor,
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppText.headline.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    height: 1.05,
+                    letterSpacing: -0.4,
+                    color: titleColor,
+                  ),
+                ),
+                const Spacer(),
+                _CardProgressRow(episode: episode, progress: progress),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+}
 
-  String _resolveGlyph() {
-    if (!progress.isUnlocked) return '🔒';
-    if (progress.isComplete) return '✓${episode.number}';
-    if (episode.kind == EpisodeKind.master) return '★${episode.number}';
-    if (episode.kind == EpisodeKind.endless) return '∞${episode.number}';
-    return '${episode.number}';
+class _CardProgressRow extends StatelessWidget {
+  const _CardProgressRow({required this.episode, required this.progress});
+
+  final Episode episode;
+  final EpisodeProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!progress.isUnlocked) {
+      return Text(
+        '🔒',
+        style: AppText.mono.copyWith(color: AppColors.textMuted, fontSize: 12),
+      );
+    }
+    switch (episode.kind) {
+      case EpisodeKind.canonical:
+        return Text(
+          _canonicalPipString(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppText.mono.copyWith(
+            color: progress.isComplete ? AppColors.rescue : AppColors.textDim,
+            fontSize: 11,
+            letterSpacing: 0.4,
+          ),
+        );
+      case EpisodeKind.master:
+        return Text(
+          '★  ▮▮▮',
+          maxLines: 1,
+          style: AppText.mono.copyWith(
+            color: AppColors.accent,
+            fontSize: 11,
+            letterSpacing: 0.4,
+          ),
+        );
+      case EpisodeKind.endless:
+        return Text(
+          '∞',
+          style: AppText.mono.copyWith(color: AppColors.rescue, fontSize: 16),
+        );
+    }
+  }
+
+  String _canonicalPipString() {
+    final total = episode.canonicalPuzzleIds.length;
+    final done = progress.completedCount.clamp(0, total);
+    final filled = '▮' * done;
+    final empty = '▯' * (total - done);
+    if (done == 0) return empty;
+    return '$filled$empty  $done/$total';
   }
 }
 

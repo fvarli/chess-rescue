@@ -80,7 +80,7 @@ void main() {
     });
 
     testWidgets(
-      'completing Ep3 focuses Ep4 and shows trilogy-complete snackbar',
+      'completing Ep3 focuses Ep4 (trilogy unlock; sheet handles the copy)',
       (tester) async {
         await _pumpAndPopWith(
           tester: tester,
@@ -102,10 +102,9 @@ void main() {
           result: true,
         );
         expect(find.text('EPISODE 4 · THE OTHER SIDE'), findsOneWidget);
-        expect(
-          find.text('Trilogy complete. Master and Endless unlocked.'),
-          findsOneWidget,
-        );
+        // G1.1 — the trilogy copy now lives on the EpisodeCompletionSheet
+        // (RescueScreen layer), not the Home snackbar. The flow test only
+        // verifies Home's auto-focus reaction to the bool pop signal.
       },
     );
 
@@ -135,32 +134,9 @@ void main() {
     });
   });
 
-  group('P3.1 — completion snackbar', () {
+  group('P3.1 / G1.1 — non-completion / system-back behaviour', () {
     testWidgets(
-      'standard episodeCompleteToast renders for non-trilogy completion',
-      (tester) async {
-        await _pumpAndPopWith(
-          tester: tester,
-          prefs: {
-            'flutter.cr_intro_seen': true,
-            'flutter.cr_completed_ids': [
-              'p1-knight-rescue',
-              'a4-the-breakaway',
-              'b4-the-cross-check',
-            ],
-            'flutter.cr_current_episode_id': 'ep1-strike-back',
-          },
-          result: true,
-        );
-        expect(
-          find.text('Episode complete. Next rescue unlocked.'),
-          findsOneWidget,
-        );
-      },
-    );
-
-    testWidgets(
-      'system-back pop (result null) shows NO snackbar and no auto-focus',
+      'system-back pop (result null) keeps focus on current episode',
       (tester) async {
         await _pumpAndPopWith(
           tester: tester,
@@ -175,16 +151,8 @@ void main() {
           },
           result: null,
         );
-        // Focus stays on ep1, no completion snackbar.
+        // Focus stays on ep1 — no bool=true signal arrived, so no auto-focus.
         expect(find.text('EPISODE 1 · STRIKE BACK'), findsOneWidget);
-        expect(
-          find.text('Episode complete. Next rescue unlocked.'),
-          findsNothing,
-        );
-        expect(
-          find.text('Trilogy complete. Master and Endless unlocked.'),
-          findsNothing,
-        );
       },
     );
   });

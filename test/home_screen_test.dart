@@ -38,12 +38,12 @@ void main() {
 
         // Episode strip — 5 chips present (P3 identity layer).
         expect(
-          find.byKey(const ValueKey('home-episode-strip')),
+          find.byKey(const ValueKey('home-episode-card-list')),
           findsOneWidget,
         );
         for (var n = 1; n <= 5; n++) {
           expect(
-            find.byKey(ValueKey('home-episode-chip-$n')),
+            find.byKey(ValueKey('home-episode-card-$n')),
             findsOneWidget,
             reason: 'episode chip $n should render',
           );
@@ -119,7 +119,7 @@ void main() {
         await tester.pump();
 
         // Ep3 should be locked (ep1 not complete).
-        await tester.tap(find.byKey(const ValueKey('home-episode-chip-3')));
+        await tester.tap(find.byKey(const ValueKey('home-episode-card-3')));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 100));
 
@@ -150,7 +150,7 @@ void main() {
         // Defaults to ep2 (first non-complete after ep1).
         expect(find.text('EPISODE 2 · END THE THREAT'), findsOneWidget);
 
-        await tester.tap(find.byKey(const ValueKey('home-episode-chip-1')));
+        await tester.tap(find.byKey(const ValueKey('home-episode-card-1')));
         await tester.pump();
 
         expect(find.text('EPISODE 1 · STRIKE BACK'), findsOneWidget);

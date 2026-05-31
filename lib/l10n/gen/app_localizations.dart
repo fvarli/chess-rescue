@@ -602,6 +602,42 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Trilogy complete. Master and Endless unlocked.'**
   String get episodeTrilogyCompleteToast;
+
+  /// G1.1 Episode Completion Sheet eyebrow for canonical / master episodes. Pre-uppercased per locale — Dart's String.toUpperCase() is locale-insensitive.
+  ///
+  /// In en, this message translates to:
+  /// **'✓ EPISODE COMPLETE'**
+  String get episodeSheetCompleteEyebrow;
+
+  /// G1.1 Episode Completion Sheet eyebrow for the Ep3 (canonical trilogy) finale.
+  ///
+  /// In en, this message translates to:
+  /// **'✓ TRILOGY COMPLETE'**
+  String get episodeSheetTrilogyEyebrow;
+
+  /// G1.1 Episode Completion Sheet — the 'Episode N' label above the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode {number}'**
+  String episodeSheetEpisodeLabel(int number);
+
+  /// G1.1 Episode Completion Sheet — the rescue count line below the title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} rescues completed'**
+  String episodeSheetRescuesCount(int count);
+
+  /// G1.1 Episode Completion Sheet — extra line shown on the Ep3 finale sheet between rescues count and Continue, announcing the simultaneous unlock of Ep4 + Ep5.
+  ///
+  /// In en, this message translates to:
+  /// **'Master and Endless unlocked'**
+  String get episodeSheetTrilogyUnlock;
+
+  /// G1.1 Episode Completion Sheet — mint CTA that dismisses the sheet and pops RescueScreen with result true.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get episodeSheetContinue;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

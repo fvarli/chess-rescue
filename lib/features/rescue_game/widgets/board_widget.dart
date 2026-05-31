@@ -59,6 +59,10 @@ class _BoardWidgetState extends State<BoardWidget>
   // animations. Each ticks only during its ≤520 ms forward run.
   late final AnimationController _rescueRing;
   late final AnimationController _failRim;
+  // G1.3 — one-shot scale pulse on the threatened king piece itself when
+  // state transitions to rescued. Paired with the existing rescueBloom (which
+  // paints the square); together the figure and its ground respond.
+  late final AnimationController _kingPulse;
 
   late final Animation<double> _dangerPulseValue;
 
@@ -128,6 +132,10 @@ class _BoardWidgetState extends State<BoardWidget>
           MotionTokens.failRimHold +
           MotionTokens.failRimOut,
     );
+    _kingPulse = AnimationController(
+      vsync: this,
+      duration: MotionTokens.kingRescuePulse,
+    );
 
     _dangerPulse.repeat();
     _retuneAmbientBreath();
@@ -161,6 +169,12 @@ class _BoardWidgetState extends State<BoardWidget>
           _rescueRing
             ..reset()
             ..forward();
+          // G1.3 — same gating; the king-piece scale pulse only fires on
+          // genuine danger → rescued transitions, never on first mount of an
+          // already-rescued screen.
+          _kingPulse
+            ..reset()
+            ..forward();
         }
         _failedFlash.value = 0;
         _microShake.value = 0;
@@ -182,6 +196,7 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueBloom.value = 0;
         _rescueBreath.stop();
         _rescueRing.value = 0;
+        _kingPulse.value = 0;
         break;
       case GameState.danger:
       case GameState.selected:
@@ -191,6 +206,7 @@ class _BoardWidgetState extends State<BoardWidget>
         _microShake.value = 0;
         _rescueRing.value = 0;
         _failRim.value = 0;
+        _kingPulse.value = 0;
         break;
     }
   }
@@ -259,6 +275,7 @@ class _BoardWidgetState extends State<BoardWidget>
     _ambientBreath.dispose();
     _rescueRing.dispose();
     _failRim.dispose();
+    _kingPulse.dispose();
     super.dispose();
   }
 
@@ -841,15 +858,38 @@ class _BoardWidgetState extends State<BoardWidget>
           child: IgnorePointer(
             child: Padding(
               padding: EdgeInsets.all(centerPad),
-              child: PieceWidget(
-                piece: p,
-                size: pieceSize,
-                liftedScale: _liftFor(p),
+              child: _kingPulseWrap(
+                p,
+                PieceWidget(
+                  piece: p,
+                  size: pieceSize,
+                  liftedScale: _liftFor(p),
+                ),
               ),
             ),
           ),
         ),
     ];
+  }
+
+  // G1.3 — wrap the threatened-king piece in a one-shot scale pulse driven by
+  // [_kingPulse]. Non-king pieces pass through unchanged so the wrap is free.
+  Widget _kingPulseWrap(Piece p, Widget child) {
+    final isKing =
+        p.type == PieceType.king &&
+        p.file == widget.threatenedKing.file &&
+        p.rank == widget.threatenedKing.rank;
+    if (!isKing) return child;
+    return AnimatedBuilder(
+      animation: _kingPulse,
+      builder: (context, c) {
+        // sin(πv) traces 0 → 1 → 0 cleanly over the controller's 0 → 1 run.
+        final v = math.sin(_kingPulse.value * math.pi);
+        final extra = (MotionTokens.kingRescuePulseScalePeak - 1.0) * v;
+        return Transform.scale(scale: 1.0 + extra, child: c);
+      },
+      child: child,
+    );
   }
 
   Widget _buildTapLayer() {

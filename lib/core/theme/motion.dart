@@ -50,11 +50,24 @@ class MotionTokens {
   static const double rescueGlowBreathMax = 0.60;
 
   // — Failed flash (sting, micro-shake)
+  // G1.4 — amplitude bumped from 1.0 → 2.0 px and cycles from 2 → 3 per the
+  // game-feel playtest finding that the prior register lacked emotional
+  // weight. Still well under the typical "perceptible shake" threshold
+  // (~4–6 dp) — restrained, not gimmicky.
   static const Duration failHold = Duration(milliseconds: 140);
   static const Duration failFade = Duration(milliseconds: 380);
   static const Duration microShake = Duration(milliseconds: 80);
-  static const double microShakeAmplitudePx = 1.0;
-  static const int microShakeCycles = 2;
+  static const double microShakeAmplitudePx = 2.0;
+  static const int microShakeCycles = 3;
+
+  // G1.3 — king-piece rescue pulse. One-shot scale pulse on the threatened
+  // king when state transitions to rescued. Paired with the existing
+  // rescueBloom (which paints the square) — the pulse makes the figure
+  // itself respond. Subtler than `rescueScalePeak` (1.08), which is reserved
+  // for the rescuing piece; the rescued king gets a softer "exhale" so the
+  // two don't compete.
+  static const Duration kingRescuePulse = Duration(milliseconds: 280);
+  static const double kingRescuePulseScalePeak = 1.06;
 
   // V2 — failure rim flash. Boardwide coral rim pulses once when a non-rescue
   // move commits. Quiet "that didn't work" — never shame, never punishment.

@@ -95,5 +95,11 @@
   "episodeLockedLabel": "Termina el episodio anterior para desbloquear.",
   "episodeCompleteFooter": "Episodio completado  ↦",
   "episodeCompleteToast": "Episodio completado. Siguiente rescate desbloqueado.",
-  "episodeTrilogyCompleteToast": "Trilogía completada. Master y Endless desbloqueados."
+  "episodeTrilogyCompleteToast": "Trilogía completada. Master y Endless desbloqueados.",
+  "episodeSheetCompleteEyebrow": "✓ EPISODIO COMPLETADO",
+  "episodeSheetTrilogyEyebrow": "✓ TRILOGÍA COMPLETADA",
+  "episodeSheetEpisodeLabel": "Episodio {number}",
+  "episodeSheetRescuesCount": "{count} rescates completados",
+  "episodeSheetTrilogyUnlock": "Master y Endless desbloqueados",
+  "episodeSheetContinue": "Continuar"
 }

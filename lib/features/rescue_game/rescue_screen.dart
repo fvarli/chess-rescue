@@ -4,12 +4,14 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import '../../core/models/episode.dart';
+import '../../core/models/episode_library.dart';
 import '../../core/models/puzzle_l10n.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../settings/language_picker.dart';
+import 'episode_completion_sheet.dart';
 import 'game_controller.dart';
 import 'game_state.dart';
 import 'widgets/board_widget.dart';
@@ -79,6 +81,11 @@ class _RescueScreenState extends State<RescueScreen> {
           // rather than routing through the controller (no auto-rotation).
           final isEpisodeFinale = _game.isEpisodeFinale;
           final buttonLabel = switch (_game.state) {
+            // When the finale lands, the EpisodeCompletionSheet (rendered as a
+            // Stack overlay below) owns the celebration + the pop; the footer
+            // button is hidden behind the sheet's backdrop dim. We keep the
+            // label assignment so the underlying button has a valid string
+            // during the 280ms sheet fade-in.
             GameState.rescued when isEpisodeFinale => l.episodeCompleteFooter,
             GameState.rescued =>
               _game.hasNext ? l.footerNextPuzzle : l.footerAgain,
@@ -219,6 +226,14 @@ class _RescueScreenState extends State<RescueScreen> {
                   },
                 ),
               ),
+              // G1.1 — Episode Completion Sheet. Mounts over the rescue UI
+              // when the player reaches the canonical / master episode finale;
+              // its Continue CTA owns the Navigator.maybePop<bool>(true) — the
+              // same pop signal P3.1 wires to Home's auto-focus + persistence.
+              if (isEpisodeFinale)
+                Positioned.fill(
+                  child: _buildCompletionSheet(context, l, _game.episode),
+                ),
               // First-run intro overlay (topmost). Cross-fades out when its CTA
               // dismisses it, revealing the danger cold open underneath with the
               // focus cue intact. Absent when there's no store (harness/degraded).
@@ -238,5 +253,40 @@ class _RescueScreenState extends State<RescueScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildCompletionSheet(
+    BuildContext context,
+    AppL10n l,
+    Episode episode,
+  ) {
+    final isTrilogy = episode.id == EpisodeLibrary.ep3.id;
+    return EpisodeCompletionSheet(
+      eyebrow: isTrilogy
+          ? l.episodeSheetTrilogyEyebrow
+          : l.episodeSheetCompleteEyebrow,
+      episodeLabel: l.episodeSheetEpisodeLabel(episode.number),
+      title: _episodeTitle(l, episode),
+      rescuesCount: l.episodeSheetRescuesCount(episode.puzzleCount),
+      continueLabel: l.episodeSheetContinue,
+      trilogyUnlockLabel: isTrilogy ? l.episodeSheetTrilogyUnlock : null,
+      onContinue: () => Navigator.of(context).maybePop<bool>(true),
+    );
+  }
+
+  String _episodeTitle(AppL10n l, Episode episode) {
+    switch (episode.id) {
+      case 'ep1-strike-back':
+        return l.episodeEp1Title;
+      case 'ep2-end-the-threat':
+        return l.episodeEp2Title;
+      case 'ep3-hold-the-line':
+        return l.episodeEp3Title;
+      case 'ep4-the-other-side':
+        return l.episodeEp4Title;
+      case 'ep5-endless-rescue':
+        return l.episodeEp5Title;
+    }
+    return '';
   }
 }

@@ -279,4 +279,26 @@ class AppL10nTr extends AppL10n {
   @override
   String get episodeTrilogyCompleteToast =>
       'Üçleme tamamlandı. Master ve Sonsuz açıldı.';
+
+  @override
+  String get episodeSheetCompleteEyebrow => '✓ BÖLÜM TAMAMLANDI';
+
+  @override
+  String get episodeSheetTrilogyEyebrow => '✓ ÜÇLEME TAMAMLANDI';
+
+  @override
+  String episodeSheetEpisodeLabel(int number) {
+    return 'Bölüm $number';
+  }
+
+  @override
+  String episodeSheetRescuesCount(int count) {
+    return '$count kurtarış tamamlandı';
+  }
+
+  @override
+  String get episodeSheetTrilogyUnlock => 'Master ve Sonsuz açıldı';
+
+  @override
+  String get episodeSheetContinue => 'Devam et';
 }
