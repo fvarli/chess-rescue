@@ -78,5 +78,20 @@
   "homeRescueCounter": "Kurtarış {current} / {total}",
   "homeTotalRescues": "Toplam kurtarış: {count}",
   "homeContinue": "Kurtarışa devam et  ↦",
-  "homeStart": "Kurtarışa başla  ↦"
+  "homeStart": "Kurtarışa başla  ↦",
+
+  "episodeBadge": "BÖLÜM {number}",
+  "episodeEp1Title": "KARŞI VUR",
+  "episodeEp1Tagline": "Saldırıyı geri çevir.",
+  "episodeEp2Title": "TEHDİDİ BİTİR",
+  "episodeEp2Tagline": "Saldıranı tahtadan kaldır.",
+  "episodeEp3Title": "HATTI TUT",
+  "episodeEp3Tagline": "Şah için bir beden.",
+  "episodeEp4Title": "DİĞER TARAF",
+  "episodeEp4Tagline": "Bunları daha önce gördün. Kurtarışı diğer taraftan bul.",
+  "episodeEp5Title": "SONSUZ KURTARIŞ",
+  "episodeEp5Tagline": "Şahı kurtar. Tekrar. Ve tekrar.",
+  "episodeBestRun": "En iyi tur: {count}",
+  "episodeLockedLabel": "Açmak için önceki bölümü bitir.",
+  "episodeCompleteFooter": "Bölüm tamamlandı  ↦"
 }

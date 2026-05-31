@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/haptics.dart';
+import '../../core/models/episode.dart';
+import '../../core/models/episode_library.dart';
 import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
 import '../../core/models/puzzle_library.dart';
+import '../../core/models/session_composer.dart';
 import '../../core/models/square.dart';
 import '../../core/models/variation.dart';
 import '../../core/storage/progress_store.dart';
@@ -13,30 +16,44 @@ import '../../core/theme/motion.dart';
 import 'game_state.dart';
 
 class GameController extends ChangeNotifier {
-  GameController({ProgressStore? store}) : _store = store {
-    _seed = store?.sessionSeed ?? 0;
-    _puzzles = PuzzleLibrary.session(_seed);
-    if (store != null) {
-      // _completed holds canonical (family) ids; every session's family set is
-      // the base ids, so old saves (base ids) restore cleanly.
+  GameController({ProgressStore? store, Episode? episode})
+    : _store = store,
+      _episode = episode ?? EpisodeLibrary.first {
+    _seed = store?.seedFor(_episode.id) ?? 0;
+    _puzzles = SessionComposer.composeEpisode(
+      episode: _episode,
+      templates: PuzzleLibrary.templates,
+      expansion: PuzzleLibrary.expansionTemplates,
+      seed: _seed,
+    );
+
+    // Restore in-episode progress only for canonical episodes; master/endless
+    // start fresh on every entry (their completions don't accumulate in the
+    // global set).
+    int restored = 0;
+    if (store != null && _episode.kind == EpisodeKind.canonical) {
       final known = {for (final p in _puzzles) canonicalPuzzleId(p.id)};
       _completed.addAll(store.completedIds.where(known.contains));
+      restored = _puzzles.indexWhere(
+        (p) => !_completed.contains(canonicalPuzzleId(p.id)),
+      );
+      if (restored < 0) restored = _puzzles.length - 1;
     }
+
     _onboarding = (store != null) && !store.onboardingSeen;
-    // First-run intro overlay gate. No store (degraded boot / screenshot
-    // harness) → never show it. Independent of _onboarding by design.
     _introSeen = store?.introSeen ?? true;
-    final restored = (store?.puzzleIndex ?? 0).clamp(0, _puzzles.length - 1);
     _loadPuzzle(restored);
   }
 
   final ProgressStore? _store;
+  final Episode _episode;
   late int _seed;
   late List<Puzzle> _puzzles;
   int _index = 0;
   final Set<String> _completed = {};
   bool _onboarding = false;
   late bool _introSeen;
+  int _currentEndlessStreak = 0;
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -46,27 +63,21 @@ class GameController extends ChangeNotifier {
   bool _commitInFlight = false;
   bool _resetInFlight = false;
 
-  // — Puzzle sequencing
+  // — Episode + puzzle sequencing
+  Episode get episode => _episode;
   Puzzle get currentPuzzle => _puzzles[_index];
   int get puzzleNumber => _index + 1;
   int get puzzleCount => _puzzles.length;
   bool get hasNext => _index < _puzzles.length - 1;
   int get completedCount => _completed.length;
   bool get allComplete => _completed.length == _puzzles.length;
+  int get currentEndlessStreak => _currentEndlessStreak;
 
-  // Current session seed (Phase 21). 0 = canonical authored session.
   int get sessionSeed => _seed;
 
-  // First-run only. Stays true through the first rescued screen, then ends
-  // when the player advances off the first puzzle.
   bool get isOnboarding => _onboarding;
-
-  // First-run intro overlay: shown once before the first-ever puzzle, then
-  // dismissed by its CTA. Orthogonal to puzzle progression and to onboarding.
   bool get showIntro => !_introSeen;
 
-  // Called by the intro overlay's "Start rescue" CTA. Persists "seen" and
-  // reveals the (already-built) danger cold open. Touches no puzzle state.
   void dismissIntro() {
     if (_introSeen) return;
     _introSeen = true;
@@ -94,8 +105,6 @@ class GameController extends ChangeNotifier {
     _commitInFlight = false;
   }
 
-  // Whitelisted moves: only the puzzle's designated piece responds, and only
-  // with that puzzle's curated destinations. No engine.
   List<Square> _legalMovesFor(Piece p) {
     final puzzle = currentPuzzle;
     if (p.file == puzzle.tappableSquare.file &&
@@ -118,7 +127,6 @@ class GameController extends ChangeNotifier {
 
     final tapped = _pieceAt(file, rank);
 
-    // Re-select: tapping the rescuing piece again while one is selected.
     if (_selected != null &&
         tapped != null &&
         tapped.color == PieceColor.light &&
@@ -131,11 +139,9 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    // Commit move attempt.
     if (_selected != null) {
       final target = Square(file, rank);
       if (!_legalSquares.contains(target)) {
-        // Silent cancel.
         _selected = null;
         _legalSquares = const [];
         _state = GameState.danger;
@@ -146,7 +152,6 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    // Initial selection — only the designated piece is tappable.
     if (tapped != null &&
         tapped.color == PieceColor.light &&
         _legalMovesFor(tapped).isNotEmpty) {
@@ -158,8 +163,6 @@ class GameController extends ChangeNotifier {
     }
   }
 
-  // Commit flow (unchanged Phase 11 timing):
-  // t=0: tap haptic + wind-up · t=80: apply move (slide) · t=300: outcome.
   Future<void> _commitMove(Square target) async {
     final from = _selected!;
     _commitInFlight = true;
@@ -187,44 +190,72 @@ class GameController extends ChangeNotifier {
     _selected = null;
     _commitInFlight = false;
     if (isRescue) {
-      _completed.add(canonicalPuzzleId(puzzle.id));
+      final base = canonicalPuzzleId(puzzle.id);
+      _completed.add(base);
       _state = GameState.rescued;
       _statusMsg = '◐ Attack broken';
       Haptics.rescue();
-      // Mark the first rescue survived so the cold open never re-triggers,
-      // but keep _onboarding true in memory through this rescued screen.
       if (_onboarding) unawaited(_store?.setOnboardingSeen());
-      // Bump the lifetime counter (Home's "Total rescues" line) independently
-      // of the per-session completed-ids set, which clears when a session
-      // rotates.
+      // Lifetime counter fires for every rescue across every episode kind.
       unawaited(_store?.incrementLifetimeSaved());
+      // Canonical episodes accumulate canonical-base completions into the
+      // global set; master and endless leave no per-puzzle footprint.
+      if (_episode.kind == EpisodeKind.canonical) {
+        unawaited(_store?.addCompletedId(base));
+      }
+      // Endless streak: increment on each rescue; persist on streak-end only.
+      if (_episode.kind == EpisodeKind.endless) {
+        _currentEndlessStreak += 1;
+      }
       notifyListeners();
-      _persist();
       return;
     } else {
       _state = GameState.failed;
       _statusMsg = '▮ Still trapped';
       Haptics.fail();
+      // A failed move ends an in-progress endless streak.
+      if (_episode.kind == EpisodeKind.endless) {
+        _endEndlessStreak();
+      }
     }
     notifyListeners();
   }
 
-  // Footer button routing.
+  // True when the player has just rescued the last puzzle of a canonical or
+  // master episode. RescueScreen reads this to render the "Back to Home"
+  // footer; the tap pops the navigator rather than routing through this
+  // controller. (Endless episodes never reach this state — they rotate seeds
+  // on the final rescue and keep playing.)
+  bool get isEpisodeFinale =>
+      _state == GameState.rescued &&
+      allComplete &&
+      _episode.kind != EpisodeKind.endless;
+
   void onPrimaryAction() {
     switch (_state) {
       case GameState.rescued:
-        _onboarding = false; // first run ends as the player moves on
-        if (hasNext) {
-          _loadPuzzle(_index + 1);
-        } else {
-          // Session complete → rotate to the next curated session (Phase 21).
-          _seed += 1;
-          _completed.clear();
-          _puzzles = PuzzleLibrary.session(_seed);
-          _loadPuzzle(0);
+        _onboarding = false;
+        if (allComplete) {
+          if (_episode.kind == EpisodeKind.endless) {
+            // Rotate seed inline; streak continues across rotations.
+            _seed += 1;
+            _completed.clear();
+            _puzzles = SessionComposer.composeEpisode(
+              episode: _episode,
+              templates: PuzzleLibrary.templates,
+              expansion: PuzzleLibrary.expansionTemplates,
+              seed: _seed,
+            );
+            unawaited(_store?.setEpisodeSeed(_episode.id, _seed));
+            _loadPuzzle(0);
+            notifyListeners();
+          }
+          // canonical / master finale: RescueScreen handles the pop on its
+          // own footer tap — this controller does nothing further.
+          return;
         }
+        _loadPuzzle(_index + 1);
         notifyListeners();
-        _persist();
         break;
       case GameState.failed:
       case GameState.danger:
@@ -234,36 +265,40 @@ class GameController extends ChangeNotifier {
     }
   }
 
-  // Persist the durable progress (session seed + index + canonical completed
-  // ids). Transient game state is never saved. Fire-and-forget; null store =
-  // no persistence.
-  void _persist() {
-    unawaited(
-      _store?.save(
-        sessionSeed: _seed,
-        puzzleIndex: _index,
-        completedIds: _completed,
-      ),
-    );
+  void _endEndlessStreak() {
+    if (_currentEndlessStreak <= 0) return;
+    unawaited(_store?.updateBestEndlessStreak(_currentEndlessStreak));
+    _currentEndlessStreak = 0;
   }
 
-  // Hidden debug action — wipe local progress, return to the canonical first
-  // session, and re-arm the cold open.
+  @override
+  void dispose() {
+    // Leaving an endless episode (controller disposed) ends the current streak.
+    if (_episode.kind == EpisodeKind.endless) {
+      _endEndlessStreak();
+    }
+    super.dispose();
+  }
+
   Future<void> resetProgress() async {
     if (_commitInFlight || _resetInFlight) return;
     _seed = 0;
-    _puzzles = PuzzleLibrary.session(0);
+    _puzzles = SessionComposer.composeEpisode(
+      episode: _episode,
+      templates: PuzzleLibrary.templates,
+      expansion: PuzzleLibrary.expansionTemplates,
+      seed: 0,
+    );
     _completed.clear();
-    _onboarding =
-        _store != null; // re-arm the cold open (cleared-storage parity)
-    _introSeen = _store == null; // re-arm the intro overlay for testing
+    _currentEndlessStreak = 0;
+    _onboarding = _store != null;
+    _introSeen = _store == null;
     _loadPuzzle(0);
     Haptics.resetProgress();
     notifyListeners();
     await _store?.clear();
   }
 
-  // Retry / restart the CURRENT puzzle with the Phase 11 settle animation.
   Future<void> reset() async {
     if (_resetInFlight) return;
     _resetInFlight = true;

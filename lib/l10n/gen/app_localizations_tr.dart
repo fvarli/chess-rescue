@@ -224,4 +224,51 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get homeStart => 'Kurtarışa başla  ↦';
+
+  @override
+  String episodeBadge(int number) {
+    return 'BÖLÜM $number';
+  }
+
+  @override
+  String get episodeEp1Title => 'KARŞI VUR';
+
+  @override
+  String get episodeEp1Tagline => 'Saldırıyı geri çevir.';
+
+  @override
+  String get episodeEp2Title => 'TEHDİDİ BİTİR';
+
+  @override
+  String get episodeEp2Tagline => 'Saldıranı tahtadan kaldır.';
+
+  @override
+  String get episodeEp3Title => 'HATTI TUT';
+
+  @override
+  String get episodeEp3Tagline => 'Şah için bir beden.';
+
+  @override
+  String get episodeEp4Title => 'DİĞER TARAF';
+
+  @override
+  String get episodeEp4Tagline =>
+      'Bunları daha önce gördün. Kurtarışı diğer taraftan bul.';
+
+  @override
+  String get episodeEp5Title => 'SONSUZ KURTARIŞ';
+
+  @override
+  String get episodeEp5Tagline => 'Şahı kurtar. Tekrar. Ve tekrar.';
+
+  @override
+  String episodeBestRun(int count) {
+    return 'En iyi tur: $count';
+  }
+
+  @override
+  String get episodeLockedLabel => 'Açmak için önceki bölümü bitir.';
+
+  @override
+  String get episodeCompleteFooter => 'Bölüm tamamlandı  ↦';
 }

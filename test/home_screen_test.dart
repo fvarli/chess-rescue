@@ -15,9 +15,9 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
   }
 
-  group('HomeScreen (P2)', () {
+  group('HomeScreen (P3 episode shell)', () {
     testWidgets(
-      'renders king hero + title + tagline + mission card + CTA for a returning player',
+      'renders king hero + title + tagline + episode strip + episode card + CTA',
       (tester) async {
         useLargePhoneViewport(tester);
         SharedPreferences.setMockInitialValues({
@@ -28,23 +28,35 @@ void main() {
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
 
-        // King hero is present (identity layer).
+        // Identity layer (P2).
         expect(find.byKey(const ValueKey('home-king-hero')), findsOneWidget);
-
-        // Title + new active tagline.
         expect(find.text('Chess Rescue'), findsOneWidget);
         expect(
           find.text('Your king is in danger.\nFind the rescue.'),
           findsOneWidget,
         );
 
-        // Mission-briefing progress card.
-        expect(find.text('RESCUE MISSION'), findsOneWidget);
+        // Episode strip — 5 chips present (P3 identity layer).
+        expect(
+          find.byKey(const ValueKey('home-episode-strip')),
+          findsOneWidget,
+        );
+        for (var n = 1; n <= 5; n++) {
+          expect(
+            find.byKey(ValueKey('home-episode-chip-$n')),
+            findsOneWidget,
+            reason: 'episode chip $n should render',
+          );
+        }
+
+        // Episode 1 panel — Strike Back, 3-puzzle pacing.
+        expect(find.text('EPISODE 1 · STRIKE BACK'), findsOneWidget);
+        expect(find.text('Turn the attack back.'), findsOneWidget);
         expect(find.text('Current run'), findsOneWidget);
-        expect(find.text('Rescue 1 / 5'), findsOneWidget);
+        expect(find.text('Rescue 1 / 3'), findsOneWidget);
         expect(find.text('Total rescues: 12'), findsOneWidget);
 
-        // Returning CTA carries the rescue verb.
+        // Returning CTA.
         expect(find.text('Continue rescue  ↦'), findsOneWidget);
         expect(find.text('Start rescue  ↦'), findsNothing);
       },
@@ -60,47 +72,150 @@ void main() {
       await tester.pump();
       expect(find.text('Start rescue  ↦'), findsOneWidget);
       expect(find.text('Continue rescue  ↦'), findsNothing);
-      // Lifetime starts at 0 — no fake content claimed.
       expect(find.text('Total rescues: 0'), findsOneWidget);
     });
 
     testWidgets(
-      'session counter reflects ProgressStore.puzzleIndex on cold start',
+      'counter reflects in-episode progress derived from completedIds',
       (tester) async {
         useLargePhoneViewport(tester);
         SharedPreferences.setMockInitialValues({
           'flutter.cr_intro_seen': true,
-          'flutter.cr_puzzle_index': 2, // third puzzle of the run
+          'flutter.cr_completed_ids': ['p1-knight-rescue'],
         });
         final store = await ProgressStore.create();
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
-        expect(find.text('Rescue 3 / 5'), findsOneWidget);
+        // Ep1 player has done p1 (1 of 3) — resumes at puzzle 2.
+        expect(find.text('Rescue 2 / 3'), findsOneWidget);
       },
     );
 
-    testWidgets('tapping the CTA pushes RescueScreen', (tester) async {
+    testWidgets('tapping the CTA pushes RescueScreen for the focused episode', (
+      tester,
+    ) async {
       useLargePhoneViewport(tester);
       SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
 
-      // Pre-tap: rescue-screen content is not on screen.
       expect(find.text('Save the king.'), findsNothing);
 
       await tester.tap(find.text('Continue rescue  ↦'));
-      // Pump the navigation transition (Material default ~300 ms).
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      // RescueScreen's danger headline is now visible.
       expect(find.text('Save the king.'), findsOneWidget);
     });
+
+    testWidgets(
+      'tapping a locked episode chip shows the unlock hint snackbar',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        // Ep3 should be locked (ep1 not complete).
+        await tester.tap(find.byKey(const ValueKey('home-episode-chip-3')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(
+          find.text('Finish the previous episode to unlock.'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'tapping an unlocked sibling chip switches focus to that episode',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_intro_seen': true,
+          // ep1 complete → ep2 unlocked
+          'flutter.cr_completed_ids': [
+            'p1-knight-rescue',
+            'a4-the-breakaway',
+            'b4-the-cross-check',
+          ],
+        });
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        // Defaults to ep2 (first non-complete after ep1).
+        expect(find.text('EPISODE 2 · END THE THREAT'), findsOneWidget);
+
+        await tester.tap(find.byKey(const ValueKey('home-episode-chip-1')));
+        await tester.pump();
+
+        expect(find.text('EPISODE 1 · STRIKE BACK'), findsOneWidget);
+      },
+    );
+  });
+
+  group('HomeScreen Ep5 Best Run line', () {
+    testWidgets('Best run line is suppressed when bestEndlessStreak is 0', (
+      tester,
+    ) async {
+      useLargePhoneViewport(tester);
+      SharedPreferences.setMockInitialValues({
+        'flutter.cr_intro_seen': true,
+        // Clear all 3 canonical episodes so ep5 is unlocked + can be focused.
+        'flutter.cr_completed_ids': [
+          'p1-knight-rescue',
+          'a4-the-breakaway',
+          'b4-the-cross-check',
+          'p2-take-the-checker',
+          'p5-win-the-queen',
+          'b3-remove-the-defender',
+          'p3-block-the-file',
+          'p4-seal-the-diagonal',
+          'b1-the-martyr',
+        ],
+        'flutter.cr_current_episode_id': 'ep5-endless-rescue',
+      });
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(ChessRescueApp(store: store));
+      await tester.pump();
+      expect(find.text('EPISODE 5 · ENDLESS RESCUE'), findsOneWidget);
+      expect(find.textContaining('Best run'), findsNothing);
+    });
+
+    testWidgets(
+      'Best run line renders when bestEndlessStreak > 0 and Ep5 is focused',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_intro_seen': true,
+          'flutter.cr_completed_ids': [
+            'p1-knight-rescue',
+            'a4-the-breakaway',
+            'b4-the-cross-check',
+            'p2-take-the-checker',
+            'p5-win-the-queen',
+            'b3-remove-the-defender',
+            'p3-block-the-file',
+            'p4-seal-the-diagonal',
+            'b1-the-martyr',
+          ],
+          'flutter.cr_current_episode_id': 'ep5-endless-rescue',
+          'flutter.cr_best_endless_streak': 17,
+        });
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+        expect(find.text('Best run: 17'), findsOneWidget);
+      },
+    );
   });
 
   group('HomeScreen localization', () {
-    testWidgets('Turkish locale renders Home strings in Turkish', (
+    testWidgets('Turkish locale renders Home + episode strings in Turkish', (
       tester,
     ) async {
       useLargePhoneViewport(tester);
@@ -113,14 +228,15 @@ void main() {
       await tester.pump();
 
       expect(find.text('Şahın tehlikede.\nKurtarışı bul.'), findsOneWidget);
-      expect(find.text('KURTARMA GÖREVİ'), findsOneWidget);
+      expect(find.text('BÖLÜM 1 · KARŞI VUR'), findsOneWidget);
+      expect(find.text('Saldırıyı geri çevir.'), findsOneWidget);
       expect(find.text('Mevcut seri'), findsOneWidget);
-      expect(find.text('Kurtarış 1 / 5'), findsOneWidget);
+      expect(find.text('Kurtarış 1 / 3'), findsOneWidget);
       expect(find.text('Toplam kurtarış: 0'), findsOneWidget);
       expect(find.text('Kurtarışa devam et  ↦'), findsOneWidget);
     });
 
-    testWidgets('Spanish locale renders Home strings in Spanish', (
+    testWidgets('Spanish locale renders Home + episode strings in Spanish', (
       tester,
     ) async {
       useLargePhoneViewport(tester);
@@ -136,9 +252,10 @@ void main() {
         find.text('Tu rey está en peligro.\nEncuentra el rescate.'),
         findsOneWidget,
       );
-      expect(find.text('MISIÓN DE RESCATE'), findsOneWidget);
+      expect(find.text('EPISODIO 1 · CONTRAATAQUE'), findsOneWidget);
+      expect(find.text('Devuelve el ataque.'), findsOneWidget);
       expect(find.text('Racha actual'), findsOneWidget);
-      expect(find.text('Rescate 1 / 5'), findsOneWidget);
+      expect(find.text('Rescate 1 / 3'), findsOneWidget);
       expect(find.text('Rescates totales: 0'), findsOneWidget);
       expect(find.text('Continuar rescate  ↦'), findsOneWidget);
     });

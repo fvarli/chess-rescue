@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
+import '../../core/models/episode.dart';
 import '../../core/models/puzzle_l10n.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
@@ -19,7 +20,12 @@ import 'widgets/saved_badge.dart';
 import 'widgets/status_bar.dart';
 
 class RescueScreen extends StatefulWidget {
-  const RescueScreen({super.key, required this.store, this.controller});
+  const RescueScreen({
+    super.key,
+    required this.store,
+    this.controller,
+    this.episode,
+  });
 
   final ProgressStore? store;
 
@@ -27,6 +33,10 @@ class RescueScreen extends StatefulWidget {
   /// screenshot harness to render a pre-driven game state. When null (the
   /// shipping path via main.dart), the screen creates and owns its own.
   final GameController? controller;
+
+  /// P3 — the episode this screen plays. When null, the controller picks
+  /// `EpisodeLibrary.first` (ep1) as a safe fallback.
+  final Episode? episode;
 
   @override
   State<RescueScreen> createState() => _RescueScreenState();
@@ -39,7 +49,9 @@ class _RescueScreenState extends State<RescueScreen> {
   @override
   void initState() {
     super.initState();
-    _game = widget.controller ?? GameController(store: widget.store);
+    _game =
+        widget.controller ??
+        GameController(store: widget.store, episode: widget.episode);
     _ownsController = widget.controller == null;
   }
 
@@ -62,7 +74,12 @@ class _RescueScreenState extends State<RescueScreen> {
           final puzzleCopy = puzzleCopyFor(puzzle, l);
           final sequenceComplete =
               isRescued && _game.allComplete && !_game.hasNext;
+          // P3 — when the last rescue of a canonical/master episode lands, the
+          // footer becomes a "Back to Home" CTA and the tap pops the navigator
+          // rather than routing through the controller (no auto-rotation).
+          final isEpisodeFinale = _game.isEpisodeFinale;
           final buttonLabel = switch (_game.state) {
+            GameState.rescued when isEpisodeFinale => l.episodeCompleteFooter,
             GameState.rescued =>
               _game.hasNext ? l.footerNextPuzzle : l.footerAgain,
             GameState.failed => l.footerTryAgain,
@@ -190,7 +207,9 @@ class _RescueScreenState extends State<RescueScreen> {
                           FooterButton(
                             state: _game.state,
                             label: buttonLabel,
-                            onTap: _game.onPrimaryAction,
+                            onTap: isEpisodeFinale
+                                ? () => Navigator.of(context).maybePop()
+                                : _game.onPrimaryAction,
                           ),
                           const SizedBox(height: 16),
                         ],

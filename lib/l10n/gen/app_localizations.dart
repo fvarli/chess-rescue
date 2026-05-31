@@ -506,6 +506,90 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Start rescue  ↦'**
   String get homeStart;
+
+  /// Pre-uppercased badge prefix for the episode panel title on Home (e.g. 'EPISODE 1'). Stored pre-uppercased because Dart's String.toUpperCase() is locale-insensitive — see homeRescueMission precedent.
+  ///
+  /// In en, this message translates to:
+  /// **'EPISODE {number}'**
+  String episodeBadge(int number);
+
+  /// Episode 1 title — canonical counter-check chapter (P1, A4, B4). Pre-uppercased per locale (see homeRescueMission precedent) — Dart's String.toUpperCase() is locale-insensitive and mis-cases Turkish.
+  ///
+  /// In en, this message translates to:
+  /// **'STRIKE BACK'**
+  String get episodeEp1Title;
+
+  /// Episode 1 tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn the attack back.'**
+  String get episodeEp1Tagline;
+
+  /// Episode 2 title — canonical capture/remove-attacker chapter (P2, P5, B3).
+  ///
+  /// In en, this message translates to:
+  /// **'END THE THREAT'**
+  String get episodeEp2Title;
+
+  /// Episode 2 tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the attacker off the board.'**
+  String get episodeEp2Tagline;
+
+  /// Episode 3 title — canonical interpose/martyr chapter (P3, P4, B1).
+  ///
+  /// In en, this message translates to:
+  /// **'HOLD THE LINE'**
+  String get episodeEp3Title;
+
+  /// Episode 3 tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'A body for the king.'**
+  String get episodeEp3Tagline;
+
+  /// Episode 4 title — master/mirror chapter (mirrors of P1, P5, B1).
+  ///
+  /// In en, this message translates to:
+  /// **'THE OTHER SIDE'**
+  String get episodeEp4Title;
+
+  /// Episode 4 tagline — frames the mirror inversion honestly.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve seen these before. Find the rescue from the other side.'**
+  String get episodeEp4Tagline;
+
+  /// Episode 5 title — endless seed-composed long-term retention mode.
+  ///
+  /// In en, this message translates to:
+  /// **'ENDLESS RESCUE'**
+  String get episodeEp5Title;
+
+  /// Episode 5 tagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the king. Again. And again.'**
+  String get episodeEp5Tagline;
+
+  /// Ep5-only Home card line. Shown only when bestEndlessStreak > 0.
+  ///
+  /// In en, this message translates to:
+  /// **'Best run: {count}'**
+  String episodeBestRun(int count);
+
+  /// Snackbar copy when the player taps a locked-by-progression chip on the Home episode strip.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the previous episode to unlock.'**
+  String get episodeLockedLabel;
+
+  /// RescueScreen footer on the last rescue of a canonical or master episode — CTA returns to Home.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode complete  ↦'**
+  String get episodeCompleteFooter;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

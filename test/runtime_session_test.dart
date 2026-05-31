@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:chess_rescue/core/models/episode_library.dart';
 import 'package:chess_rescue/core/models/puzzle_library.dart';
 import 'package:chess_rescue/core/models/puzzle_validation.dart';
 import 'package:chess_rescue/core/models/readability.dart';
@@ -13,17 +14,18 @@ import 'package:chess_rescue/features/rescue_game/game_state.dart';
 Future<void> _solveCurrent(GameController g) async {
   final t = g.currentPuzzle.tappableSquare;
   final r = g.currentPuzzle.rescueTo;
-  g.handleSquare(t.file, t.rank); // select the rescuer
-  g.handleSquare(r.file, r.rank); // commit the rescue
+  g.handleSquare(t.file, t.rank);
+  g.handleSquare(r.file, r.rank);
   await Future<void>.delayed(const Duration(milliseconds: 400));
 }
 
-/// Solve a full session, leaving the controller on the final rescued screen.
+/// Solve every puzzle in the controller's session, leaving the controller on
+/// the final rescued screen.
 Future<void> _solveSession(GameController g) async {
   final count = g.puzzleCount;
   for (var i = 0; i < count; i++) {
     await _solveCurrent(g);
-    if (i < count - 1) g.onPrimaryAction(); // advance within session
+    if (i < count - 1) g.onPrimaryAction();
   }
 }
 
@@ -37,7 +39,7 @@ void main() {
     });
   });
 
-  group('PuzzleLibrary.session', () {
+  group('PuzzleLibrary.session (legacy backward compat)', () {
     test('seed 0 is the canonical authored session', () {
       expect(
         PuzzleLibrary.session(0).map((p) => p.id).toList(),
@@ -74,23 +76,114 @@ void main() {
     });
   });
 
-  group('GameController restore', () {
+  group('GameController episode restore', () {
+    test('default episode is ep1 when no override + no persisted id', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await ProgressStore.create();
+      final game = GameController(store: store);
+      expect(game.episode.id, EpisodeLibrary.ep1.id);
+      expect(game.puzzleCount, 3); // ep1 has 3 puzzles
+      expect(game.completedCount, 0);
+      expect(game.state, GameState.danger);
+    });
+
     test(
-      'restores seed, index, and canonical completed from storage',
+      'restores in-episode progress from completedIds for canonical episodes',
       () async {
         SharedPreferences.setMockInitialValues({
-          'flutter.cr_session_seed': 2,
-          'flutter.cr_puzzle_index': 1,
           'flutter.cr_completed_ids': ['p1-knight-rescue'],
         });
         final store = await ProgressStore.create();
         final game = GameController(store: store);
-        expect(game.sessionSeed, 2);
-        expect(game.puzzleNumber, 2); // index 1 → "puzzle 2"
+        expect(game.episode.id, EpisodeLibrary.ep1.id);
         expect(game.completedCount, 1);
+        // Resumed at puzzle 2 (a4) — first puzzle whose canonical id is NOT
+        // in completedIds.
+        expect(game.puzzleNumber, 2);
         expect(game.state, GameState.danger);
       },
     );
+
+    test(
+      'master episode starts fresh — does NOT inherit completedIds progress',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          // Player has completed p1 (and the whole canonical trilogy implicitly).
+          'flutter.cr_completed_ids': ['p1-knight-rescue'],
+        });
+        final store = await ProgressStore.create();
+        final game = GameController(store: store, episode: EpisodeLibrary.ep4);
+        expect(game.completedCount, 0);
+        expect(game.puzzleNumber, 1);
+      },
+    );
+  });
+
+  group('Canonical episode finale', () {
+    test(
+      'completing every puzzle reaches the finale state without auto-rotation',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final store = await ProgressStore.create();
+        final game = GameController(store: store); // ep1 default
+
+        await _solveSession(game);
+        expect(game.allComplete, isTrue);
+        expect(game.completedCount, 3);
+        expect(game.state, GameState.rescued);
+        expect(game.isEpisodeFinale, isTrue);
+
+        // onPrimaryAction is a no-op on a canonical finale — RescueScreen
+        // handles the navigator pop on its own footer tap.
+        final beforeIndex = game.puzzleNumber;
+        game.onPrimaryAction();
+        expect(game.isEpisodeFinale, isTrue);
+        expect(game.completedCount, 3);
+        expect(game.puzzleNumber, beforeIndex);
+      },
+    );
+
+    test(
+      'canonical rescue persists to global completedIds via incremental add',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final store = await ProgressStore.create();
+        final game = GameController(store: store);
+        await _solveCurrent(game); // rescue p1
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        // Re-create store to read back persisted state.
+        final fresh = await ProgressStore.create();
+        expect(fresh.completedIds, contains('p1-knight-rescue'));
+      },
+    );
+  });
+
+  group('Endless episode rotation + Best Run streak', () {
+    test('endless episode rotates seed inline on session completion', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await ProgressStore.create();
+      final game = GameController(store: store, episode: EpisodeLibrary.ep5);
+      expect(game.sessionSeed, 0);
+      expect(game.puzzleCount, 5); // endless session length
+
+      await _solveSession(game);
+      expect(game.allComplete, isTrue);
+      expect(game.state, GameState.rescued);
+
+      game.onPrimaryAction(); // rotate
+      expect(game.sessionSeed, 1);
+      expect(game.completedCount, 0);
+      expect(game.state, GameState.danger);
+    });
+
+    test('endless rescue increments the in-memory streak counter', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await ProgressStore.create();
+      final game = GameController(store: store, episode: EpisodeLibrary.ep5);
+      expect(game.currentEndlessStreak, 0);
+      await _solveCurrent(game);
+      expect(game.currentEndlessStreak, 1);
+    });
   });
 
   group('ProgressStore round-trip', () {
@@ -107,35 +200,17 @@ void main() {
       expect(s2.puzzleIndex, 2);
       expect(s2.completedIds, {'p2-take-the-checker'});
     });
-  });
 
-  group('session regeneration', () {
     test(
-      'completing session 0 rotates to seed 1 with fresh progress',
+      'addCompletedId accumulates without overwriting prior entries',
       () async {
         SharedPreferences.setMockInitialValues({});
-        final store = await ProgressStore.create();
-        final game = GameController(store: store);
-        expect(game.sessionSeed, 0);
-
-        await _solveSession(game);
-        expect(game.allComplete, isTrue);
-        expect(game.completedCount, 5);
-        expect(game.state, GameState.rescued);
-
-        game.onPrimaryAction(); // "Again" → next curated session
-        expect(game.sessionSeed, 1);
-        expect(game.completedCount, 0);
-        expect(game.state, GameState.danger);
+        final s = await ProgressStore.create();
+        await s.addCompletedId('p1-knight-rescue');
+        await s.addCompletedId('a4-the-breakaway');
+        final fresh = await ProgressStore.create();
+        expect(fresh.completedIds, {'p1-knight-rescue', 'a4-the-breakaway'});
       },
     );
-
-    test('solving a composed session counts canonical families only', () async {
-      SharedPreferences.setMockInitialValues({'flutter.cr_session_seed': 1});
-      final store = await ProgressStore.create();
-      final game = GameController(store: store); // session 1 (has mirrors)
-      await _solveSession(game);
-      expect(game.completedCount, 5); // 5 distinct families, not 5+mirrors
-    });
   });
 }

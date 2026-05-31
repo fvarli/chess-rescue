@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'episode.dart';
 import 'puzzle.dart';
 import 'puzzle_template.dart';
 import 'readability.dart';
@@ -21,6 +22,109 @@ class SessionComposer {
   SessionComposer._();
 
   static const int sessionLength = 5;
+
+  /// Kind-aware episode composition (Phase P3). Routes by `episode.kind`:
+  ///
+  /// - **canonical** — draws from `episode.canonicalPuzzleIds`. Seed 0 returns
+  ///   the authored puzzles in canonical order with no variation; seed >= 1 may
+  ///   apply mirror per slot (forced mix) plus optional decoy texture on the
+  ///   middle slot.
+  /// - **master** — every slot is the mirror variant of the episode's canonical
+  ///   pool. Optional decoy texture on the middle slot. Session length matches
+  ///   `episode.canonicalPuzzleIds.length` (3 for ep4).
+  /// - **endless** — delegates to [compose] with the full templates + expansion
+  ///   pool, producing the legacy 5-puzzle session with full canonical-anchor /
+  ///   mirror-balance / texture-cap invariants.
+  static List<Puzzle> composeEpisode({
+    required Episode episode,
+    required List<PuzzleTemplate> templates,
+    List<PuzzleTemplate> expansion = const [],
+    required int seed,
+  }) {
+    switch (episode.kind) {
+      case EpisodeKind.canonical:
+        return _composeCanonicalEpisode(episode, templates, expansion, seed);
+      case EpisodeKind.master:
+        return _composeMasterEpisode(episode, templates, expansion, seed);
+      case EpisodeKind.endless:
+        return compose(templates: templates, expansion: expansion, seed: seed);
+    }
+  }
+
+  static List<Puzzle> _composeCanonicalEpisode(
+    Episode episode,
+    List<PuzzleTemplate> templates,
+    List<PuzzleTemplate> expansion,
+    int seed,
+  ) {
+    final all = [...templates, ...expansion];
+    final pool = <PuzzleTemplate>[
+      for (final id in episode.canonicalPuzzleIds) ?_templateForId(all, id),
+    ];
+
+    // Seed 0 → canonical authored order, no variation. The promise that
+    // entering an episode for the first time shows the authored puzzles
+    // verbatim.
+    if (seed == 0) {
+      return [for (final t in pool) t.toPuzzle()];
+    }
+
+    final rng = Random(seed);
+
+    // Mirror per slot, forced to a mix (avoid all-base / all-mirror).
+    final useMirror = [for (var i = 0; i < pool.length; i++) rng.nextBool()];
+    if (pool.length > 1) {
+      if (useMirror.every((m) => m)) useMirror[0] = false;
+      if (useMirror.every((m) => !m)) useMirror[0] = true;
+    }
+
+    // Texture only the middle slot (canonical bookends stay clean).
+    final textureSlot = pool.length > 2 ? 1 : -1;
+    final textureSeed = (textureSlot >= 0 && rng.nextBool())
+        ? 1 + rng.nextInt(64)
+        : 0;
+
+    return [
+      for (var i = 0; i < pool.length; i++)
+        _instance(pool[i], useMirror[i], i == textureSlot ? textureSeed : 0, 0),
+    ];
+  }
+
+  static List<Puzzle> _composeMasterEpisode(
+    Episode episode,
+    List<PuzzleTemplate> templates,
+    List<PuzzleTemplate> expansion,
+    int seed,
+  ) {
+    final all = [...templates, ...expansion];
+    final pool = <PuzzleTemplate>[
+      for (final id in episode.canonicalPuzzleIds) ?_templateForId(all, id),
+    ];
+
+    final rng = Random(seed);
+
+    // Master mode: every slot is mirrored. Optional decoy texture on the
+    // middle slot only.
+    final textureSlot = pool.length > 2 ? 1 : -1;
+    final textureSeed = (textureSlot >= 0 && rng.nextBool())
+        ? 1 + rng.nextInt(64)
+        : 0;
+
+    return [
+      for (var i = 0; i < pool.length; i++)
+        _instance(pool[i], true, i == textureSlot ? textureSeed : 0, 0),
+    ];
+  }
+
+  static PuzzleTemplate? _templateForId(
+    List<PuzzleTemplate> all,
+    String puzzleId,
+  ) {
+    for (final t in all) {
+      if (t.puzzle.id == puzzleId) return t;
+    }
+    return null;
+  }
 
   static List<Puzzle> compose({
     required List<PuzzleTemplate> templates,

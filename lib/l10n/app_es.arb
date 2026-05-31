@@ -78,5 +78,20 @@
   "homeRescueCounter": "Rescate {current} / {total}",
   "homeTotalRescues": "Rescates totales: {count}",
   "homeContinue": "Continuar rescate  ↦",
-  "homeStart": "Comenzar rescate  ↦"
+  "homeStart": "Comenzar rescate  ↦",
+
+  "episodeBadge": "EPISODIO {number}",
+  "episodeEp1Title": "CONTRAATAQUE",
+  "episodeEp1Tagline": "Devuelve el ataque.",
+  "episodeEp2Title": "ACABA CON LA AMENAZA",
+  "episodeEp2Tagline": "Saca al atacante del tablero.",
+  "episodeEp3Title": "MANTÉN LA LÍNEA",
+  "episodeEp3Tagline": "Un cuerpo por el rey.",
+  "episodeEp4Title": "EL OTRO LADO",
+  "episodeEp4Tagline": "Ya los has visto. Encuentra el rescate desde el otro lado.",
+  "episodeEp5Title": "RESCATE INFINITO",
+  "episodeEp5Tagline": "Salva al rey. Otra vez. Y otra.",
+  "episodeBestRun": "Mejor racha: {count}",
+  "episodeLockedLabel": "Termina el episodio anterior para desbloquear.",
+  "episodeCompleteFooter": "Episodio completado  ↦"
 }

@@ -228,4 +228,52 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get homeStart => 'Comenzar rescate  ↦';
+
+  @override
+  String episodeBadge(int number) {
+    return 'EPISODIO $number';
+  }
+
+  @override
+  String get episodeEp1Title => 'CONTRAATAQUE';
+
+  @override
+  String get episodeEp1Tagline => 'Devuelve el ataque.';
+
+  @override
+  String get episodeEp2Title => 'ACABA CON LA AMENAZA';
+
+  @override
+  String get episodeEp2Tagline => 'Saca al atacante del tablero.';
+
+  @override
+  String get episodeEp3Title => 'MANTÉN LA LÍNEA';
+
+  @override
+  String get episodeEp3Tagline => 'Un cuerpo por el rey.';
+
+  @override
+  String get episodeEp4Title => 'EL OTRO LADO';
+
+  @override
+  String get episodeEp4Tagline =>
+      'Ya los has visto. Encuentra el rescate desde el otro lado.';
+
+  @override
+  String get episodeEp5Title => 'RESCATE INFINITO';
+
+  @override
+  String get episodeEp5Tagline => 'Salva al rey. Otra vez. Y otra.';
+
+  @override
+  String episodeBestRun(int count) {
+    return 'Mejor racha: $count';
+  }
+
+  @override
+  String get episodeLockedLabel =>
+      'Termina el episodio anterior para desbloquear.';
+
+  @override
+  String get episodeCompleteFooter => 'Episodio completado  ↦';
 }

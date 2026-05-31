@@ -227,4 +227,51 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get homeStart => 'Start rescue  ↦';
+
+  @override
+  String episodeBadge(int number) {
+    return 'EPISODE $number';
+  }
+
+  @override
+  String get episodeEp1Title => 'STRIKE BACK';
+
+  @override
+  String get episodeEp1Tagline => 'Turn the attack back.';
+
+  @override
+  String get episodeEp2Title => 'END THE THREAT';
+
+  @override
+  String get episodeEp2Tagline => 'Take the attacker off the board.';
+
+  @override
+  String get episodeEp3Title => 'HOLD THE LINE';
+
+  @override
+  String get episodeEp3Tagline => 'A body for the king.';
+
+  @override
+  String get episodeEp4Title => 'THE OTHER SIDE';
+
+  @override
+  String get episodeEp4Tagline =>
+      'You\'ve seen these before. Find the rescue from the other side.';
+
+  @override
+  String get episodeEp5Title => 'ENDLESS RESCUE';
+
+  @override
+  String get episodeEp5Tagline => 'Save the king. Again. And again.';
+
+  @override
+  String episodeBestRun(int count) {
+    return 'Best run: $count';
+  }
+
+  @override
+  String get episodeLockedLabel => 'Finish the previous episode to unlock.';
+
+  @override
+  String get episodeCompleteFooter => 'Episode complete  ↦';
 }
