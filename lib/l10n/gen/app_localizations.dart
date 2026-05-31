@@ -465,13 +465,25 @@ abstract class AppL10n {
   /// **'Done'**
   String get settingsDone;
 
-  /// Eyebrow label above the session counter on Home. Renders uppercase via AppText.mono — frames the count below as belonging to the current run, not the whole game.
+  /// Home tagline beneath the title. Two short sentences — names the danger, directs the action — replacing the reused intro headline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your king is in danger.\nFind the rescue.'**
+  String get homeTagline;
+
+  /// Mission-briefing panel title on the Home progress card, rendered in AppText.mono with a coral status dot prefix — mirrors the in-game status pill grammar. Stored pre-uppercased per locale because Dart's String.toUpperCase() is locale-insensitive and would mis-case Turkish (e.g. 'görevi' → 'GÖREVI' instead of 'GÖREVİ'). Widget does NOT call toUpperCase().
+  ///
+  /// In en, this message translates to:
+  /// **'RESCUE MISSION'**
+  String get homeRescueMission;
+
+  /// Sub-label inside the progress card, between the panel title and the counter. Sentence case — preserves single-eyebrow hierarchy under the panel title.
   ///
   /// In en, this message translates to:
   /// **'Current run'**
   String get homeCurrentRun;
 
-  /// Session-local rescue counter shown beneath the 'Current run' eyebrow on Home.
+  /// Session-local rescue counter shown beneath the 'Current run' sub-label on Home.
   ///
   /// In en, this message translates to:
   /// **'Rescue {current} / {total}'**
@@ -486,13 +498,13 @@ abstract class AppL10n {
   /// Home CTA for returning players (introSeen=true).
   ///
   /// In en, this message translates to:
-  /// **'Continue  ↦'**
+  /// **'Continue rescue  ↦'**
   String get homeContinue;
 
   /// Home CTA for first-time players (introSeen=false).
   ///
   /// In en, this message translates to:
-  /// **'Start  ↦'**
+  /// **'Start rescue  ↦'**
   String get homeStart;
 }
 

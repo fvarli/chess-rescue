@@ -72,9 +72,11 @@
   "settingsLanguageSpanish": "Español",
   "settingsDone": "Listo",
 
+  "homeTagline": "Tu rey está en peligro.\nEncuentra el rescate.",
+  "homeRescueMission": "MISIÓN DE RESCATE",
   "homeCurrentRun": "Racha actual",
   "homeRescueCounter": "Rescate {current} / {total}",
   "homeTotalRescues": "Rescates totales: {count}",
-  "homeContinue": "Continuar  ↦",
-  "homeStart": "Comenzar  ↦"
+  "homeContinue": "Continuar rescate  ↦",
+  "homeStart": "Comenzar rescate  ↦"
 }

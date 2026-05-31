@@ -15,9 +15,9 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
   }
 
-  group('HomeScreen (P1)', () {
+  group('HomeScreen (P2)', () {
     testWidgets(
-      'renders title + tagline + progress card + CTA for a returning player',
+      'renders king hero + title + tagline + mission card + CTA for a returning player',
       (tester) async {
         useLargePhoneViewport(tester);
         SharedPreferences.setMockInitialValues({
@@ -28,22 +28,29 @@ void main() {
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
 
-        // Title + tagline (reusing appTitle + introTitle).
-        expect(find.text('Chess Rescue'), findsOneWidget);
-        expect(find.text('One move saves the king.'), findsOneWidget);
+        // King hero is present (identity layer).
+        expect(find.byKey(const ValueKey('home-king-hero')), findsOneWidget);
 
-        // Progress card.
-        expect(find.text('CURRENT RUN'), findsOneWidget);
+        // Title + new active tagline.
+        expect(find.text('Chess Rescue'), findsOneWidget);
+        expect(
+          find.text('Your king is in danger.\nFind the rescue.'),
+          findsOneWidget,
+        );
+
+        // Mission-briefing progress card.
+        expect(find.text('RESCUE MISSION'), findsOneWidget);
+        expect(find.text('Current run'), findsOneWidget);
         expect(find.text('Rescue 1 / 5'), findsOneWidget);
         expect(find.text('Total rescues: 12'), findsOneWidget);
 
-        // Returning CTA.
-        expect(find.text('Continue  ↦'), findsOneWidget);
-        expect(find.text('Start  ↦'), findsNothing);
+        // Returning CTA carries the rescue verb.
+        expect(find.text('Continue rescue  ↦'), findsOneWidget);
+        expect(find.text('Start rescue  ↦'), findsNothing);
       },
     );
 
-    testWidgets('first-time player sees the Start CTA, not Continue', (
+    testWidgets('first-time player sees the Start rescue CTA, not Continue', (
       tester,
     ) async {
       useLargePhoneViewport(tester);
@@ -51,8 +58,8 @@ void main() {
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
-      expect(find.text('Start  ↦'), findsOneWidget);
-      expect(find.text('Continue  ↦'), findsNothing);
+      expect(find.text('Start rescue  ↦'), findsOneWidget);
+      expect(find.text('Continue rescue  ↦'), findsNothing);
       // Lifetime starts at 0 — no fake content claimed.
       expect(find.text('Total rescues: 0'), findsOneWidget);
     });
@@ -82,7 +89,7 @@ void main() {
       // Pre-tap: rescue-screen content is not on screen.
       expect(find.text('Save the king.'), findsNothing);
 
-      await tester.tap(find.text('Continue  ↦'));
+      await tester.tap(find.text('Continue rescue  ↦'));
       // Pump the navigation transition (Material default ~300 ms).
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -105,11 +112,12 @@ void main() {
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
 
-      expect(find.text('Tek hamle şahı kurtarır.'), findsOneWidget);
-      expect(find.text('MEVCUT SERI'), findsOneWidget);
+      expect(find.text('Şahın tehlikede.\nKurtarışı bul.'), findsOneWidget);
+      expect(find.text('KURTARMA GÖREVİ'), findsOneWidget);
+      expect(find.text('Mevcut seri'), findsOneWidget);
       expect(find.text('Kurtarış 1 / 5'), findsOneWidget);
       expect(find.text('Toplam kurtarış: 0'), findsOneWidget);
-      expect(find.text('Devam et  ↦'), findsOneWidget);
+      expect(find.text('Kurtarışa devam et  ↦'), findsOneWidget);
     });
 
     testWidgets('Spanish locale renders Home strings in Spanish', (
@@ -124,11 +132,15 @@ void main() {
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
 
-      expect(find.text('Un movimiento salva al rey.'), findsOneWidget);
-      expect(find.text('RACHA ACTUAL'), findsOneWidget);
+      expect(
+        find.text('Tu rey está en peligro.\nEncuentra el rescate.'),
+        findsOneWidget,
+      );
+      expect(find.text('MISIÓN DE RESCATE'), findsOneWidget);
+      expect(find.text('Racha actual'), findsOneWidget);
       expect(find.text('Rescate 1 / 5'), findsOneWidget);
       expect(find.text('Rescates totales: 0'), findsOneWidget);
-      expect(find.text('Continuar  ↦'), findsOneWidget);
+      expect(find.text('Continuar rescate  ↦'), findsOneWidget);
     });
   });
 

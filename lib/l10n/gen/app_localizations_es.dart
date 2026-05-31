@@ -205,6 +205,12 @@ class AppL10nEs extends AppL10n {
   String get settingsDone => 'Listo';
 
   @override
+  String get homeTagline => 'Tu rey está en peligro.\nEncuentra el rescate.';
+
+  @override
+  String get homeRescueMission => 'MISIÓN DE RESCATE';
+
+  @override
   String get homeCurrentRun => 'Racha actual';
 
   @override
@@ -218,8 +224,8 @@ class AppL10nEs extends AppL10n {
   }
 
   @override
-  String get homeContinue => 'Continuar  ↦';
+  String get homeContinue => 'Continuar rescate  ↦';
 
   @override
-  String get homeStart => 'Comenzar  ↦';
+  String get homeStart => 'Comenzar rescate  ↦';
 }

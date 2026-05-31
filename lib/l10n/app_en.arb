@@ -196,11 +196,15 @@
   "settingsDone": "Done",
   "@settingsDone": { "description": "Dismisses the language picker sheet." },
 
+  "homeTagline": "Your king is in danger.\nFind the rescue.",
+  "@homeTagline": { "description": "Home tagline beneath the title. Two short sentences — names the danger, directs the action — replacing the reused intro headline." },
+  "homeRescueMission": "RESCUE MISSION",
+  "@homeRescueMission": { "description": "Mission-briefing panel title on the Home progress card, rendered in AppText.mono with a coral status dot prefix — mirrors the in-game status pill grammar. Stored pre-uppercased per locale because Dart's String.toUpperCase() is locale-insensitive and would mis-case Turkish (e.g. 'görevi' → 'GÖREVI' instead of 'GÖREVİ'). Widget does NOT call toUpperCase()." },
   "homeCurrentRun": "Current run",
-  "@homeCurrentRun": { "description": "Eyebrow label above the session counter on Home. Renders uppercase via AppText.mono — frames the count below as belonging to the current run, not the whole game." },
+  "@homeCurrentRun": { "description": "Sub-label inside the progress card, between the panel title and the counter. Sentence case — preserves single-eyebrow hierarchy under the panel title." },
   "homeRescueCounter": "Rescue {current} / {total}",
   "@homeRescueCounter": {
-    "description": "Session-local rescue counter shown beneath the 'Current run' eyebrow on Home.",
+    "description": "Session-local rescue counter shown beneath the 'Current run' sub-label on Home.",
     "placeholders": {
       "current": { "type": "int" },
       "total": { "type": "int" }
@@ -213,8 +217,8 @@
       "count": { "type": "int" }
     }
   },
-  "homeContinue": "Continue  ↦",
+  "homeContinue": "Continue rescue  ↦",
   "@homeContinue": { "description": "Home CTA for returning players (introSeen=true)." },
-  "homeStart": "Start  ↦",
+  "homeStart": "Start rescue  ↦",
   "@homeStart": { "description": "Home CTA for first-time players (introSeen=false)." }
 }

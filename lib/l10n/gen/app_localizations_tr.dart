@@ -201,6 +201,12 @@ class AppL10nTr extends AppL10n {
   String get settingsDone => 'Bitti';
 
   @override
+  String get homeTagline => 'Şahın tehlikede.\nKurtarışı bul.';
+
+  @override
+  String get homeRescueMission => 'KURTARMA GÖREVİ';
+
+  @override
   String get homeCurrentRun => 'Mevcut seri';
 
   @override
@@ -214,8 +220,8 @@ class AppL10nTr extends AppL10n {
   }
 
   @override
-  String get homeContinue => 'Devam et  ↦';
+  String get homeContinue => 'Kurtarışa devam et  ↦';
 
   @override
-  String get homeStart => 'Başla  ↦';
+  String get homeStart => 'Kurtarışa başla  ↦';
 }

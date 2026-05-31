@@ -72,9 +72,11 @@
   "settingsLanguageSpanish": "İspanyolca",
   "settingsDone": "Bitti",
 
+  "homeTagline": "Şahın tehlikede.\nKurtarışı bul.",
+  "homeRescueMission": "KURTARMA GÖREVİ",
   "homeCurrentRun": "Mevcut seri",
   "homeRescueCounter": "Kurtarış {current} / {total}",
   "homeTotalRescues": "Toplam kurtarış: {count}",
-  "homeContinue": "Devam et  ↦",
-  "homeStart": "Başla  ↦"
+  "homeContinue": "Kurtarışa devam et  ↦",
+  "homeStart": "Kurtarışa başla  ↦"
 }
