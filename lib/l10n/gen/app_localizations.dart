@@ -428,6 +428,42 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'CHECK MEETS CHECK'**
   String get puzzleB4SuccessExplanation;
+
+  /// Title of the language picker bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// Picker option that defers to the device's language.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get settingsLanguageSystemDefault;
+
+  /// Picker option that forces the app into English.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
+  /// Picker option that forces the app into Turkish.
+  ///
+  /// In en, this message translates to:
+  /// **'Turkish'**
+  String get settingsLanguageTurkish;
+
+  /// Picker option that forces the app into Spanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get settingsLanguageSpanish;
+
+  /// Dismisses the language picker sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get settingsDone;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

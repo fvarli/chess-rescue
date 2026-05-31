@@ -181,5 +181,18 @@
   "puzzleB4FailureHint": "That doesn't break the check. Answer with a check of your own.",
   "@puzzleB4FailureHint": { "description": "B4 failure hint." },
   "puzzleB4SuccessExplanation": "CHECK MEETS CHECK",
-  "@puzzleB4SuccessExplanation": { "description": "B4 success explanation." }
+  "@puzzleB4SuccessExplanation": { "description": "B4 success explanation." },
+
+  "settingsLanguage": "Language",
+  "@settingsLanguage": { "description": "Title of the language picker bottom sheet." },
+  "settingsLanguageSystemDefault": "System default",
+  "@settingsLanguageSystemDefault": { "description": "Picker option that defers to the device's language." },
+  "settingsLanguageEnglish": "English",
+  "@settingsLanguageEnglish": { "description": "Picker option that forces the app into English." },
+  "settingsLanguageTurkish": "Turkish",
+  "@settingsLanguageTurkish": { "description": "Picker option that forces the app into Turkish." },
+  "settingsLanguageSpanish": "Spanish",
+  "@settingsLanguageSpanish": { "description": "Picker option that forces the app into Spanish." },
+  "settingsDone": "Done",
+  "@settingsDone": { "description": "Dismisses the language picker sheet." }
 }

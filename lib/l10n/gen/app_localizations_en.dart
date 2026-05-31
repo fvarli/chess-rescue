@@ -184,4 +184,22 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get puzzleB4SuccessExplanation => 'CHECK MEETS CHECK';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageSystemDefault => 'System default';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsLanguageTurkish => 'Turkish';
+
+  @override
+  String get settingsLanguageSpanish => 'Spanish';
+
+  @override
+  String get settingsDone => 'Done';
 }

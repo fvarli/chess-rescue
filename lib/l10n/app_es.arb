@@ -63,5 +63,12 @@
   "puzzleB4StatusText": "▮ En jaque",
   "puzzleB4DangerHint": "Estás en jaque — pero puedes responder con la misma moneda.",
   "puzzleB4FailureHint": "Eso no rompe el jaque. Responde con tu propio jaque.",
-  "puzzleB4SuccessExplanation": "JAQUE CONTRA JAQUE"
+  "puzzleB4SuccessExplanation": "JAQUE CONTRA JAQUE",
+
+  "settingsLanguage": "Idioma",
+  "settingsLanguageSystemDefault": "Idioma del sistema",
+  "settingsLanguageEnglish": "Inglés",
+  "settingsLanguageTurkish": "Turco",
+  "settingsLanguageSpanish": "Español",
+  "settingsDone": "Listo"
 }

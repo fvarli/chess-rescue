@@ -8,6 +8,7 @@ import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../settings/language_picker.dart';
 import 'game_controller.dart';
 import 'game_state.dart';
 import 'widgets/board_widget.dart';
@@ -140,6 +141,11 @@ class _RescueScreenState extends State<RescueScreen> {
                                   complete: _game.allComplete,
                                 ),
                               ],
+                              // C5 — tiny language affordance, always visible
+                              // on the rescue screen (hidden behind the intro
+                              // overlay during first-run).
+                              const SizedBox(width: 4),
+                              const LanguagePickerButton(),
                             ],
                           ),
                           const SizedBox(height: 30),

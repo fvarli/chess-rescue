@@ -63,5 +63,12 @@
   "puzzleB4StatusText": "▮ Şahta",
   "puzzleB4DangerHint": "Şahtasın — ama aynı şekilde yanıt verebilirsin.",
   "puzzleB4FailureHint": "Bu şahı kırmıyor. Kendi şah çekişinle karşılık ver.",
-  "puzzleB4SuccessExplanation": "ŞAHA ŞAH"
+  "puzzleB4SuccessExplanation": "ŞAHA ŞAH",
+
+  "settingsLanguage": "Dil",
+  "settingsLanguageSystemDefault": "Sistem dili",
+  "settingsLanguageEnglish": "İngilizce",
+  "settingsLanguageTurkish": "Türkçe",
+  "settingsLanguageSpanish": "İspanyolca",
+  "settingsDone": "Bitti"
 }

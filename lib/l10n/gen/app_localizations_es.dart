@@ -185,4 +185,22 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get puzzleB4SuccessExplanation => 'JAQUE CONTRA JAQUE';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageSystemDefault => 'Idioma del sistema';
+
+  @override
+  String get settingsLanguageEnglish => 'Inglés';
+
+  @override
+  String get settingsLanguageTurkish => 'Turco';
+
+  @override
+  String get settingsLanguageSpanish => 'Español';
+
+  @override
+  String get settingsDone => 'Listo';
 }

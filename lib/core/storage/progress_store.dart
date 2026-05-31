@@ -15,6 +15,7 @@ class ProgressStore {
   static const String _kCompleted = 'cr_completed_ids';
   static const String _kOnboarding = 'cr_onboarding_seen';
   static const String _kIntroSeen = 'cr_intro_seen';
+  static const String _kLanguageMode = 'cr_language_mode';
 
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
@@ -36,6 +37,12 @@ class ProgressStore {
   // the first rescue and drives the focus cue) so the cue survives the intro.
   bool get introSeen => _prefs.getBool(_kIntroSeen) ?? false;
 
+  // Player-chosen language behaviour. 'system' (default) defers to the device
+  // locale via the existing localeResolutionCallback; 'en'/'tr'/'es' forces
+  // the app into that locale regardless of device. Parsed into
+  // [AppLanguageMode] at the wiring layer (main.dart).
+  String get languageMode => _prefs.getString(_kLanguageMode) ?? 'system';
+
   Future<void> save({
     required int sessionSeed,
     required int puzzleIndex,
@@ -54,11 +61,16 @@ class ProgressStore {
     await _prefs.setBool(_kIntroSeen, true);
   }
 
+  Future<void> setLanguageMode(String mode) async {
+    await _prefs.setString(_kLanguageMode, mode);
+  }
+
   Future<void> clear() async {
     await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
     await _prefs.remove(_kCompleted);
     await _prefs.remove(_kOnboarding);
     await _prefs.remove(_kIntroSeen);
+    await _prefs.remove(_kLanguageMode);
   }
 }

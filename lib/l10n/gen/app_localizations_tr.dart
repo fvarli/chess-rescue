@@ -181,4 +181,22 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get puzzleB4SuccessExplanation => 'ŞAHA ŞAH';
+
+  @override
+  String get settingsLanguage => 'Dil';
+
+  @override
+  String get settingsLanguageSystemDefault => 'Sistem dili';
+
+  @override
+  String get settingsLanguageEnglish => 'İngilizce';
+
+  @override
+  String get settingsLanguageTurkish => 'Türkçe';
+
+  @override
+  String get settingsLanguageSpanish => 'İspanyolca';
+
+  @override
+  String get settingsDone => 'Bitti';
 }
