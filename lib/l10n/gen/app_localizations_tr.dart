@@ -271,4 +271,12 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get episodeCompleteFooter => 'Bölüm tamamlandı  ↦';
+
+  @override
+  String get episodeCompleteToast =>
+      'Bölüm tamamlandı. Sıradaki kurtarış açıldı.';
+
+  @override
+  String get episodeTrilogyCompleteToast =>
+      'Üçleme tamamlandı. Master ve Sonsuz açıldı.';
 }

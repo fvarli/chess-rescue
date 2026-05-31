@@ -93,5 +93,7 @@
   "episodeEp5Tagline": "Salva al rey. Otra vez. Y otra.",
   "episodeBestRun": "Mejor racha: {count}",
   "episodeLockedLabel": "Termina el episodio anterior para desbloquear.",
-  "episodeCompleteFooter": "Episodio completado  ↦"
+  "episodeCompleteFooter": "Episodio completado  ↦",
+  "episodeCompleteToast": "Episodio completado. Siguiente rescate desbloqueado.",
+  "episodeTrilogyCompleteToast": "Trilogía completada. Master y Endless desbloqueados."
 }

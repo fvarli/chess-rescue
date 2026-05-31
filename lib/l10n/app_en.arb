@@ -259,5 +259,9 @@
   "episodeLockedLabel": "Finish the previous episode to unlock.",
   "@episodeLockedLabel": { "description": "Snackbar copy when the player taps a locked-by-progression chip on the Home episode strip." },
   "episodeCompleteFooter": "Episode complete  ↦",
-  "@episodeCompleteFooter": { "description": "RescueScreen footer on the last rescue of a canonical or master episode — CTA returns to Home." }
+  "@episodeCompleteFooter": { "description": "RescueScreen footer on the last rescue of a canonical or master episode — CTA returns to Home." },
+  "episodeCompleteToast": "Episode complete. Next rescue unlocked.",
+  "@episodeCompleteToast": { "description": "Home snackbar shown once after returning from a completed canonical or master episode (except ep3 — see episodeTrilogyCompleteToast). Triggered by the navigator pop result; ephemeral, no persistence." },
+  "episodeTrilogyCompleteToast": "Trilogy complete. Master and Endless unlocked.",
+  "@episodeTrilogyCompleteToast": { "description": "Home snackbar shown once after completing Ep3 (the canonical trilogy finale) — Ep4 (master) and Ep5 (endless) unlock simultaneously." }
 }

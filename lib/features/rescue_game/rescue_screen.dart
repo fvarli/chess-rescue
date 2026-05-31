@@ -208,7 +208,8 @@ class _RescueScreenState extends State<RescueScreen> {
                             state: _game.state,
                             label: buttonLabel,
                             onTap: isEpisodeFinale
-                                ? () => Navigator.of(context).maybePop()
+                                ? () =>
+                                      Navigator.of(context).maybePop<bool>(true)
                                 : _game.onPrimaryAction,
                           ),
                           const SizedBox(height: 16),

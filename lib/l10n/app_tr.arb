@@ -93,5 +93,7 @@
   "episodeEp5Tagline": "Şahı kurtar. Tekrar. Ve tekrar.",
   "episodeBestRun": "En iyi tur: {count}",
   "episodeLockedLabel": "Açmak için önceki bölümü bitir.",
-  "episodeCompleteFooter": "Bölüm tamamlandı  ↦"
+  "episodeCompleteFooter": "Bölüm tamamlandı  ↦",
+  "episodeCompleteToast": "Bölüm tamamlandı. Sıradaki kurtarış açıldı.",
+  "episodeTrilogyCompleteToast": "Üçleme tamamlandı. Master ve Sonsuz açıldı."
 }

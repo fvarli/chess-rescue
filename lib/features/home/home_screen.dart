@@ -24,11 +24,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Episode _focused;
+  // P3.1 — the chip currently rendering the one-shot "just unlocked" mint
+  // glow. Set when auto-focus fires after an episode completion; cleared by a
+  // 1500ms post-frame timer. Null in steady state.
+  String? _newlyUnlockedId;
+  Timer? _pulseTimer;
 
   @override
   void initState() {
     super.initState();
     _focused = _deriveInitialFocus();
+  }
+
+  @override
+  void dispose() {
+    _pulseTimer?.cancel();
+    super.dispose();
   }
 
   Episode _deriveInitialFocus() {
@@ -52,12 +63,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _openRescue(BuildContext context) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    final justCompletedEp = _focused;
+    final completed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
         builder: (_) => RescueScreen(store: widget.store, episode: _focused),
       ),
     );
-    if (mounted) setState(() {});
+    if (!mounted) return;
+
+    if (completed == true) {
+      _handleEpisodeCompleted(justCompletedEp);
+    } else {
+      setState(() {});
+    }
+  }
+
+  void _handleEpisodeCompleted(Episode justCompletedEp) {
+    final next = EpisodeLibrary.nextAfter(justCompletedEp);
+    if (next == null) {
+      setState(() {});
+      return;
+    }
+    setState(() {
+      _focused = next;
+      _newlyUnlockedId = next.id;
+    });
+    unawaited(widget.store?.setCurrentEpisodeId(next.id));
+    _pulseTimer?.cancel();
+    _pulseTimer = Timer(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      setState(() => _newlyUnlockedId = null);
+    });
+    final l = AppL10n.of(context)!;
+    final msg = justCompletedEp.id == EpisodeLibrary.ep3.id
+        ? l.episodeTrilogyCompleteToast
+        : l.episodeCompleteToast;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _showLockedSnack(String label) {
@@ -133,6 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _EpisodeStrip(
                       focused: _focused,
                       completedIds: completedIds,
+                      newlyUnlockedId: _newlyUnlockedId,
                       onTapEpisode: _setFocus,
                       onTapLocked: () => _showLockedSnack(t.episodeLockedLabel),
                     ),
@@ -281,12 +330,14 @@ class _EpisodeStrip extends StatelessWidget {
   const _EpisodeStrip({
     required this.focused,
     required this.completedIds,
+    required this.newlyUnlockedId,
     required this.onTapEpisode,
     required this.onTapLocked,
   });
 
   final Episode focused;
   final Set<String> completedIds;
+  final String? newlyUnlockedId;
   final ValueChanged<Episode> onTapEpisode;
   final VoidCallback onTapLocked;
 
@@ -301,6 +352,7 @@ class _EpisodeStrip extends StatelessWidget {
             episode: ep,
             progress: EpisodeLibrary.progressFor(ep, completedIds),
             isFocused: ep.id == focused.id,
+            isNewlyUnlocked: ep.id == newlyUnlockedId,
             onTap: () {
               final p = EpisodeLibrary.progressFor(ep, completedIds);
               if (!p.isUnlocked) {
@@ -320,15 +372,18 @@ class _EpisodeChip extends StatelessWidget {
     required this.episode,
     required this.progress,
     required this.isFocused,
+    required this.isNewlyUnlocked,
     required this.onTap,
   });
 
   final Episode episode;
   final EpisodeProgress progress;
   final bool isFocused;
+  final bool isNewlyUnlocked;
   final VoidCallback onTap;
 
   static const double _size = 44;
+  static const Duration _pulseDuration = Duration(milliseconds: 1500);
 
   @override
   Widget build(BuildContext context) {
@@ -343,22 +398,36 @@ class _EpisodeChip extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        key: ValueKey('home-episode-chip-${episode.number}'),
-        width: _size,
-        height: _size,
-        decoration: BoxDecoration(
-          color: bg,
-          shape: BoxShape.circle,
-          border: Border.all(color: border, width: 1.5),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          glyph,
-          style: AppText.mono.copyWith(
-            color: fg,
-            fontSize: 13,
-            letterSpacing: 0,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: isNewlyUnlocked ? 1.0 : 0.0, end: 0.0),
+        duration: _pulseDuration,
+        curve: Curves.easeOut,
+        builder: (context, t, _) => Container(
+          key: ValueKey('home-episode-chip-${episode.number}'),
+          width: _size,
+          height: _size,
+          decoration: BoxDecoration(
+            color: bg,
+            shape: BoxShape.circle,
+            border: Border.all(color: border, width: 1.5),
+            boxShadow: t > 0
+                ? [
+                    BoxShadow(
+                      color: AppColors.rescue.withValues(alpha: 0.4 * t),
+                      blurRadius: 12 * t,
+                      spreadRadius: 2 * t,
+                    ),
+                  ]
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            glyph,
+            style: AppText.mono.copyWith(
+              color: fg,
+              fontSize: 13,
+              letterSpacing: 0,
+            ),
           ),
         ),
       ),

@@ -276,4 +276,12 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get episodeCompleteFooter => 'Episodio completado  ↦';
+
+  @override
+  String get episodeCompleteToast =>
+      'Episodio completado. Siguiente rescate desbloqueado.';
+
+  @override
+  String get episodeTrilogyCompleteToast =>
+      'Trilogía completada. Master y Endless desbloqueados.';
 }

@@ -590,6 +590,18 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Episode complete  ↦'**
   String get episodeCompleteFooter;
+
+  /// Home snackbar shown once after returning from a completed canonical or master episode (except ep3 — see episodeTrilogyCompleteToast). Triggered by the navigator pop result; ephemeral, no persistence.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode complete. Next rescue unlocked.'**
+  String get episodeCompleteToast;
+
+  /// Home snackbar shown once after completing Ep3 (the canonical trilogy finale) — Ep4 (master) and Ep5 (endless) unlock simultaneously.
+  ///
+  /// In en, this message translates to:
+  /// **'Trilogy complete. Master and Endless unlocked.'**
+  String get episodeTrilogyCompleteToast;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
