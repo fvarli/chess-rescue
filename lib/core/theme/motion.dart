@@ -37,7 +37,9 @@ class MotionTokens {
   static const double dangerScaleMax = 1.01;
 
   // — Rescue glow (bloom → settle → breath)
-  static const Duration rescueBloom = Duration(milliseconds: 280);
+  // V2 — bloom savor: 280 → 340 ms gives the rescue resolution a touch more
+  // weight without exceeding the < 1 s total rescue-resolution budget.
+  static const Duration rescueBloom = Duration(milliseconds: 340);
   static const Duration rescueSettle = Duration(milliseconds: 420);
   static const Duration rescueBreathPeriod = Duration(milliseconds: 3000);
   static const double rescueScalePeak = 1.08;
@@ -53,6 +55,27 @@ class MotionTokens {
   static const Duration microShake = Duration(milliseconds: 80);
   static const double microShakeAmplitudePx = 1.0;
   static const int microShakeCycles = 2;
+
+  // V2 — failure rim flash. Boardwide coral rim pulses once when a non-rescue
+  // move commits. Quiet "that didn't work" — never shame, never punishment.
+  // Total flash = failRimIn + failRimHold + failRimOut = 370 ms.
+  static const Duration failRimIn = Duration(milliseconds: 80);
+  static const Duration failRimHold = Duration(milliseconds: 90);
+  static const Duration failRimOut = Duration(milliseconds: 200);
+  static const double failRimAlphaPeak = 0.32;
+  static const double failRimWidthPx = 2.0;
+
+  // V2 — rescue expansion ring. Single concentric mint ring radiates outward
+  // from the rescue square at commit, fading as it expands. Quiet pride.
+  // `rescueRingEndScale` starts at the subtle end of the visually sensible
+  // range; tune UP only on playtesting evidence (see memory:
+  // feedback_prefer_subtlety_first.md).
+  static const Duration rescueRingExpand = Duration(milliseconds: 520);
+  static const double rescueRingStartScale = 1.0; // begin at the square radius
+  static const double rescueRingEndScale = 2.1; // end at ~2.1× the square
+  static const double rescueRingAlphaStart = 0.55;
+  static const double rescueRingStrokeStart = 1.6;
+  static const double rescueRingStrokeEnd = 0.4;
 
   // — Background gradient transition
   static const Duration gradientTransition = Duration(milliseconds: 600);

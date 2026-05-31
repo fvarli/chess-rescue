@@ -55,6 +55,10 @@ class _BoardWidgetState extends State<BoardWidget>
   late final AnimationController _failedFlash;
   late final AnimationController _microShake;
   late final AnimationController _ambientBreath;
+  // V2 — transient effects layered on top of the existing rescue/failure
+  // animations. Each ticks only during its ≤520 ms forward run.
+  late final AnimationController _rescueRing;
+  late final AnimationController _failRim;
 
   late final Animation<double> _dangerPulseValue;
 
@@ -113,6 +117,17 @@ class _BoardWidgetState extends State<BoardWidget>
       vsync: this,
       duration: MotionTokens.ambientBreathDefault,
     );
+    _rescueRing = AnimationController(
+      vsync: this,
+      duration: MotionTokens.rescueRingExpand,
+    );
+    _failRim = AnimationController(
+      vsync: this,
+      duration:
+          MotionTokens.failRimIn +
+          MotionTokens.failRimHold +
+          MotionTokens.failRimOut,
+    );
 
     _dangerPulse.repeat();
     _retuneAmbientBreath();
@@ -140,8 +155,16 @@ class _BoardWidgetState extends State<BoardWidget>
               _rescueBreath.repeat(reverse: true);
             }
           });
+        // V2 — fire the expansion ring once on transition. Skip on initial
+        // build so re-mounting a settled "rescued" state doesn't re-animate.
+        if (!initial) {
+          _rescueRing
+            ..reset()
+            ..forward();
+        }
         _failedFlash.value = 0;
         _microShake.value = 0;
+        _failRim.value = 0;
         break;
       case GameState.failed:
         _failedFlash
@@ -150,8 +173,15 @@ class _BoardWidgetState extends State<BoardWidget>
         _microShake
           ..reset()
           ..forward();
+        // V2 — fire the rim flash once on transition.
+        if (!initial) {
+          _failRim
+            ..reset()
+            ..forward();
+        }
         _rescueBloom.value = 0;
         _rescueBreath.stop();
+        _rescueRing.value = 0;
         break;
       case GameState.danger:
       case GameState.selected:
@@ -159,6 +189,8 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueBreath.stop();
         _failedFlash.value = 0;
         _microShake.value = 0;
+        _rescueRing.value = 0;
+        _failRim.value = 0;
         break;
     }
   }
@@ -225,6 +257,8 @@ class _BoardWidgetState extends State<BoardWidget>
     _failedFlash.dispose();
     _microShake.dispose();
     _ambientBreath.dispose();
+    _rescueRing.dispose();
+    _failRim.dispose();
     super.dispose();
   }
 
@@ -289,7 +323,15 @@ class _BoardWidgetState extends State<BoardWidget>
                 _buildInnerVignette(),
                 _buildDangerGlow(),
                 _buildFailedFlash(),
+                // V2 — coral rim flashes once on failed commits. Sits above
+                // the king's failure flash so it reads as a *boardwide*
+                // signal, not a local one.
+                _buildFailureRim(),
                 _buildRescueGlow(),
+                // V2 — mint ring radiates outward from the rescue square at
+                // commit. Sits just above the glow so glow + ring read as
+                // concentric.
+                _buildRescueRing(),
                 _buildFocusCue(),
                 if (widget.selected != null) _buildSelectedRing(),
                 ..._buildLegalDots(),
@@ -491,6 +533,51 @@ class _BoardWidgetState extends State<BoardWidget>
     );
   }
 
+  // V2 — coral rim flash on failed commits. Fires once via `_failRim`;
+  // boardwide border at low alpha so the player reads it as "that didn't
+  // rescue" without any shame register. IgnorePointer so the tap layer keeps
+  // responding throughout the 370 ms.
+  Widget _buildFailureRim() {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: AnimatedBuilder(
+          animation: _failRim,
+          builder: (context, _) {
+            final t = _failRim.value;
+            if (t == 0) return const SizedBox.shrink();
+            final total =
+                MotionTokens.failRimIn.inMilliseconds +
+                MotionTokens.failRimHold.inMilliseconds +
+                MotionTokens.failRimOut.inMilliseconds;
+            final inEnd = MotionTokens.failRimIn.inMilliseconds / total;
+            final holdEnd =
+                (MotionTokens.failRimIn.inMilliseconds +
+                    MotionTokens.failRimHold.inMilliseconds) /
+                total;
+            // 3-segment ramp: ease in → hold → ease out.
+            final double k = t <= inEnd
+                ? Curves.easeOutCubic.transform(t / inEnd)
+                : t <= holdEnd
+                ? 1.0
+                : 1.0 -
+                      Curves.easeInCubic.transform(
+                        (t - holdEnd) / (1.0 - holdEnd),
+                      );
+            final alpha = k * MotionTokens.failRimAlphaPeak;
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: AppColors.danger.withValues(alpha: alpha),
+                  width: MotionTokens.failRimWidthPx,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildRescueGlow() {
     if (widget.state != GameState.rescued) return const SizedBox.shrink();
     final origin = _squareOrigin(widget.rescueTo.file, widget.rescueTo.rank);
@@ -582,6 +669,32 @@ class _BoardWidgetState extends State<BoardWidget>
 
   // First-run only: a soft breathing accent glow drawing the eye to the
   // rescuing piece. Fades out gently the moment a piece is selected.
+  // V2 — single mint expansion ring radiating from the rescue square at
+  // commit. Quiet pride; not a fireworks show. Drawn via CustomPaint backed
+  // by the dedicated `_rescueRing` controller (520 ms forward run).
+  Widget _buildRescueRing() {
+    final centerOrigin = _squareOrigin(
+      widget.rescueTo.file,
+      widget.rescueTo.rank,
+    );
+    final center = Offset(centerOrigin.dx + _sq / 2, centerOrigin.dy + _sq / 2);
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: AnimatedBuilder(
+          animation: _rescueRing,
+          builder: (context, _) => CustomPaint(
+            painter: _RescueRingPainter(
+              visible: widget.state == GameState.rescued,
+              t: Curves.easeOutCubic.transform(_rescueRing.value),
+              center: center,
+              squareSize: _sq,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFocusCue() {
     final fs = widget.focusSquare;
     if (fs == null) return const SizedBox.shrink();
@@ -869,5 +982,49 @@ class _GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _GridPainter old) =>
+      old.squareSize != squareSize;
+}
+
+// V2 — paints a single concentric mint ring around the rescue square.
+// Radius lerps from `start*sq/2` to `end*sq/2`; alpha lerps from `start → 0`;
+// stroke width tapers `strokeStart → strokeEnd`. One drawCircle per frame.
+class _RescueRingPainter extends CustomPainter {
+  _RescueRingPainter({
+    required this.visible,
+    required this.t,
+    required this.center,
+    required this.squareSize,
+  });
+
+  final bool visible;
+  final double t; // 0..1 (already curved)
+  final Offset center;
+  final double squareSize;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (!visible || t <= 0.0 || t >= 1.0) return;
+    final r0 = squareSize * MotionTokens.rescueRingStartScale / 2;
+    final r1 = squareSize * MotionTokens.rescueRingEndScale / 2;
+    final radius = r0 + (r1 - r0) * t;
+    final alpha = MotionTokens.rescueRingAlphaStart * (1.0 - t);
+    final stroke =
+        MotionTokens.rescueRingStrokeStart +
+        (MotionTokens.rescueRingStrokeEnd -
+                MotionTokens.rescueRingStrokeStart) *
+            t;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..isAntiAlias = true
+      ..color = AppColors.rescue.withValues(alpha: alpha);
+    canvas.drawCircle(center, radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _RescueRingPainter old) =>
+      old.visible != visible ||
+      old.t != t ||
+      old.center != center ||
       old.squareSize != squareSize;
 }
