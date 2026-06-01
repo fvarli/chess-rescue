@@ -1064,6 +1064,18 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'today'**
   String get relativeTimeToday;
+
+  /// PR 3 Familiarity bare cue label — mono small-caps, shown on the rescued screen for any puzzle the player has solved before. Reused as line 1 of the one-time first-recognition hint overlay.
+  ///
+  /// In en, this message translates to:
+  /// **'FAMILIAR'**
+  String get familiarCueLabel;
+
+  /// PR 3 one-time first-recognition hint body line — appears once per device, the first time the player re-encounters a previously-solved puzzle. Quiet, in the player's own internal voice; intentionally avoids 'the game notices' framing so the designer's hand stays invisible.
+  ///
+  /// In en, this message translates to:
+  /// **'You know this one.'**
+  String get familiarFirstSeenHintLine;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -68,6 +68,12 @@ class GameController extends ChangeNotifier {
   // completion-sheet inline section (if isEpisodeFinale) or the mid-rescue
   // overlay queue. Empty in steady state.
   final List<String> _recordsJustUnlocked = <String>[];
+  // PR 3 Familiarity — snapshot captured at every _loadPuzzle. True iff
+  // the player has already completed the current puzzle's canonical id,
+  // either earlier in this session (any mode) OR in any prior canonical-
+  // mode session. RescueScreen reads via [wasPreviouslySolvedAtStart] to
+  // gate the FAMILIAR cue + the one-time first-recognition overlay.
+  bool _wasPreviouslySolvedAtStart = false;
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -92,6 +98,12 @@ class GameController extends ChangeNotifier {
   /// view; consumed by RescueScreen.
   List<String> get recordsJustUnlocked =>
       List<String>.unmodifiable(_recordsJustUnlocked);
+
+  /// PR 3 Familiarity — has the player already completed the current
+  /// puzzle's canonical id, snapshotted at puzzle-load time? Snapshot
+  /// rather than live check so the in-flight rescue's `_completed.add`
+  /// does not retroactively flip the value.
+  bool get wasPreviouslySolvedAtStart => _wasPreviouslySolvedAtStart;
 
   int get sessionSeed => _seed;
 
@@ -123,6 +135,18 @@ class GameController extends ChangeNotifier {
     _state = GameState.danger;
     _statusMsg = p.statusText;
     _commitInFlight = false;
+    // PR 3 Familiarity — snapshot whether the player has completed this
+    // canonical puzzle before, either earlier this session (any mode)
+    // OR in any prior canonical-mode session. Captured at load time so
+    // the in-flight rescue's `_completed.add(base)` does not retroactively
+    // flip the value. The `_completed` term covers within-session
+    // encounters of any mode; the `_store?.completedIds` term covers
+    // cross-session canonical-mode encounters. The known cross-session
+    // Endless gap is documented in the PR 3 plan §3.
+    final canonical = canonicalPuzzleId(p.id);
+    _wasPreviouslySolvedAtStart =
+        _completed.contains(canonical) ||
+        (_store?.completedIds.contains(canonical) ?? false);
   }
 
   List<Square> _legalMovesFor(Piece p) {

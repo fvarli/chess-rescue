@@ -33,6 +33,12 @@ class ProgressStore {
   static const String _kSignaturesFirstBookmarkHintSeen =
       'cr_signatures_first_bookmark_hint_seen';
   static const String _kSignaturesTabPulseSeen = 'cr_signatures_tab_pulse_seen';
+  // PR 3 Familiarity — single one-time flag for the first-recognition
+  // hint. No other storage. The recognition signal itself derives from
+  // the existing `completedIds` set (PR 1) and the controller's
+  // in-memory `_completed`; nothing is persisted per-puzzle here.
+  static const String _kFamiliarityFirstSeenHintSeen =
+      'cr_familiarity_first_seen_hint_seen';
 
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
@@ -169,6 +175,12 @@ class ProgressStore {
   bool get hasSeenSignaturesTabPulse =>
       _prefs.getBool(_kSignaturesTabPulseSeen) ?? false;
 
+  // PR 3 Familiarity — one-time first-recognition hint flag. False
+  // until the player re-encounters their first previously-solved
+  // puzzle and the inline overlay fires; permanently true thereafter.
+  bool get hasSeenFirstFamiliarityHint =>
+      _prefs.getBool(_kFamiliarityFirstSeenHintSeen) ?? false;
+
   Future<void> save({
     required int sessionSeed,
     required int puzzleIndex,
@@ -299,6 +311,14 @@ class ProgressStore {
     await _prefs.setBool(_kSignaturesTabPulseSeen, true);
   }
 
+  // PR 3 Familiarity — mark the first-recognition hint as seen.
+  // Called by the host (RescueScreen) at the moment it mounts the
+  // one-time FamiliarityFirstSeenOverlay, so a mid-fade screen-close
+  // does not re-fire the hint on the next rescued state.
+  Future<void> markFirstFamiliarityHintSeen() async {
+    await _prefs.setBool(_kFamiliarityFirstSeenHintSeen, true);
+  }
+
   Future<void> clear() async {
     await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
@@ -315,5 +335,6 @@ class ProgressStore {
     await _prefs.remove(_kRecentlySolved);
     await _prefs.remove(_kSignaturesFirstBookmarkHintSeen);
     await _prefs.remove(_kSignaturesTabPulseSeen);
+    await _prefs.remove(_kFamiliarityFirstSeenHintSeen);
   }
 }

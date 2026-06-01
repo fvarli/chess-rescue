@@ -546,4 +546,10 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get relativeTimeToday => 'hoy';
+
+  @override
+  String get familiarCueLabel => 'FAMILIAR';
+
+  @override
+  String get familiarFirstSeenHintLine => 'Lo conoces.';
 }

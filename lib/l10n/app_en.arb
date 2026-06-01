@@ -454,5 +454,10 @@
   "signaturesFirstBookmarkHintLine2": "Keep the rescues that stay with you.",
   "@signaturesFirstBookmarkHintLine2": { "description": "First-bookmark inline hint line 2 — body 12pt, dim. Echoes the empty-state framing so the relationship vocabulary stays consistent across articulation moments." },
   "relativeTimeToday": "today",
-  "@relativeTimeToday": { "description": "Single-word relative-time fragment used inside the journal-line-today variants on the SIGNATURES tab. The only relative-time string V1 surfaces." }
+  "@relativeTimeToday": { "description": "Single-word relative-time fragment used inside the journal-line-today variants on the SIGNATURES tab. The only relative-time string V1 surfaces." },
+
+  "familiarCueLabel": "FAMILIAR",
+  "@familiarCueLabel": { "description": "PR 3 Familiarity bare cue label — mono small-caps, shown on the rescued screen for any puzzle the player has solved before. Reused as line 1 of the one-time first-recognition hint overlay." },
+  "familiarFirstSeenHintLine": "You know this one.",
+  "@familiarFirstSeenHintLine": { "description": "PR 3 one-time first-recognition hint body line — appears once per device, the first time the player re-encounters a previously-solved puzzle. Quiet, in the player's own internal voice; intentionally avoids 'the game notices' framing so the designer's hand stays invisible." }
 }

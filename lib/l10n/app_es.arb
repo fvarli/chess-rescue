@@ -178,5 +178,8 @@
   "signaturesJournalRememberedDetail": "Aún recordado.",
   "signaturesFirstBookmarkHintLine1": "Guardado.",
   "signaturesFirstBookmarkHintLine2": "Guarda los rescates que se quedan contigo.",
-  "relativeTimeToday": "hoy"
+  "relativeTimeToday": "hoy",
+
+  "familiarCueLabel": "FAMILIAR",
+  "familiarFirstSeenHintLine": "Lo conoces."
 }

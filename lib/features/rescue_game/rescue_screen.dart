@@ -13,6 +13,8 @@ import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../familiarity/familiar_cue.dart';
+import '../familiarity/familiarity_first_seen_overlay.dart';
 import '../records/record_symbols.dart';
 import '../records/record_unlock_overlay.dart';
 import '../settings/language_picker.dart';
@@ -73,6 +75,11 @@ class _RescueScreenState extends State<RescueScreen> {
   // adds their very first Signature; the FirstBookmarkHintOverlay clears
   // it via onDismissed after the fade-out completes.
   bool _showFirstBookmarkHint = false;
+  // PR 3 — one-time first-recognition hint. Flipped to true the first
+  // time the player re-encounters a previously-solved canonical id;
+  // the FamiliarityFirstSeenOverlay clears it via onDismissed after
+  // the fade-out completes.
+  bool _showFirstFamiliarityHint = false;
 
   @override
   void initState() {
@@ -101,6 +108,10 @@ class _RescueScreenState extends State<RescueScreen> {
     // controller's rescued state is the cleanest signal: it transitions
     // from non-rescued → rescued once per successful commit.
     if (_game.state != GameState.rescued) return;
+    // PR 3 Familiarity — trigger the one-time first-recognition hint
+    // BEFORE the records-just-unlocked guard, so the check runs on every
+    // rescued transition, not only on those with new records.
+    _maybeShowFirstFamiliarityHint();
     final justUnlocked = _game.recordsJustUnlocked;
     if (justUnlocked.isEmpty) return;
     // Skip if we've already consumed this exact set (a no-op rebuild).
@@ -262,6 +273,17 @@ class _RescueScreenState extends State<RescueScreen> {
                               const LanguagePickerButton(),
                             ],
                           ),
+                          // PR 3 — Familiarity ambient cue. Quiet
+                          // observational annotation between the
+                          // transactional status row and the rescued
+                          // headline. Only on rescued + previously-
+                          // solved; non-familiar rescues keep the
+                          // original 30dp spacing unchanged.
+                          if (isRescued && _game.wasPreviouslySolvedAtStart)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 6),
+                              child: FamiliarCue(),
+                            ),
                           const SizedBox(height: 30),
                           HeadlineText(
                             state: _game.state,
@@ -340,6 +362,21 @@ class _RescueScreenState extends State<RescueScreen> {
                   bottom: 170,
                   child: FirstBookmarkHintOverlay(
                     onDismissed: _handleFirstBookmarkHintDismissed,
+                  ),
+                ),
+              // PR 3 — first-recognition inline hint. One-time per device.
+              // Fires the first time the player re-encounters a previously-
+              // solved canonical id. Positioned HIGHER than the bookmark
+              // hint so if both fire on the same rescued screen (rare),
+              // they stack vertically rather than overlap. Non-interactive
+              // (IgnorePointer is internal to the overlay).
+              if (_showFirstFamiliarityHint)
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 250,
+                  child: FamiliarityFirstSeenOverlay(
+                    onDismissed: _handleFirstFamiliarityHintDismissed,
                   ),
                 ),
               // G1.1 — Episode Completion Sheet. Mounts over the rescue UI
@@ -476,6 +513,26 @@ class _RescueScreenState extends State<RescueScreen> {
   void _handleFirstBookmarkHintDismissed() {
     if (!mounted) return;
     setState(() => _showFirstBookmarkHint = false);
+  }
+
+  /// PR 3 Familiarity — fire the one-time first-recognition inline hint.
+  /// Gated on (a) the current puzzle being a previously-solved canonical,
+  /// (b) the store flag not yet marked, and (c) the local flag not
+  /// already showing. Marks the persisted flag immediately so a
+  /// mid-fade screen-close does not re-fire on the next rescued state.
+  void _maybeShowFirstFamiliarityHint() {
+    if (!_game.wasPreviouslySolvedAtStart) return;
+    final store = widget.store;
+    if (store == null) return;
+    if (store.hasSeenFirstFamiliarityHint) return;
+    if (_showFirstFamiliarityHint) return;
+    unawaited(store.markFirstFamiliarityHintSeen());
+    setState(() => _showFirstFamiliarityHint = true);
+  }
+
+  void _handleFirstFamiliarityHintDismissed() {
+    if (!mounted) return;
+    setState(() => _showFirstFamiliarityHint = false);
   }
 
   /// R1B — renders the active mid-rescue overlay for [recordId]. The first

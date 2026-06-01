@@ -532,4 +532,10 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get relativeTimeToday => 'bugün';
+
+  @override
+  String get familiarCueLabel => 'AŞİNA';
+
+  @override
+  String get familiarFirstSeenHintLine => 'Bunu biliyorsun.';
 }

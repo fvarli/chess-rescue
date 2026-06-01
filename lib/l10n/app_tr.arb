@@ -178,5 +178,8 @@
   "signaturesJournalRememberedDetail": "Hâlâ hatırlanıyor.",
   "signaturesFirstBookmarkHintLine1": "Kaydedildi.",
   "signaturesFirstBookmarkHintLine2": "Seninle kalan kurtarışları sakla.",
-  "relativeTimeToday": "bugün"
+  "relativeTimeToday": "bugün",
+
+  "familiarCueLabel": "AŞİNA",
+  "familiarFirstSeenHintLine": "Bunu biliyorsun."
 }
