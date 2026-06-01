@@ -471,4 +471,69 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get recordUnlockOverlayCta => 'Page turned.';
+
+  @override
+  String get signaturesTabLabel => 'SIGNATURES';
+
+  @override
+  String get signaturesEmptyStateLine1 => 'Some rescues stay with you.';
+
+  @override
+  String get signaturesEmptyStateLine2 => 'This is where you keep them.';
+
+  @override
+  String get signaturesRecentlySolvedHeader => 'RECENTLY SOLVED';
+
+  @override
+  String get signaturesMenuRemove => 'Remove from Signatures';
+
+  @override
+  String get signaturesRemoveDialogTitle => 'Remove from Signatures?';
+
+  @override
+  String get signaturesRemoveDialogBody =>
+      'This rescue won\'t be in your collection any more.';
+
+  @override
+  String get signaturesRemoveDialogCancel => 'Cancel';
+
+  @override
+  String get signaturesRemoveDialogConfirm => 'Remove';
+
+  @override
+  String signaturesJournalLineCanonical(int episodeNumber) {
+    return 'From Episode $episodeNumber';
+  }
+
+  @override
+  String signaturesJournalLineCanonicalToday(int episodeNumber) {
+    return 'From Episode $episodeNumber · today';
+  }
+
+  @override
+  String get signaturesJournalLineEndless => 'From Endless';
+
+  @override
+  String get signaturesJournalLineEndlessToday => 'From Endless · today';
+
+  @override
+  String signaturesJournalCanonicalDetail(int episodeNumber) {
+    return 'From Episode $episodeNumber.';
+  }
+
+  @override
+  String get signaturesJournalEndlessDetail => 'From Endless.';
+
+  @override
+  String get signaturesJournalRememberedDetail => 'Still remembered.';
+
+  @override
+  String get signaturesFirstBookmarkHintLine1 => 'Saved.';
+
+  @override
+  String get signaturesFirstBookmarkHintLine2 =>
+      'Keep the rescues that stay with you.';
+
+  @override
+  String get relativeTimeToday => 'today';
 }

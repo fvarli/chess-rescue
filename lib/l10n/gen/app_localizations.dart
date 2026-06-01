@@ -950,6 +950,120 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Page turned.'**
   String get recordUnlockOverlayCta;
+
+  /// Signatures tab label inside the Records modal. Mono small-caps register, paired with RECORDS.
+  ///
+  /// In en, this message translates to:
+  /// **'SIGNATURES'**
+  String get signaturesTabLabel;
+
+  /// Signatures empty-state line 1 — names the player-system relationship (what the player feels), never prescribes saving criteria.
+  ///
+  /// In en, this message translates to:
+  /// **'Some rescues stay with you.'**
+  String get signaturesEmptyStateLine1;
+
+  /// Signatures empty-state line 2 — names what the surface is. Pairs with line 1.
+  ///
+  /// In en, this message translates to:
+  /// **'This is where you keep them.'**
+  String get signaturesEmptyStateLine2;
+
+  /// Hairline-bracketed mono small-caps header above the fallback intake list inside the SIGNATURES tab.
+  ///
+  /// In en, this message translates to:
+  /// **'RECENTLY SOLVED'**
+  String get signaturesRecentlySolvedHeader;
+
+  /// Three-dot overflow menu item inside the signature expansion sheet — opens the removal confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Signatures'**
+  String get signaturesMenuRemove;
+
+  /// Title for the AlertDialog that confirms removing a signature from the collection.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Signatures?'**
+  String get signaturesRemoveDialogTitle;
+
+  /// Body copy for the remove-confirmation dialog. Quiet, informational, not alarming.
+  ///
+  /// In en, this message translates to:
+  /// **'This rescue won\'t be in your collection any more.'**
+  String get signaturesRemoveDialogBody;
+
+  /// Cancel action label for the remove-confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get signaturesRemoveDialogCancel;
+
+  /// Confirm-remove action label for the remove-confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get signaturesRemoveDialogConfirm;
+
+  /// Signature card journal fragment for a canonical-episode save NOT adopted today. Notebook marginalia: no trailing period.
+  ///
+  /// In en, this message translates to:
+  /// **'From Episode {episodeNumber}'**
+  String signaturesJournalLineCanonical(int episodeNumber);
+
+  /// Signature card journal fragment for a canonical-episode save adopted today — adds the only freshness signal allowed in the journal register.
+  ///
+  /// In en, this message translates to:
+  /// **'From Episode {episodeNumber} · today'**
+  String signaturesJournalLineCanonicalToday(int episodeNumber);
+
+  /// Signature card journal fragment for an Endless save NOT adopted today.
+  ///
+  /// In en, this message translates to:
+  /// **'From Endless'**
+  String get signaturesJournalLineEndless;
+
+  /// Signature card journal fragment for an Endless save adopted today.
+  ///
+  /// In en, this message translates to:
+  /// **'From Endless · today'**
+  String get signaturesJournalLineEndlessToday;
+
+  /// Expansion sheet journal line 1 for a canonical-episode save — sentence form with period; carries no time fragment.
+  ///
+  /// In en, this message translates to:
+  /// **'From Episode {episodeNumber}.'**
+  String signaturesJournalCanonicalDetail(int episodeNumber);
+
+  /// Expansion sheet journal line 1 for an Endless save — sentence form with period.
+  ///
+  /// In en, this message translates to:
+  /// **'From Endless.'**
+  String get signaturesJournalEndlessDetail;
+
+  /// Expansion sheet journal line 2 — names what the Signatures layer is FOR (a memory layer). Pairs under the provenance line.
+  ///
+  /// In en, this message translates to:
+  /// **'Still remembered.'**
+  String get signaturesJournalRememberedDetail;
+
+  /// First-bookmark inline hint line 1 — mono small-caps, dim. Fires once per device.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved.'**
+  String get signaturesFirstBookmarkHintLine1;
+
+  /// First-bookmark inline hint line 2 — body 12pt, dim. Echoes the empty-state framing so the relationship vocabulary stays consistent across articulation moments.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the rescues that stay with you.'**
+  String get signaturesFirstBookmarkHintLine2;
+
+  /// Single-word relative-time fragment used inside the journal-line-today variants on the SIGNATURES tab. The only relative-time string V1 surfaces.
+  ///
+  /// In en, this message translates to:
+  /// **'today'**
+  String get relativeTimeToday;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

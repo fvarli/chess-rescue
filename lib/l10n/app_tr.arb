@@ -158,5 +158,25 @@
   "recordUnlockEyebrow": "✓ KAYIT AÇILDI",
   "recordUnlockEyebrowFirstEver": "Bir sayfa yazıldı.",
   "recordsAllPagesWritten": "Her sayfa yazıldı.",
-  "recordUnlockOverlayCta": "Sayfa çevrildi."
+  "recordUnlockOverlayCta": "Sayfa çevrildi.",
+
+  "signaturesTabLabel": "İMZALAR",
+  "signaturesEmptyStateLine1": "Bazı kurtarışlar seninle kalır.",
+  "signaturesEmptyStateLine2": "Onları burada saklarsın.",
+  "signaturesRecentlySolvedHeader": "SON ÇÖZÜLENLER",
+  "signaturesMenuRemove": "İmzalardan kaldır",
+  "signaturesRemoveDialogTitle": "İmzalardan kaldırılsın mı?",
+  "signaturesRemoveDialogBody": "Bu kurtarış artık koleksiyonunda olmayacak.",
+  "signaturesRemoveDialogCancel": "İptal",
+  "signaturesRemoveDialogConfirm": "Kaldır",
+  "signaturesJournalLineCanonical": "{episodeNumber}. Bölümden",
+  "signaturesJournalLineCanonicalToday": "{episodeNumber}. Bölümden · bugün",
+  "signaturesJournalLineEndless": "Sonsuzdan",
+  "signaturesJournalLineEndlessToday": "Sonsuzdan · bugün",
+  "signaturesJournalCanonicalDetail": "{episodeNumber}. Bölümden.",
+  "signaturesJournalEndlessDetail": "Sonsuzdan.",
+  "signaturesJournalRememberedDetail": "Hâlâ hatırlanıyor.",
+  "signaturesFirstBookmarkHintLine1": "Kaydedildi.",
+  "signaturesFirstBookmarkHintLine2": "Seninle kalan kurtarışları sakla.",
+  "relativeTimeToday": "bugün"
 }

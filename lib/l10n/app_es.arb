@@ -158,5 +158,25 @@
   "recordUnlockEyebrow": "✓ REGISTRO DESBLOQUEADO",
   "recordUnlockEyebrowFirstEver": "Se ha escrito una página.",
   "recordsAllPagesWritten": "Cada página ha sido escrita.",
-  "recordUnlockOverlayCta": "Página pasada."
+  "recordUnlockOverlayCta": "Página pasada.",
+
+  "signaturesTabLabel": "FIRMAS",
+  "signaturesEmptyStateLine1": "Algunos rescates se quedan contigo.",
+  "signaturesEmptyStateLine2": "Aquí es donde los guardas.",
+  "signaturesRecentlySolvedHeader": "RESUELTOS RECIENTEMENTE",
+  "signaturesMenuRemove": "Quitar de Firmas",
+  "signaturesRemoveDialogTitle": "¿Quitar de Firmas?",
+  "signaturesRemoveDialogBody": "Este rescate ya no estará en tu colección.",
+  "signaturesRemoveDialogCancel": "Cancelar",
+  "signaturesRemoveDialogConfirm": "Quitar",
+  "signaturesJournalLineCanonical": "Del Episodio {episodeNumber}",
+  "signaturesJournalLineCanonicalToday": "Del Episodio {episodeNumber} · hoy",
+  "signaturesJournalLineEndless": "Del Infinito",
+  "signaturesJournalLineEndlessToday": "Del Infinito · hoy",
+  "signaturesJournalCanonicalDetail": "Del Episodio {episodeNumber}.",
+  "signaturesJournalEndlessDetail": "Del Infinito.",
+  "signaturesJournalRememberedDetail": "Aún recordado.",
+  "signaturesFirstBookmarkHintLine1": "Guardado.",
+  "signaturesFirstBookmarkHintLine2": "Guarda los rescates que se quedan contigo.",
+  "relativeTimeToday": "hoy"
 }

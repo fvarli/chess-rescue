@@ -6,10 +6,14 @@ import '../../core/models/rescue_record_library.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../signatures/signatures_tab.dart';
+import '../signatures/signatures_tab_pulse.dart';
 import 'record_symbols.dart';
 
-/// R1B — opens the modal Records Sheet over the host. Returns the
-/// `Future<void>` that completes when the sheet is dismissed.
+/// R1B / PR 2 — opens the modal Records Sheet over the host. The sheet
+/// now hosts two tabs: RECORDS (the original journal) and SIGNATURES
+/// (PR 2 player-curated collection). Default tab is RECORDS for
+/// backward compatibility with existing flows.
 Future<void> showRecordsSheet(BuildContext context, ProgressStore? store) {
   return showModalBottomSheet<void>(
     context: context,
@@ -25,33 +29,32 @@ Future<void> showRecordsSheet(BuildContext context, ProgressStore? store) {
   );
 }
 
-/// R1B — the Record Book sheet. Renders 4 category sections in book order
-/// (Rescue → Episodes → Endless → Mastery) with hairline dividers,
-/// typographic rows, chained mystery visibility, and the Mastery
-/// hiddenCategory rule. No boxed-card styling, no progress bars, no
-/// percentage, no "claim" CTAs.
-class RecordsSheet extends StatelessWidget {
+/// PR 2 — what tab is active inside [RecordsSheet]. Default: records.
+enum _RecordsSheetTab { records, signatures }
+
+/// R1B + PR 2 — the Records modal. Hosts two tabs (RECORDS / SIGNATURES)
+/// behind a hand-rolled segmented control. The RECORDS body retains the
+/// original behaviour: 4 category sections in book order, hairline
+/// dividers, mystery visibility, count line at the top of the body
+/// (`"5 / 13"` / `"Every page has been written."`). The SIGNATURES body
+/// is delegated to [SignaturesTab] — fully self-contained, store
+/// injected via constructor, no Records-modal-specific coupling
+/// (extractability — see PR 2 plan §4).
+class RecordsSheet extends StatefulWidget {
   const RecordsSheet({super.key, this.store});
 
   final ProgressStore? store;
 
   @override
+  State<RecordsSheet> createState() => _RecordsSheetState();
+}
+
+class _RecordsSheetState extends State<RecordsSheet> {
+  _RecordsSheetTab _activeTab = _RecordsSheetTab.records;
+
+  @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context)!;
-    final completedIds = store?.completedIds ?? const <String>{};
-    final unlocked = store?.unlockedRecordsSet ?? const <String>{};
-    final snapshot = RescueRecordSnapshot(
-      lifetimeSaved: store?.lifetimeSaved ?? 0,
-      bestEndlessStreak: store?.bestEndlessStreak ?? 0,
-      currentEndlessStreakPeak: 0,
-      completedIds: completedIds,
-      unlockedRecords: unlocked,
-    );
-    final states = evaluateRecords(snapshot);
-    final unlockedCount = states.where((s) => s.isUnlocked).length;
-    final isFreshInstall = unlocked.isEmpty;
-    final isAllUnlocked = unlockedCount == RescueRecordLibrary.all.length;
-
     final height = MediaQuery.of(context).size.height * 0.88;
 
     return Container(
@@ -82,8 +85,142 @@ class RecordsSheet extends StatelessWidget {
                 fontSize: 11,
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
+            const SizedBox(height: 14),
+            // PR 2 — segmented tab control. The SIGNATURES button is
+            // wrapped by SignaturesTabPulse, which animates a one-time
+            // mint border-glow when the player opens the modal for the
+            // first time after their first bookmark.
+            _SegmentedTabs(
+              activeTab: _activeTab,
+              store: widget.store,
+              onSelect: (tab) => setState(() => _activeTab = tab),
+              recordsLabel: l.recordsSheetEyebrow,
+              signaturesLabel: l.signaturesTabLabel,
+            ),
+            const SizedBox(height: 18),
+            Expanded(
+              child: _activeTab == _RecordsSheetTab.records
+                  ? _RecordsBody(l: l, store: widget.store)
+                  : SignaturesTab(store: widget.store),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SegmentedTabs extends StatelessWidget {
+  const _SegmentedTabs({
+    required this.activeTab,
+    required this.store,
+    required this.onSelect,
+    required this.recordsLabel,
+    required this.signaturesLabel,
+  });
+
+  final _RecordsSheetTab activeTab;
+  final ProgressStore? store;
+  final ValueChanged<_RecordsSheetTab> onSelect;
+  // The records-tab label here reuses the existing `recordsSheetEyebrow`
+  // ("RESCUE RECORDS") so the eyebrow + the tab are visually consistent.
+  final String recordsLabel;
+  final String signaturesLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _TabButton(
+          label: 'RECORDS',
+          isActive: activeTab == _RecordsSheetTab.records,
+          onTap: () => onSelect(_RecordsSheetTab.records),
+        ),
+        const SizedBox(width: 28),
+        SignaturesTabPulse(
+          store: store,
+          child: _TabButton(
+            label: signaturesLabel,
+            isActive: activeTab == _RecordsSheetTab.signatures,
+            onTap: () => onSelect(_RecordsSheetTab.signatures),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TabButton extends StatelessWidget {
+  const _TabButton({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isActive ? AppColors.rescue : Colors.transparent,
+              width: 1,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppText.mono.copyWith(
+            fontSize: 10,
+            letterSpacing: 1.2,
+            color: isActive ? AppColors.text : AppColors.textMuted,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RecordsBody extends StatelessWidget {
+  const _RecordsBody({required this.l, required this.store});
+
+  final AppL10n l;
+  final ProgressStore? store;
+
+  @override
+  Widget build(BuildContext context) {
+    final completedIds = store?.completedIds ?? const <String>{};
+    final unlocked = store?.unlockedRecordsSet ?? const <String>{};
+    final snapshot = RescueRecordSnapshot(
+      lifetimeSaved: store?.lifetimeSaved ?? 0,
+      bestEndlessStreak: store?.bestEndlessStreak ?? 0,
+      currentEndlessStreakPeak: 0,
+      completedIds: completedIds,
+      unlockedRecords: unlocked,
+    );
+    final states = evaluateRecords(snapshot);
+    final unlockedCount = states.where((s) => s.isUnlocked).length;
+    final isFreshInstall = unlocked.isEmpty;
+    final isAllUnlocked = unlockedCount == RescueRecordLibrary.all.length;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Count line (lifted from the modal top into the RECORDS body
+          // per PR 2 — SIGNATURES is curated, not counted).
+          Center(
+            child: Text(
               isAllUnlocked
                   ? l.recordsAllPagesWritten
                   : l.recordsCount(
@@ -96,36 +233,26 @@ class RecordsSheet extends StatelessWidget {
                 color: AppColors.textDim,
               ),
             ),
-            const SizedBox(height: 22),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (isFreshInstall) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          l.recordsSheetIntro,
-                          textAlign: TextAlign.center,
-                          style: AppText.body.copyWith(
-                            fontSize: 14,
-                            fontStyle: FontStyle.italic,
-                            color: AppColors.textDim,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                    ],
-                    ..._buildCategorySections(l, states),
-                    const SizedBox(height: 24),
-                  ],
+          ),
+          const SizedBox(height: 18),
+          if (isFreshInstall) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                l.recordsSheetIntro,
+                textAlign: TextAlign.center,
+                style: AppText.body.copyWith(
+                  fontSize: 14,
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.textDim,
                 ),
               ),
             ),
+            const SizedBox(height: 18),
           ],
-        ),
+          ..._buildCategorySections(l, states),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }

@@ -481,4 +481,69 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get recordUnlockOverlayCta => 'Página pasada.';
+
+  @override
+  String get signaturesTabLabel => 'FIRMAS';
+
+  @override
+  String get signaturesEmptyStateLine1 => 'Algunos rescates se quedan contigo.';
+
+  @override
+  String get signaturesEmptyStateLine2 => 'Aquí es donde los guardas.';
+
+  @override
+  String get signaturesRecentlySolvedHeader => 'RESUELTOS RECIENTEMENTE';
+
+  @override
+  String get signaturesMenuRemove => 'Quitar de Firmas';
+
+  @override
+  String get signaturesRemoveDialogTitle => '¿Quitar de Firmas?';
+
+  @override
+  String get signaturesRemoveDialogBody =>
+      'Este rescate ya no estará en tu colección.';
+
+  @override
+  String get signaturesRemoveDialogCancel => 'Cancelar';
+
+  @override
+  String get signaturesRemoveDialogConfirm => 'Quitar';
+
+  @override
+  String signaturesJournalLineCanonical(int episodeNumber) {
+    return 'Del Episodio $episodeNumber';
+  }
+
+  @override
+  String signaturesJournalLineCanonicalToday(int episodeNumber) {
+    return 'Del Episodio $episodeNumber · hoy';
+  }
+
+  @override
+  String get signaturesJournalLineEndless => 'Del Infinito';
+
+  @override
+  String get signaturesJournalLineEndlessToday => 'Del Infinito · hoy';
+
+  @override
+  String signaturesJournalCanonicalDetail(int episodeNumber) {
+    return 'Del Episodio $episodeNumber.';
+  }
+
+  @override
+  String get signaturesJournalEndlessDetail => 'Del Infinito.';
+
+  @override
+  String get signaturesJournalRememberedDetail => 'Aún recordado.';
+
+  @override
+  String get signaturesFirstBookmarkHintLine1 => 'Guardado.';
+
+  @override
+  String get signaturesFirstBookmarkHintLine2 =>
+      'Guarda los rescates que se quedan contigo.';
+
+  @override
+  String get relativeTimeToday => 'hoy';
 }

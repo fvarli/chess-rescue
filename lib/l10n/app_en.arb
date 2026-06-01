@@ -400,5 +400,59 @@
   "recordsAllPagesWritten": "Every page has been written.",
   "@recordsAllPagesWritten": { "description": "R1 final-state line — fires once as an overlay when the 13th record is earned, AND replaces the count line on Home + Records Sheet permanently afterwards. Not a reward, just a meaningful inscription." },
   "recordUnlockOverlayCta": "Page turned.",
-  "@recordUnlockOverlayCta": { "description": "R1 unlock overlay CTA — book-themed dismissal copy. Replaces the earlier 'Nice' draft per the lead's premium-register direction." }
+  "@recordUnlockOverlayCta": { "description": "R1 unlock overlay CTA — book-themed dismissal copy. Replaces the earlier 'Nice' draft per the lead's premium-register direction." },
+
+  "signaturesTabLabel": "SIGNATURES",
+  "@signaturesTabLabel": { "description": "Signatures tab label inside the Records modal. Mono small-caps register, paired with RECORDS." },
+  "signaturesEmptyStateLine1": "Some rescues stay with you.",
+  "@signaturesEmptyStateLine1": { "description": "Signatures empty-state line 1 — names the player-system relationship (what the player feels), never prescribes saving criteria." },
+  "signaturesEmptyStateLine2": "This is where you keep them.",
+  "@signaturesEmptyStateLine2": { "description": "Signatures empty-state line 2 — names what the surface is. Pairs with line 1." },
+  "signaturesRecentlySolvedHeader": "RECENTLY SOLVED",
+  "@signaturesRecentlySolvedHeader": { "description": "Hairline-bracketed mono small-caps header above the fallback intake list inside the SIGNATURES tab." },
+  "signaturesMenuRemove": "Remove from Signatures",
+  "@signaturesMenuRemove": { "description": "Three-dot overflow menu item inside the signature expansion sheet — opens the removal confirmation dialog." },
+  "signaturesRemoveDialogTitle": "Remove from Signatures?",
+  "@signaturesRemoveDialogTitle": { "description": "Title for the AlertDialog that confirms removing a signature from the collection." },
+  "signaturesRemoveDialogBody": "This rescue won't be in your collection any more.",
+  "@signaturesRemoveDialogBody": { "description": "Body copy for the remove-confirmation dialog. Quiet, informational, not alarming." },
+  "signaturesRemoveDialogCancel": "Cancel",
+  "@signaturesRemoveDialogCancel": { "description": "Cancel action label for the remove-confirmation dialog." },
+  "signaturesRemoveDialogConfirm": "Remove",
+  "@signaturesRemoveDialogConfirm": { "description": "Confirm-remove action label for the remove-confirmation dialog." },
+  "signaturesJournalLineCanonical": "From Episode {episodeNumber}",
+  "@signaturesJournalLineCanonical": {
+    "description": "Signature card journal fragment for a canonical-episode save NOT adopted today. Notebook marginalia: no trailing period.",
+    "placeholders": {
+      "episodeNumber": { "type": "int" }
+    }
+  },
+  "signaturesJournalLineCanonicalToday": "From Episode {episodeNumber} · today",
+  "@signaturesJournalLineCanonicalToday": {
+    "description": "Signature card journal fragment for a canonical-episode save adopted today — adds the only freshness signal allowed in the journal register.",
+    "placeholders": {
+      "episodeNumber": { "type": "int" }
+    }
+  },
+  "signaturesJournalLineEndless": "From Endless",
+  "@signaturesJournalLineEndless": { "description": "Signature card journal fragment for an Endless save NOT adopted today." },
+  "signaturesJournalLineEndlessToday": "From Endless · today",
+  "@signaturesJournalLineEndlessToday": { "description": "Signature card journal fragment for an Endless save adopted today." },
+  "signaturesJournalCanonicalDetail": "From Episode {episodeNumber}.",
+  "@signaturesJournalCanonicalDetail": {
+    "description": "Expansion sheet journal line 1 for a canonical-episode save — sentence form with period; carries no time fragment.",
+    "placeholders": {
+      "episodeNumber": { "type": "int" }
+    }
+  },
+  "signaturesJournalEndlessDetail": "From Endless.",
+  "@signaturesJournalEndlessDetail": { "description": "Expansion sheet journal line 1 for an Endless save — sentence form with period." },
+  "signaturesJournalRememberedDetail": "Still remembered.",
+  "@signaturesJournalRememberedDetail": { "description": "Expansion sheet journal line 2 — names what the Signatures layer is FOR (a memory layer). Pairs under the provenance line." },
+  "signaturesFirstBookmarkHintLine1": "Saved.",
+  "@signaturesFirstBookmarkHintLine1": { "description": "First-bookmark inline hint line 1 — mono small-caps, dim. Fires once per device." },
+  "signaturesFirstBookmarkHintLine2": "Keep the rescues that stay with you.",
+  "@signaturesFirstBookmarkHintLine2": { "description": "First-bookmark inline hint line 2 — body 12pt, dim. Echoes the empty-state framing so the relationship vocabulary stays consistent across articulation moments." },
+  "relativeTimeToday": "today",
+  "@relativeTimeToday": { "description": "Single-word relative-time fragment used inside the journal-line-today variants on the SIGNATURES tab. The only relative-time string V1 surfaces." }
 }

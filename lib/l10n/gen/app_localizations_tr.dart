@@ -467,4 +467,69 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get recordUnlockOverlayCta => 'Sayfa çevrildi.';
+
+  @override
+  String get signaturesTabLabel => 'İMZALAR';
+
+  @override
+  String get signaturesEmptyStateLine1 => 'Bazı kurtarışlar seninle kalır.';
+
+  @override
+  String get signaturesEmptyStateLine2 => 'Onları burada saklarsın.';
+
+  @override
+  String get signaturesRecentlySolvedHeader => 'SON ÇÖZÜLENLER';
+
+  @override
+  String get signaturesMenuRemove => 'İmzalardan kaldır';
+
+  @override
+  String get signaturesRemoveDialogTitle => 'İmzalardan kaldırılsın mı?';
+
+  @override
+  String get signaturesRemoveDialogBody =>
+      'Bu kurtarış artık koleksiyonunda olmayacak.';
+
+  @override
+  String get signaturesRemoveDialogCancel => 'İptal';
+
+  @override
+  String get signaturesRemoveDialogConfirm => 'Kaldır';
+
+  @override
+  String signaturesJournalLineCanonical(int episodeNumber) {
+    return '$episodeNumber. Bölümden';
+  }
+
+  @override
+  String signaturesJournalLineCanonicalToday(int episodeNumber) {
+    return '$episodeNumber. Bölümden · bugün';
+  }
+
+  @override
+  String get signaturesJournalLineEndless => 'Sonsuzdan';
+
+  @override
+  String get signaturesJournalLineEndlessToday => 'Sonsuzdan · bugün';
+
+  @override
+  String signaturesJournalCanonicalDetail(int episodeNumber) {
+    return '$episodeNumber. Bölümden.';
+  }
+
+  @override
+  String get signaturesJournalEndlessDetail => 'Sonsuzdan.';
+
+  @override
+  String get signaturesJournalRememberedDetail => 'Hâlâ hatırlanıyor.';
+
+  @override
+  String get signaturesFirstBookmarkHintLine1 => 'Kaydedildi.';
+
+  @override
+  String get signaturesFirstBookmarkHintLine2 =>
+      'Seninle kalan kurtarışları sakla.';
+
+  @override
+  String get relativeTimeToday => 'bugün';
 }

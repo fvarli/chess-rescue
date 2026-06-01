@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -6,6 +7,8 @@ import 'package:flutter/material.dart';
 import '../../core/models/episode.dart';
 import '../../core/models/episode_library.dart';
 import '../../core/models/puzzle_l10n.dart';
+import '../../core/models/signature_entry.dart';
+import '../../core/models/variation.dart' show canonicalPuzzleId;
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
@@ -13,6 +16,8 @@ import '../../l10n/gen/app_localizations.dart';
 import '../records/record_symbols.dart';
 import '../records/record_unlock_overlay.dart';
 import '../settings/language_picker.dart';
+import '../signatures/first_bookmark_hint_overlay.dart';
+import '../signatures/signature_bookmark_glyph.dart';
 import 'episode_completion_sheet.dart';
 import 'game_controller.dart';
 import 'game_state.dart';
@@ -64,6 +69,10 @@ class _RescueScreenState extends State<RescueScreen> {
   String? _activeOverlayId; // currently fading-in / hold / fading-out
   bool _initialUnlockedRecordsEmpty = false;
   bool _firstOverlayHasFired = false;
+  // PR 2 — one-time first-bookmark hint. Flipped to true when the player
+  // adds their very first Signature; the FirstBookmarkHintOverlay clears
+  // it via onDismissed after the fade-out completes.
+  bool _showFirstBookmarkHint = false;
 
   @override
   void initState() {
@@ -231,6 +240,21 @@ class _RescueScreenState extends State<RescueScreen> {
                                   complete: _game.allComplete,
                                 ),
                               ],
+                              // PR 2 — bookmark glyph. Only on the rescued
+                              // state (no rescue to keep before the move
+                              // lands), only when there's a store to write
+                              // to. Visually SECONDARY to SAVED: smaller,
+                              // dim, no mint accent. 12dp gap so it sits a
+                              // bit removed from the SavedBadge cluster.
+                              if (isRescued && widget.store != null) ...[
+                                const SizedBox(width: 12),
+                                SignatureBookmarkGlyph(
+                                  isSaved: widget.store!.isSignatureSaved(
+                                    canonicalPuzzleId(puzzle.id),
+                                  ),
+                                  onTap: _onBookmarkTap,
+                                ),
+                              ],
                               // C5 — tiny language affordance, always visible
                               // on the rescue screen (hidden behind the intro
                               // overlay during first-run).
@@ -302,6 +326,21 @@ class _RescueScreenState extends State<RescueScreen> {
                   right: 24,
                   bottom: 84,
                   child: _buildOverlay(context, l, _activeOverlayId!),
+                ),
+              // PR 2 — first-bookmark inline hint. One-time per device.
+              // Fires immediately after the player taps the bookmark glyph
+              // for the very first time. Positioned slightly higher than
+              // the record unlock band so the rare simultaneous case is
+              // visually distinct. Non-interactive (the overlay is wrapped
+              // in IgnorePointer internally).
+              if (_showFirstBookmarkHint)
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 170,
+                  child: FirstBookmarkHintOverlay(
+                    onDismissed: _handleFirstBookmarkHintDismissed,
+                  ),
                 ),
               // G1.1 — Episode Completion Sheet. Mounts over the rescue UI
               // when the player reaches the canonical / master episode finale;
@@ -387,6 +426,56 @@ class _RescueScreenState extends State<RescueScreen> {
         newlyUnlockedRecordIds: List<String>.unmodifiable(_sessionRecordIds),
       ),
     );
+  }
+
+  /// PR 2 — toggle the current puzzle's Signature membership. Reads the
+  /// current saved state via [ProgressStore.isSignatureSaved] (canonical-
+  /// id based) and either adds or removes. On the player's very first
+  /// add ever (transition from empty signatures + first-bookmark-hint-
+  /// flag not seen → has one), mounts the [FirstBookmarkHintOverlay]
+  /// and marks the flag so it never fires again.
+  void _onBookmarkTap() {
+    final store = widget.store;
+    if (store == null) return;
+    final puzzle = _game.currentPuzzle;
+    final canonical = canonicalPuzzleId(puzzle.id);
+    final episode = _game.episode;
+    final wasSaved = store.isSignatureSaved(canonical);
+    if (wasSaved) {
+      unawaited(store.removeSignature(canonical));
+    } else {
+      final isEndless = episode.kind == EpisodeKind.endless;
+      unawaited(
+        store.addSignature(
+          SignatureEntry(
+            canonicalPuzzleId: canonical,
+            encounteredPuzzleId: puzzle.id,
+            episodeId: episode.id,
+            adoptedAt: DateTime.now(),
+            endlessSeed: isEndless ? _game.sessionSeed : null,
+            endlessMirrored: isEndless ? puzzle.id.contains('#mirror') : null,
+          ),
+        ),
+      );
+      // Trigger the one-time first-bookmark hint if (a) the player had
+      // never bookmarked anything before, and (b) the inline hint flag
+      // has never been marked. We check both because PR 1's storage
+      // tracks the flag independently of the signatures list — a player
+      // could have bookmarked once, removed it, and the flag would still
+      // be true (the hint has been seen). We only want the hint on the
+      // genuine first-ever bookmark.
+      if (!store.hasSeenSignaturesFirstBookmarkHint) {
+        unawaited(store.markSignaturesFirstBookmarkHintSeen());
+        setState(() => _showFirstBookmarkHint = true);
+      }
+    }
+    // Re-render the glyph (and any consumers of isSignatureSaved).
+    setState(() {});
+  }
+
+  void _handleFirstBookmarkHintDismissed() {
+    if (!mounted) return;
+    setState(() => _showFirstBookmarkHint = false);
   }
 
   /// R1B — renders the active mid-rescue overlay for [recordId]. The first
