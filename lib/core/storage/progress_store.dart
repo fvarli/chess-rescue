@@ -22,6 +22,7 @@ class ProgressStore {
   static const String _kCurrentEpisodeId = 'cr_current_episode_id';
   static const String _kEpisodeSeeds = 'cr_episode_seeds';
   static const String _kBestEndlessStreak = 'cr_best_endless_streak';
+  static const String _kUnlockedRecords = 'cr_unlocked_records';
 
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
@@ -81,6 +82,27 @@ class ProgressStore {
   // Updated via [updateBestEndlessStreak] which takes max(stored, candidate).
   int get bestEndlessStreak => _prefs.getInt(_kBestEndlessStreak) ?? 0;
 
+  // R1 Rescue Records — earned record ids in insertion order. The list is
+  // treated as a set for `contains` lookups but preserves order so the
+  // Home preview's open-page row can read the last entry. Append-only with
+  // at-write dedup; never reordered.
+  List<String> get unlockedRecords {
+    final raw = _prefs.getString(_kUnlockedRecords);
+    if (raw == null || raw.isEmpty) return const <String>[];
+    try {
+      final decoded = json.decode(raw);
+      if (decoded is List) {
+        return decoded.map((e) => e.toString()).toList();
+      }
+    } catch (_) {}
+    return const <String>[];
+  }
+
+  // Convenience: same data, as a Set for `contains` lookups inside the
+  // evaluator. Computed every read — the list is short (<= 13 entries in
+  // R1) so the cost is negligible.
+  Set<String> get unlockedRecordsSet => unlockedRecords.toSet();
+
   Future<void> save({
     required int sessionSeed,
     required int puzzleIndex,
@@ -131,6 +153,16 @@ class ProgressStore {
     await _prefs.setInt(_kBestEndlessStreak, candidate);
   }
 
+  // R1 — append a record id to the unlocked-records list if not already
+  // present. Insertion order is preserved (the list's last entry is the
+  // page the Home preview is currently open at).
+  Future<void> addUnlockedRecord(String id) async {
+    final current = unlockedRecords;
+    if (current.contains(id)) return;
+    final next = [...current, id];
+    await _prefs.setString(_kUnlockedRecords, json.encode(next));
+  }
+
   Future<void> clear() async {
     await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
@@ -142,5 +174,6 @@ class ProgressStore {
     await _prefs.remove(_kCurrentEpisodeId);
     await _prefs.remove(_kEpisodeSeeds);
     await _prefs.remove(_kBestEndlessStreak);
+    await _prefs.remove(_kUnlockedRecords);
   }
 }

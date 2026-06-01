@@ -638,6 +638,318 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Continue'**
   String get episodeSheetContinue;
+
+  /// R1 record title — the originating page of the Record Book. Lifetime 1.
+  ///
+  /// In en, this message translates to:
+  /// **'First Rescue'**
+  String get recordTitle_firstRescue;
+
+  /// R1 record title. Lifetime 10 — the rhythm becomes familiar.
+  ///
+  /// In en, this message translates to:
+  /// **'Familiar Ground'**
+  String get recordTitle_familiarGround;
+
+  /// R1 record title. Lifetime 25 — identity formed.
+  ///
+  /// In en, this message translates to:
+  /// **'The Rescuer'**
+  String get recordTitle_theRescuer;
+
+  /// R1 record title. Lifetime 100 — long-haul endurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Unbroken'**
+  String get recordTitle_unbroken;
+
+  /// R1 record title — clearing Episode 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Strike Back'**
+  String get recordTitle_ep1StrikeBack;
+
+  /// R1 record title — clearing Episode 2.
+  ///
+  /// In en, this message translates to:
+  /// **'End the Threat'**
+  String get recordTitle_ep2EndTheThreat;
+
+  /// R1 record title — clearing Episode 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the Line'**
+  String get recordTitle_ep3HoldTheLine;
+
+  /// R1 record title — clearing Episode 4 (master mirror chapter).
+  ///
+  /// In en, this message translates to:
+  /// **'The Other Side'**
+  String get recordTitle_ep4TheOtherSide;
+
+  /// R1 record title — fires on the first rescue after Ep4 is complete; the canonical-plus-mirror survival arc.
+  ///
+  /// In en, this message translates to:
+  /// **'Against the Odds'**
+  String get recordTitle_againstTheOdds;
+
+  /// R1 record title — 3-rescue streak in Endless.
+  ///
+  /// In en, this message translates to:
+  /// **'Endless Spark'**
+  String get recordTitle_endlessSpark;
+
+  /// R1 record title — 7-rescue streak in Endless.
+  ///
+  /// In en, this message translates to:
+  /// **'Endless Focus'**
+  String get recordTitle_endlessFocus;
+
+  /// R1 record title — 15-rescue streak in Endless.
+  ///
+  /// In en, this message translates to:
+  /// **'Endless Master'**
+  String get recordTitle_endlessMaster;
+
+  /// R1 record title — clear an episode without a wrong move.
+  ///
+  /// In en, this message translates to:
+  /// **'Unshaken'**
+  String get recordTitle_unshaken;
+
+  /// R1 locked-description (imperative present tense).
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your first rescue.'**
+  String get recordDescriptionLocked_firstRescue;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete 10 rescues.'**
+  String get recordDescriptionLocked_familiarGround;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete 25 rescues.'**
+  String get recordDescriptionLocked_theRescuer;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete 100 rescues.'**
+  String get recordDescriptionLocked_unbroken;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Episode 1.'**
+  String get recordDescriptionLocked_ep1StrikeBack;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Episode 2.'**
+  String get recordDescriptionLocked_ep2EndTheThreat;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Episode 3.'**
+  String get recordDescriptionLocked_ep3HoldTheLine;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Episode 4.'**
+  String get recordDescriptionLocked_ep4TheOtherSide;
+
+  /// R1 locked-description — describes the composite condition without exposing the exact trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear every canonical episode and walk the mirror.'**
+  String get recordDescriptionLocked_againstTheOdds;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach a 3-rescue streak in Endless.'**
+  String get recordDescriptionLocked_endlessSpark;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach a 7-rescue streak in Endless.'**
+  String get recordDescriptionLocked_endlessFocus;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach a 15-rescue streak in Endless.'**
+  String get recordDescriptionLocked_endlessMaster;
+
+  /// R1 locked-description for the Mastery hiddenCategory record.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear an episode without a wrong move.'**
+  String get recordDescriptionLocked_unshaken;
+
+  /// R1 unlocked-description (past-tense diary register).
+  ///
+  /// In en, this message translates to:
+  /// **'Your first rescue.'**
+  String get recordDescriptionUnlocked_firstRescue;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'The board has become familiar.'**
+  String get recordDescriptionUnlocked_familiarGround;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Twenty-five lives saved.'**
+  String get recordDescriptionUnlocked_theRescuer;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'One hundred unbroken.'**
+  String get recordDescriptionUnlocked_unbroken;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared Episode 1.'**
+  String get recordDescriptionUnlocked_ep1StrikeBack;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared Episode 2.'**
+  String get recordDescriptionUnlocked_ep2EndTheThreat;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared Episode 3.'**
+  String get recordDescriptionUnlocked_ep3HoldTheLine;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Walked the other side.'**
+  String get recordDescriptionUnlocked_ep4TheOtherSide;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Against the odds — every page of the canon.'**
+  String get recordDescriptionUnlocked_againstTheOdds;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'A spark caught in Endless.'**
+  String get recordDescriptionUnlocked_endlessSpark;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Seven held in focus.'**
+  String get recordDescriptionUnlocked_endlessFocus;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Fifteen in mastery.'**
+  String get recordDescriptionUnlocked_endlessMaster;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Unshaken throughout.'**
+  String get recordDescriptionUnlocked_unshaken;
+
+  /// R1 records category — sentence-case section divider above the rescue tier.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescue'**
+  String get recordCategoryRescue;
+
+  /// R1 records category — episode-completion section.
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes'**
+  String get recordCategoryEpisodes;
+
+  /// R1 records category — endless-streak section.
+  ///
+  /// In en, this message translates to:
+  /// **'Endless'**
+  String get recordCategoryEndless;
+
+  /// R1 records category — hidden until first Mastery record is earned.
+  ///
+  /// In en, this message translates to:
+  /// **'Mastery'**
+  String get recordCategoryMastery;
+
+  /// R1 Records Sheet header eyebrow. Pre-uppercased per locale per the existing toUpperCase() locale-insensitivity precedent.
+  ///
+  /// In en, this message translates to:
+  /// **'RESCUE RECORDS'**
+  String get recordsSheetEyebrow;
+
+  /// R1 records ledger count — quiet 'N / M' line. No 'unlocked' word, no percentage. Used in sheet and Home preview footer.
+  ///
+  /// In en, this message translates to:
+  /// **'{unlocked} / {total}'**
+  String recordsCount(int unlocked, int total);
+
+  /// R1 placeholder shown for chained-mystery rows (predecessor unlocked, this record still earned).
+  ///
+  /// In en, this message translates to:
+  /// **'???'**
+  String get recordsMysteryTitle;
+
+  /// R1 placeholder shown beneath the ??? title on chained-mystery rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Record.'**
+  String get recordsMysteryDescription;
+
+  /// R1 atmospheric intro line — shown in the Records Sheet AND on the Home preview ONLY while unlockedRecords is empty. Disappears forever after the first record is earned.
+  ///
+  /// In en, this message translates to:
+  /// **'These pages will fill themselves.'**
+  String get recordsSheetIntro;
+
+  /// R1 unlock overlay eyebrow — pre-uppercased per locale, mono uppercase register.
+  ///
+  /// In en, this message translates to:
+  /// **'✓ RECORD UNLOCKED'**
+  String get recordUnlockEyebrow;
+
+  /// R1 special overlay variant — replaces RECORD UNLOCKED on the very first record earned. Italic sentence case, introducing the book itself.
+  ///
+  /// In en, this message translates to:
+  /// **'A page has been written.'**
+  String get recordUnlockEyebrowFirstEver;
+
+  /// R1 final-state line — fires once as an overlay when the 13th record is earned, AND replaces the count line on Home + Records Sheet permanently afterwards. Not a reward, just a meaningful inscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Every page has been written.'**
+  String get recordsAllPagesWritten;
+
+  /// R1 unlock overlay CTA — book-themed dismissal copy. Replaces the earlier 'Nice' draft per the lead's premium-register direction.
+  ///
+  /// In en, this message translates to:
+  /// **'Page turned.'**
+  String get recordUnlockOverlayCta;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

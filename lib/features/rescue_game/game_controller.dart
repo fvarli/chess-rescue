@@ -8,6 +8,8 @@ import '../../core/models/episode_library.dart';
 import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
 import '../../core/models/puzzle_library.dart';
+import '../../core/models/rescue_record_evaluator.dart';
+import '../../core/models/rescue_record_library.dart';
 import '../../core/models/session_composer.dart';
 import '../../core/models/square.dart';
 import '../../core/models/variation.dart';
@@ -54,6 +56,10 @@ class GameController extends ChangeNotifier {
   bool _onboarding = false;
   late bool _introSeen;
   int _currentEndlessStreak = 0;
+  // R1 — per-episode failure counter, reset on every `_loadPuzzle`. Used by
+  // the Unshaken record (clear an episode with zero wrong moves). Pure
+  // in-memory; never persisted.
+  int _failureCount = 0;
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -190,6 +196,13 @@ class GameController extends ChangeNotifier {
     _selected = null;
     _commitInFlight = false;
     if (isRescue) {
+      // R1 — snapshot pre-rescue state BEFORE any side-effects, so the
+      // evaluator diff sees a clean "before" vs the derived "after".
+      final preLifetime = _store?.lifetimeSaved ?? 0;
+      final preStreak = _currentEndlessStreak;
+      final preCompleted = _store?.completedIds ?? const <String>{};
+      final preUnlocked = _store?.unlockedRecordsSet ?? const <String>{};
+
       final base = canonicalPuzzleId(puzzle.id);
       _completed.add(base);
       _state = GameState.rescued;
@@ -207,18 +220,84 @@ class GameController extends ChangeNotifier {
       if (_episode.kind == EpisodeKind.endless) {
         _currentEndlessStreak += 1;
       }
+      // R1 — derive post-rescue state, apply event-only writes (Unshaken /
+      // Ep4 / Against the Odds), run the evaluator diff against the pre
+      // snapshot, persist each newly unlocked id.
+      _persistNewlyUnlockedRecords(
+        preLifetime: preLifetime,
+        preStreak: preStreak,
+        preCompleted: preCompleted,
+        preUnlocked: preUnlocked,
+        rescuedBase: base,
+      );
       notifyListeners();
       return;
     } else {
       _state = GameState.failed;
       _statusMsg = '▮ Still trapped';
       Haptics.fail();
+      _failureCount += 1; // R1 — drives the Unshaken / Mastery test
       // A failed move ends an in-progress endless streak.
       if (_episode.kind == EpisodeKind.endless) {
         _endEndlessStreak();
       }
     }
     notifyListeners();
+  }
+
+  // R1 — derive the post-rescue snapshot (incl. event-only Unshaken / Ep4 /
+  // Against the Odds writes), diff against the pre snapshot, and persist
+  // every newly unlocked record id via the store's addUnlockedRecord. Order
+  // of insertion is preserved (library order via the evaluator).
+  void _persistNewlyUnlockedRecords({
+    required int preLifetime,
+    required int preStreak,
+    required Set<String> preCompleted,
+    required Set<String> preUnlocked,
+    required String rescuedBase,
+  }) {
+    final before = RescueRecordSnapshot(
+      lifetimeSaved: preLifetime,
+      bestEndlessStreak: _store?.bestEndlessStreak ?? 0,
+      currentEndlessStreakPeak: preStreak,
+      completedIds: preCompleted,
+      unlockedRecords: preUnlocked,
+    );
+
+    final completedAfter = _episode.kind == EpisodeKind.canonical
+        ? {...preCompleted, rescuedBase}
+        : preCompleted;
+    final unlockedAfter = {...preUnlocked};
+
+    // Event-only finale writes (canonical or master episodes — endless
+    // never reaches a finale).
+    final isCanonicalOrMasterFinale =
+        _completed.length == _puzzles.length &&
+        _episode.kind != EpisodeKind.endless;
+    if (isCanonicalOrMasterFinale && _failureCount == 0) {
+      unlockedAfter.add(RescueRecordLibrary.unshaken.id);
+    }
+    if (isCanonicalOrMasterFinale && _episode.kind == EpisodeKind.master) {
+      unlockedAfter.add(RescueRecordLibrary.ep4TheOtherSide.id);
+    }
+    // Against the Odds: the first rescue after Ep4 has ever been earned.
+    if (preUnlocked.contains(RescueRecordLibrary.ep4TheOtherSide.id) &&
+        !unlockedAfter.contains(RescueRecordLibrary.againstTheOdds.id)) {
+      unlockedAfter.add(RescueRecordLibrary.againstTheOdds.id);
+    }
+
+    final after = RescueRecordSnapshot(
+      lifetimeSaved: preLifetime + 1,
+      bestEndlessStreak: _store?.bestEndlessStreak ?? 0,
+      currentEndlessStreakPeak: _currentEndlessStreak,
+      completedIds: completedAfter,
+      unlockedRecords: unlockedAfter,
+    );
+
+    final newIds = newlyUnlocked(before, after);
+    for (final id in newIds) {
+      unawaited(_store?.addUnlockedRecord(id));
+    }
   }
 
   // True when the player has just rescued the last puzzle of a canonical or
@@ -291,6 +370,7 @@ class GameController extends ChangeNotifier {
     );
     _completed.clear();
     _currentEndlessStreak = 0;
+    _failureCount = 0; // R1 — debug-reset also clears the Mastery counter
     _onboarding = _store != null;
     _introSeen = _store == null;
     _loadPuzzle(0);

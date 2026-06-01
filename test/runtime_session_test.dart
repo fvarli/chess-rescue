@@ -213,4 +213,149 @@ void main() {
       },
     );
   });
+
+  group('R1A — controller-side record unlocks', () {
+    test(
+      'the first rescue persists First Rescue + Strike Back/etc thresholds',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final store = await ProgressStore.create();
+        final game = GameController(store: store); // ep1 default
+        await _solveCurrent(game); // rescue p1
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        final fresh = await ProgressStore.create();
+        expect(fresh.unlockedRecords, contains('first-rescue'));
+      },
+    );
+
+    test(
+      'completing Ep1 with zero failures writes Unshaken + Strike Back',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final store = await ProgressStore.create();
+        final game = GameController(store: store); // ep1, 3 puzzles
+        for (var i = 0; i < game.puzzleCount; i++) {
+          await _solveCurrent(game);
+          if (i < game.puzzleCount - 1) game.onPrimaryAction();
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        final fresh = await ProgressStore.create();
+        expect(fresh.unlockedRecords, contains('first-rescue'));
+        expect(fresh.unlockedRecords, contains('ep1-strike-back'));
+        expect(
+          fresh.unlockedRecords,
+          contains('unshaken'),
+          reason: 'no failed moves; Unshaken should fire on the finale',
+        );
+      },
+    );
+
+    test(
+      'Ep4 (master) finale writes The Other Side via eventOnly hook',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_completed_ids': [
+            'p1-knight-rescue',
+            'a4-the-breakaway',
+            'b4-the-cross-check',
+            'p2-take-the-checker',
+            'p5-win-the-queen',
+            'b3-remove-the-defender',
+            'p3-block-the-file',
+            'p4-seal-the-diagonal',
+            'b1-the-martyr',
+          ],
+        });
+        final store = await ProgressStore.create();
+        final game = GameController(store: store, episode: EpisodeLibrary.ep4);
+        // Solve all 3 ep4 mirrors without failing.
+        for (var i = 0; i < game.puzzleCount; i++) {
+          await _solveCurrent(game);
+          if (i < game.puzzleCount - 1) game.onPrimaryAction();
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        final fresh = await ProgressStore.create();
+        expect(fresh.unlockedRecords, contains('ep4-the-other-side'));
+      },
+    );
+
+    test(
+      'Against the Odds fires on the first rescue AFTER Ep4 is unlocked',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_completed_ids': [
+            'p1-knight-rescue',
+            'a4-the-breakaway',
+            'b4-the-cross-check',
+            'p2-take-the-checker',
+            'p5-win-the-queen',
+            'b3-remove-the-defender',
+            'p3-block-the-file',
+            'p4-seal-the-diagonal',
+            'b1-the-martyr',
+          ],
+          'flutter.cr_unlocked_records':
+              '["first-rescue","ep1-strike-back","ep2-end-the-threat","ep3-hold-the-line","ep4-the-other-side"]',
+        });
+        final store = await ProgressStore.create();
+        expect(store.unlockedRecordsSet, contains('ep4-the-other-side'));
+        expect(store.unlockedRecordsSet, isNot(contains('against-the-odds')));
+
+        // Enter an endless episode (or any episode) and complete one rescue.
+        final game = GameController(store: store, episode: EpisodeLibrary.ep5);
+        await _solveCurrent(game);
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        final fresh = await ProgressStore.create();
+        expect(fresh.unlockedRecords, contains('against-the-odds'));
+      },
+    );
+
+    test('failing a move blocks Unshaken on that episode finale', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await ProgressStore.create();
+      final game = GameController(store: store); // ep1
+      // Fail the first puzzle once.
+      final p = game.currentPuzzle;
+      final wrong = p.legalMoves.firstWhere((s) => s != p.rescueTo);
+      game.handleSquare(p.tappableSquare.file, p.tappableSquare.rank);
+      game.handleSquare(wrong.file, wrong.rank);
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+      // Reset and play through the whole episode cleanly.
+      await game.reset();
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+      for (var i = 0; i < game.puzzleCount; i++) {
+        await _solveCurrent(game);
+        if (i < game.puzzleCount - 1) game.onPrimaryAction();
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      final fresh = await ProgressStore.create();
+      expect(fresh.unlockedRecords, contains('ep1-strike-back'));
+      expect(
+        fresh.unlockedRecords,
+        isNot(contains('unshaken')),
+        reason: 'the failed move should disqualify Unshaken',
+      );
+    });
+
+    test(
+      'mid-Ep5 streak crossing 3 unlocks Endless Spark in real time',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final store = await ProgressStore.create();
+        final game = GameController(store: store, episode: EpisodeLibrary.ep5);
+        // Solve three puzzles back-to-back (streak hits 3).
+        for (var i = 0; i < 3; i++) {
+          await _solveCurrent(game);
+          if (i < 2) game.onPrimaryAction();
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        final fresh = await ProgressStore.create();
+        expect(
+          fresh.unlockedRecords,
+          contains('endless-spark'),
+          reason: 'streak peak should trigger Endless Spark immediately',
+        );
+      },
+    );
+  });
 }

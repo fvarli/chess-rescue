@@ -301,4 +301,170 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get episodeSheetContinue => 'Devam et';
+
+  @override
+  String get recordTitle_firstRescue => 'İlk Kurtarış';
+
+  @override
+  String get recordTitle_familiarGround => 'Tanıdık Zemin';
+
+  @override
+  String get recordTitle_theRescuer => 'Kurtarıcı';
+
+  @override
+  String get recordTitle_unbroken => 'Yenilmez';
+
+  @override
+  String get recordTitle_ep1StrikeBack => 'Karşı Vur';
+
+  @override
+  String get recordTitle_ep2EndTheThreat => 'Tehdidi Bitir';
+
+  @override
+  String get recordTitle_ep3HoldTheLine => 'Hattı Tut';
+
+  @override
+  String get recordTitle_ep4TheOtherSide => 'Diğer Taraf';
+
+  @override
+  String get recordTitle_againstTheOdds => 'Tüm Olasılıklara Karşı';
+
+  @override
+  String get recordTitle_endlessSpark => 'Sonsuz Kıvılcım';
+
+  @override
+  String get recordTitle_endlessFocus => 'Sonsuz Odak';
+
+  @override
+  String get recordTitle_endlessMaster => 'Sonsuz Usta';
+
+  @override
+  String get recordTitle_unshaken => 'Sarsılmaz';
+
+  @override
+  String get recordDescriptionLocked_firstRescue => 'İlk kurtarışını tamamla.';
+
+  @override
+  String get recordDescriptionLocked_familiarGround => '10 kurtarış tamamla.';
+
+  @override
+  String get recordDescriptionLocked_theRescuer => '25 kurtarış tamamla.';
+
+  @override
+  String get recordDescriptionLocked_unbroken => '100 kurtarış tamamla.';
+
+  @override
+  String get recordDescriptionLocked_ep1StrikeBack => 'Bölüm 1\'i bitir.';
+
+  @override
+  String get recordDescriptionLocked_ep2EndTheThreat => 'Bölüm 2\'yi bitir.';
+
+  @override
+  String get recordDescriptionLocked_ep3HoldTheLine => 'Bölüm 3\'ü bitir.';
+
+  @override
+  String get recordDescriptionLocked_ep4TheOtherSide => 'Bölüm 4\'ü bitir.';
+
+  @override
+  String get recordDescriptionLocked_againstTheOdds =>
+      'Tüm bölümleri bitir ve aynayı yürü.';
+
+  @override
+  String get recordDescriptionLocked_endlessSpark =>
+      'Sonsuz\'da 3 kurtarışlık seri yakala.';
+
+  @override
+  String get recordDescriptionLocked_endlessFocus =>
+      'Sonsuz\'da 7 kurtarışlık seri yakala.';
+
+  @override
+  String get recordDescriptionLocked_endlessMaster =>
+      'Sonsuz\'da 15 kurtarışlık seri yakala.';
+
+  @override
+  String get recordDescriptionLocked_unshaken => 'Bir bölümü hatasız bitir.';
+
+  @override
+  String get recordDescriptionUnlocked_firstRescue => 'İlk kurtarışın.';
+
+  @override
+  String get recordDescriptionUnlocked_familiarGround =>
+      'Tahta tanıdık geliyor.';
+
+  @override
+  String get recordDescriptionUnlocked_theRescuer =>
+      'Yirmi beş can kurtarıldı.';
+
+  @override
+  String get recordDescriptionUnlocked_unbroken => 'Yüz, hiç kırılmadan.';
+
+  @override
+  String get recordDescriptionUnlocked_ep1StrikeBack => 'Bölüm 1 bitti.';
+
+  @override
+  String get recordDescriptionUnlocked_ep2EndTheThreat => 'Bölüm 2 bitti.';
+
+  @override
+  String get recordDescriptionUnlocked_ep3HoldTheLine => 'Bölüm 3 bitti.';
+
+  @override
+  String get recordDescriptionUnlocked_ep4TheOtherSide => 'Diğer taraf yürüdü.';
+
+  @override
+  String get recordDescriptionUnlocked_againstTheOdds =>
+      'Tüm olasılıklara karşı — kanonun her sayfası.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessSpark =>
+      'Sonsuz\'da bir kıvılcım yakaladı.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessFocus => 'Yedi, odakta tutuldu.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessMaster => 'On beş, ustalıkta.';
+
+  @override
+  String get recordDescriptionUnlocked_unshaken => 'Baştan sona sarsılmadan.';
+
+  @override
+  String get recordCategoryRescue => 'Kurtarış';
+
+  @override
+  String get recordCategoryEpisodes => 'Bölümler';
+
+  @override
+  String get recordCategoryEndless => 'Sonsuz';
+
+  @override
+  String get recordCategoryMastery => 'Ustalık';
+
+  @override
+  String get recordsSheetEyebrow => 'KURTARIŞ KAYITLARI';
+
+  @override
+  String recordsCount(int unlocked, int total) {
+    return '$unlocked / $total';
+  }
+
+  @override
+  String get recordsMysteryTitle => '???';
+
+  @override
+  String get recordsMysteryDescription => 'Bilinmeyen Kayıt.';
+
+  @override
+  String get recordsSheetIntro => 'Bu sayfalar kendiliğinden dolacak.';
+
+  @override
+  String get recordUnlockEyebrow => '✓ KAYIT AÇILDI';
+
+  @override
+  String get recordUnlockEyebrowFirstEver => 'Bir sayfa yazıldı.';
+
+  @override
+  String get recordsAllPagesWritten => 'Her sayfa yazıldı.';
+
+  @override
+  String get recordUnlockOverlayCta => 'Sayfa çevrildi.';
 }

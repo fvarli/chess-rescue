@@ -306,4 +306,179 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get episodeSheetContinue => 'Continuar';
+
+  @override
+  String get recordTitle_firstRescue => 'Primer Rescate';
+
+  @override
+  String get recordTitle_familiarGround => 'Terreno Familiar';
+
+  @override
+  String get recordTitle_theRescuer => 'El Rescatador';
+
+  @override
+  String get recordTitle_unbroken => 'Inquebrantable';
+
+  @override
+  String get recordTitle_ep1StrikeBack => 'Contraataque';
+
+  @override
+  String get recordTitle_ep2EndTheThreat => 'Acaba con la amenaza';
+
+  @override
+  String get recordTitle_ep3HoldTheLine => 'Mantén la línea';
+
+  @override
+  String get recordTitle_ep4TheOtherSide => 'El otro lado';
+
+  @override
+  String get recordTitle_againstTheOdds => 'Contra Todo Pronóstico';
+
+  @override
+  String get recordTitle_endlessSpark => 'Chispa Infinita';
+
+  @override
+  String get recordTitle_endlessFocus => 'Foco Infinito';
+
+  @override
+  String get recordTitle_endlessMaster => 'Maestro Infinito';
+
+  @override
+  String get recordTitle_unshaken => 'Inquebrantable';
+
+  @override
+  String get recordDescriptionLocked_firstRescue =>
+      'Completa tu primer rescate.';
+
+  @override
+  String get recordDescriptionLocked_familiarGround => 'Completa 10 rescates.';
+
+  @override
+  String get recordDescriptionLocked_theRescuer => 'Completa 25 rescates.';
+
+  @override
+  String get recordDescriptionLocked_unbroken => 'Completa 100 rescates.';
+
+  @override
+  String get recordDescriptionLocked_ep1StrikeBack => 'Termina el Episodio 1.';
+
+  @override
+  String get recordDescriptionLocked_ep2EndTheThreat =>
+      'Termina el Episodio 2.';
+
+  @override
+  String get recordDescriptionLocked_ep3HoldTheLine => 'Termina el Episodio 3.';
+
+  @override
+  String get recordDescriptionLocked_ep4TheOtherSide =>
+      'Termina el Episodio 4.';
+
+  @override
+  String get recordDescriptionLocked_againstTheOdds =>
+      'Termina cada episodio canónico y atraviesa el espejo.';
+
+  @override
+  String get recordDescriptionLocked_endlessSpark =>
+      'Alcanza una racha de 3 rescates en Infinito.';
+
+  @override
+  String get recordDescriptionLocked_endlessFocus =>
+      'Alcanza una racha de 7 rescates en Infinito.';
+
+  @override
+  String get recordDescriptionLocked_endlessMaster =>
+      'Alcanza una racha de 15 rescates en Infinito.';
+
+  @override
+  String get recordDescriptionLocked_unshaken =>
+      'Termina un episodio sin movimientos erróneos.';
+
+  @override
+  String get recordDescriptionUnlocked_firstRescue => 'Tu primer rescate.';
+
+  @override
+  String get recordDescriptionUnlocked_familiarGround =>
+      'El tablero se ha vuelto familiar.';
+
+  @override
+  String get recordDescriptionUnlocked_theRescuer =>
+      'Veinticinco vidas salvadas.';
+
+  @override
+  String get recordDescriptionUnlocked_unbroken => 'Cien, sin quiebres.';
+
+  @override
+  String get recordDescriptionUnlocked_ep1StrikeBack => 'Episodio 1 terminado.';
+
+  @override
+  String get recordDescriptionUnlocked_ep2EndTheThreat =>
+      'Episodio 2 terminado.';
+
+  @override
+  String get recordDescriptionUnlocked_ep3HoldTheLine =>
+      'Episodio 3 terminado.';
+
+  @override
+  String get recordDescriptionUnlocked_ep4TheOtherSide =>
+      'Recorrió el otro lado.';
+
+  @override
+  String get recordDescriptionUnlocked_againstTheOdds =>
+      'Contra todo pronóstico — cada página del canon.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessSpark =>
+      'Una chispa atrapada en Infinito.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessFocus =>
+      'Siete sostenidos en foco.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessMaster => 'Quince con maestría.';
+
+  @override
+  String get recordDescriptionUnlocked_unshaken =>
+      'Inquebrantable de principio a fin.';
+
+  @override
+  String get recordCategoryRescue => 'Rescate';
+
+  @override
+  String get recordCategoryEpisodes => 'Episodios';
+
+  @override
+  String get recordCategoryEndless => 'Infinito';
+
+  @override
+  String get recordCategoryMastery => 'Maestría';
+
+  @override
+  String get recordsSheetEyebrow => 'REGISTROS DE RESCATE';
+
+  @override
+  String recordsCount(int unlocked, int total) {
+    return '$unlocked / $total';
+  }
+
+  @override
+  String get recordsMysteryTitle => '???';
+
+  @override
+  String get recordsMysteryDescription => 'Registro Desconocido.';
+
+  @override
+  String get recordsSheetIntro => 'Estas páginas se llenarán solas.';
+
+  @override
+  String get recordUnlockEyebrow => '✓ REGISTRO DESBLOQUEADO';
+
+  @override
+  String get recordUnlockEyebrowFirstEver => 'Se ha escrito una página.';
+
+  @override
+  String get recordsAllPagesWritten => 'Cada página ha sido escrita.';
+
+  @override
+  String get recordUnlockOverlayCta => 'Página pasada.';
 }

@@ -303,4 +303,172 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get episodeSheetContinue => 'Continue';
+
+  @override
+  String get recordTitle_firstRescue => 'First Rescue';
+
+  @override
+  String get recordTitle_familiarGround => 'Familiar Ground';
+
+  @override
+  String get recordTitle_theRescuer => 'The Rescuer';
+
+  @override
+  String get recordTitle_unbroken => 'Unbroken';
+
+  @override
+  String get recordTitle_ep1StrikeBack => 'Strike Back';
+
+  @override
+  String get recordTitle_ep2EndTheThreat => 'End the Threat';
+
+  @override
+  String get recordTitle_ep3HoldTheLine => 'Hold the Line';
+
+  @override
+  String get recordTitle_ep4TheOtherSide => 'The Other Side';
+
+  @override
+  String get recordTitle_againstTheOdds => 'Against the Odds';
+
+  @override
+  String get recordTitle_endlessSpark => 'Endless Spark';
+
+  @override
+  String get recordTitle_endlessFocus => 'Endless Focus';
+
+  @override
+  String get recordTitle_endlessMaster => 'Endless Master';
+
+  @override
+  String get recordTitle_unshaken => 'Unshaken';
+
+  @override
+  String get recordDescriptionLocked_firstRescue =>
+      'Complete your first rescue.';
+
+  @override
+  String get recordDescriptionLocked_familiarGround => 'Complete 10 rescues.';
+
+  @override
+  String get recordDescriptionLocked_theRescuer => 'Complete 25 rescues.';
+
+  @override
+  String get recordDescriptionLocked_unbroken => 'Complete 100 rescues.';
+
+  @override
+  String get recordDescriptionLocked_ep1StrikeBack => 'Clear Episode 1.';
+
+  @override
+  String get recordDescriptionLocked_ep2EndTheThreat => 'Clear Episode 2.';
+
+  @override
+  String get recordDescriptionLocked_ep3HoldTheLine => 'Clear Episode 3.';
+
+  @override
+  String get recordDescriptionLocked_ep4TheOtherSide => 'Clear Episode 4.';
+
+  @override
+  String get recordDescriptionLocked_againstTheOdds =>
+      'Clear every canonical episode and walk the mirror.';
+
+  @override
+  String get recordDescriptionLocked_endlessSpark =>
+      'Reach a 3-rescue streak in Endless.';
+
+  @override
+  String get recordDescriptionLocked_endlessFocus =>
+      'Reach a 7-rescue streak in Endless.';
+
+  @override
+  String get recordDescriptionLocked_endlessMaster =>
+      'Reach a 15-rescue streak in Endless.';
+
+  @override
+  String get recordDescriptionLocked_unshaken =>
+      'Clear an episode without a wrong move.';
+
+  @override
+  String get recordDescriptionUnlocked_firstRescue => 'Your first rescue.';
+
+  @override
+  String get recordDescriptionUnlocked_familiarGround =>
+      'The board has become familiar.';
+
+  @override
+  String get recordDescriptionUnlocked_theRescuer => 'Twenty-five lives saved.';
+
+  @override
+  String get recordDescriptionUnlocked_unbroken => 'One hundred unbroken.';
+
+  @override
+  String get recordDescriptionUnlocked_ep1StrikeBack => 'Cleared Episode 1.';
+
+  @override
+  String get recordDescriptionUnlocked_ep2EndTheThreat => 'Cleared Episode 2.';
+
+  @override
+  String get recordDescriptionUnlocked_ep3HoldTheLine => 'Cleared Episode 3.';
+
+  @override
+  String get recordDescriptionUnlocked_ep4TheOtherSide =>
+      'Walked the other side.';
+
+  @override
+  String get recordDescriptionUnlocked_againstTheOdds =>
+      'Against the odds — every page of the canon.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessSpark =>
+      'A spark caught in Endless.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessFocus => 'Seven held in focus.';
+
+  @override
+  String get recordDescriptionUnlocked_endlessMaster => 'Fifteen in mastery.';
+
+  @override
+  String get recordDescriptionUnlocked_unshaken => 'Unshaken throughout.';
+
+  @override
+  String get recordCategoryRescue => 'Rescue';
+
+  @override
+  String get recordCategoryEpisodes => 'Episodes';
+
+  @override
+  String get recordCategoryEndless => 'Endless';
+
+  @override
+  String get recordCategoryMastery => 'Mastery';
+
+  @override
+  String get recordsSheetEyebrow => 'RESCUE RECORDS';
+
+  @override
+  String recordsCount(int unlocked, int total) {
+    return '$unlocked / $total';
+  }
+
+  @override
+  String get recordsMysteryTitle => '???';
+
+  @override
+  String get recordsMysteryDescription => 'Unknown Record.';
+
+  @override
+  String get recordsSheetIntro => 'These pages will fill themselves.';
+
+  @override
+  String get recordUnlockEyebrow => '✓ RECORD UNLOCKED';
+
+  @override
+  String get recordUnlockEyebrowFirstEver => 'A page has been written.';
+
+  @override
+  String get recordsAllPagesWritten => 'Every page has been written.';
+
+  @override
+  String get recordUnlockOverlayCta => 'Page turned.';
 }
