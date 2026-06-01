@@ -8,6 +8,7 @@ import '../../core/models/episode_library.dart';
 import '../../core/models/piece.dart';
 import '../../core/models/puzzle.dart';
 import '../../core/models/puzzle_library.dart';
+import '../../core/models/recently_solved_entry.dart';
 import '../../core/models/rescue_record_evaluator.dart';
 import '../../core/models/rescue_record_library.dart';
 import '../../core/models/session_composer.dart';
@@ -219,6 +220,24 @@ class GameController extends ChangeNotifier {
 
       final base = canonicalPuzzleId(puzzle.id);
       _completed.add(base);
+      // Signature Rescues PR 1 — silently record into the recently-solved
+      // ring on every successful rescue, regardless of mode. PR 2's
+      // SIGNATURES tab will surface this as the retroactive adoption
+      // fallback. Fire-and-forget, same pattern as the existing
+      // addCompletedId / incrementLifetimeSaved writes below.
+      final isEndless = _episode.kind == EpisodeKind.endless;
+      unawaited(
+        _store?.recordRecentlySolved(
+          RecentlySolvedEntry(
+            canonicalPuzzleId: base,
+            encounteredPuzzleId: puzzle.id,
+            episodeId: _episode.id,
+            solvedAt: DateTime.now(),
+            endlessSeed: isEndless ? _seed : null,
+            endlessMirrored: isEndless ? puzzle.id.contains('#mirror') : null,
+          ),
+        ),
+      );
       _state = GameState.rescued;
       _statusMsg = '◐ Attack broken';
       Haptics.rescue();

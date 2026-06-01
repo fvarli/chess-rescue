@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/recently_solved_entry.dart';
+import '../models/recently_solved_ring.dart';
+import '../models/signature_entry.dart';
+
 // Tiny domain wrapper over SharedPreferences for offline, local-only progress.
 // Persists just the current puzzle index and the set of completed puzzle ids.
 // Values are read synchronously after the async create(), so the controller
@@ -23,6 +27,12 @@ class ProgressStore {
   static const String _kEpisodeSeeds = 'cr_episode_seeds';
   static const String _kBestEndlessStreak = 'cr_best_endless_streak';
   static const String _kUnlockedRecords = 'cr_unlocked_records';
+  // Signature Rescues PR 1 — silent storage substrate for PR 2's UI.
+  static const String _kSignatures = 'cr_signatures';
+  static const String _kRecentlySolved = 'cr_recently_solved';
+  static const String _kSignaturesFirstBookmarkHintSeen =
+      'cr_signatures_first_bookmark_hint_seen';
+  static const String _kSignaturesTabPulseSeen = 'cr_signatures_tab_pulse_seen';
 
   static Future<ProgressStore> create() async =>
       ProgressStore._(await SharedPreferences.getInstance());
@@ -103,6 +113,62 @@ class ProgressStore {
   // R1) so the cost is negligible.
   Set<String> get unlockedRecordsSet => unlockedRecords.toSet();
 
+  // — Signature Rescues PR 1: silent storage substrate. PR 2 surfaces
+  // these values in the SIGNATURES tab and bookmark glyph; PR 1 only
+  // collects and exposes them.
+
+  // Saved Signature entries in insertion order. Identity is the canonical
+  // puzzle id (a puzzle and its mirror share one entry). Same defensive
+  // JSON-list pattern as [unlockedRecords].
+  List<SignatureEntry> get signatures {
+    final raw = _prefs.getString(_kSignatures);
+    if (raw == null || raw.isEmpty) return const <SignatureEntry>[];
+    try {
+      final decoded = json.decode(raw);
+      if (decoded is List) {
+        return <SignatureEntry>[
+          for (final item in decoded)
+            if (item is Map)
+              SignatureEntry.fromJson(item.cast<String, dynamic>()),
+        ];
+      }
+    } catch (_) {}
+    return const <SignatureEntry>[];
+  }
+
+  // Canonical-id set view for O(1) `contains` lookups (mirrors
+  // [unlockedRecordsSet]).
+  Set<String> get signaturesCanonicalIds => <String>{
+    for (final e in signatures) e.canonicalPuzzleId,
+  };
+
+  bool isSignatureSaved(String canonicalId) =>
+      signaturesCanonicalIds.contains(canonicalId);
+
+  // Recently-solved ring buffer (cap 7, move-to-front on dedupe). PR 2's
+  // SIGNATURES tab renders this below the saved grid as a retroactive
+  // adoption fallback.
+  RecentlySolvedRing get recentlySolved {
+    final raw = _prefs.getString(_kRecentlySolved);
+    if (raw == null || raw.isEmpty) return RecentlySolvedRing.empty();
+    try {
+      final decoded = json.decode(raw);
+      if (decoded is Map) {
+        return RecentlySolvedRing.fromJson(decoded.cast<String, dynamic>());
+      }
+    } catch (_) {}
+    return RecentlySolvedRing.empty();
+  }
+
+  // One-time discovery flags. PR 2 wires them to the inline hint that
+  // surfaces after the player's first bookmark and the SIGNATURES tab
+  // pulse on the next Records modal open.
+  bool get hasSeenSignaturesFirstBookmarkHint =>
+      _prefs.getBool(_kSignaturesFirstBookmarkHintSeen) ?? false;
+
+  bool get hasSeenSignaturesTabPulse =>
+      _prefs.getBool(_kSignaturesTabPulseSeen) ?? false;
+
   Future<void> save({
     required int sessionSeed,
     required int puzzleIndex,
@@ -163,6 +229,76 @@ class ProgressStore {
     await _prefs.setString(_kUnlockedRecords, json.encode(next));
   }
 
+  // — Signature Rescues PR 1 writers.
+
+  // Append a Signature with canonical-id dedupe. If a signature with the
+  // same canonical id already exists, the call is a no-op (the
+  // first-encountered rendered state wins).
+  Future<void> addSignature(SignatureEntry entry) async {
+    final current = signatures;
+    if (current.any((e) => e.canonicalPuzzleId == entry.canonicalPuzzleId)) {
+      return;
+    }
+    final next = <SignatureEntry>[...current, entry];
+    await _prefs.setString(
+      _kSignatures,
+      json.encode(<Map<String, dynamic>>[for (final e in next) e.toJson()]),
+    );
+  }
+
+  // Remove the Signature matching [canonicalPuzzleId]. No-op if absent.
+  Future<void> removeSignature(String canonicalPuzzleId) async {
+    final current = signatures;
+    if (!current.any((e) => e.canonicalPuzzleId == canonicalPuzzleId)) {
+      return;
+    }
+    final next = <SignatureEntry>[
+      for (final e in current)
+        if (e.canonicalPuzzleId != canonicalPuzzleId) e,
+    ];
+    await _prefs.setString(
+      _kSignatures,
+      json.encode(<Map<String, dynamic>>[for (final e in next) e.toJson()]),
+    );
+  }
+
+  // Re-insert [entry] at [index] (clamped to the list's current length).
+  // Used by PR 2's Undo snackbar to restore a just-removed entry at its
+  // original position. PR 1 ships this method even though it has no
+  // production caller — its presence is what makes the storage layer
+  // undo-safe per the lead's directive.
+  Future<void> restoreSignatureAt(int index, SignatureEntry entry) async {
+    final current = signatures;
+    // Don't reintroduce a duplicate canonical id — silently no-op.
+    if (current.any((e) => e.canonicalPuzzleId == entry.canonicalPuzzleId)) {
+      return;
+    }
+    final clampedIndex = index < 0
+        ? 0
+        : (index > current.length ? current.length : index);
+    final next = <SignatureEntry>[...current];
+    next.insert(clampedIndex, entry);
+    await _prefs.setString(
+      _kSignatures,
+      json.encode(<Map<String, dynamic>>[for (final e in next) e.toJson()]),
+    );
+  }
+
+  // Insert [entry] into the recently-solved ring (move-to-front, then
+  // truncate to capacity).
+  Future<void> recordRecentlySolved(RecentlySolvedEntry entry) async {
+    final next = recentlySolved.insert(entry);
+    await _prefs.setString(_kRecentlySolved, json.encode(next.toJson()));
+  }
+
+  Future<void> markSignaturesFirstBookmarkHintSeen() async {
+    await _prefs.setBool(_kSignaturesFirstBookmarkHintSeen, true);
+  }
+
+  Future<void> markSignaturesTabPulseSeen() async {
+    await _prefs.setBool(_kSignaturesTabPulseSeen, true);
+  }
+
   Future<void> clear() async {
     await _prefs.remove(_kSessionSeed);
     await _prefs.remove(_kIndex);
@@ -175,5 +311,9 @@ class ProgressStore {
     await _prefs.remove(_kEpisodeSeeds);
     await _prefs.remove(_kBestEndlessStreak);
     await _prefs.remove(_kUnlockedRecords);
+    await _prefs.remove(_kSignatures);
+    await _prefs.remove(_kRecentlySolved);
+    await _prefs.remove(_kSignaturesFirstBookmarkHintSeen);
+    await _prefs.remove(_kSignaturesTabPulseSeen);
   }
 }
