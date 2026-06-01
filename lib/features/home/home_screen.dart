@@ -9,7 +9,10 @@ import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../records/records_preview.dart';
+import '../records/records_sheet.dart';
 import '../rescue_game/rescue_screen.dart';
+import '../rescue_game/rescue_screen_pop_result.dart';
 import '../rescue_game/widgets/piece_widget.dart';
 import '../settings/language_picker.dart';
 
@@ -29,6 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // 1500ms post-frame timer. Null in steady state.
   String? _newlyUnlockedId;
   Timer? _pulseTimer;
+  // R1B — set by the new RescueScreenPopResult when the just-popped rescue
+  // session unlocked at least one record. Drives the mint glow pulse on the
+  // RecordsPreview's open-page row. Cleared on any chip tap / focus change /
+  // next rescue push / preview tap.
+  bool _sessionJustUnlockedRecords = false;
 
   @override
   void initState() {
@@ -58,24 +66,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _setFocus(Episode ep) {
     if (ep.id == _focused.id) return;
-    setState(() => _focused = ep);
+    setState(() {
+      _focused = ep;
+      _sessionJustUnlockedRecords = false; // R1B — clear glow on focus change
+    });
     unawaited(widget.store?.setCurrentEpisodeId(ep.id));
   }
 
   Future<void> _openRescue(BuildContext context) async {
     final justCompletedEp = _focused;
-    final completed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
+    // R1B — clear the just-unlocked glow on re-entering a rescue (the player
+    // has acknowledged the prior recognition).
+    _sessionJustUnlockedRecords = false;
+    final result = await Navigator.of(context).push<RescueScreenPopResult>(
+      MaterialPageRoute<RescueScreenPopResult>(
         builder: (_) => RescueScreen(store: widget.store, episode: _focused),
       ),
     );
     if (!mounted) return;
 
-    if (completed == true) {
+    final earnedRecords = result?.newlyUnlockedRecordIds ?? const <String>[];
+    if (earnedRecords.isNotEmpty) {
+      _sessionJustUnlockedRecords = true;
+    }
+
+    if (result?.finishedEpisode == true) {
       _handleEpisodeCompleted(justCompletedEp);
     } else {
       setState(() {});
     }
+  }
+
+  void _openRecordsSheet() {
+    setState(() {
+      _sessionJustUnlockedRecords = false; // R1B — tap acknowledges
+    });
+    showRecordsSheet(context, widget.store);
   }
 
   void _handleEpisodeCompleted(Episode justCompletedEp) {
@@ -167,11 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  // G1.5 — title-tagline gap 14 → 18 dp so the tagline reads
-                  // as a sub-heading, not a continuation of the title. (22dp
-                  // was nicer but pushed Spanish locale into overflow on the
-                  // 800dp test viewport; 18dp is the headroom-safe ceiling.)
-                  const SizedBox(height: 18),
+                  // R1B — title-tagline gap reverted from G1.5's 18dp to 14dp
+                  // to free vertical budget for the Records preview card on
+                  // the 800dp test viewport.
+                  const SizedBox(height: 14),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28),
                     child: Text(
@@ -211,7 +236,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           : null,
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    child: RecordsPreview(
+                      unlockedRecords:
+                          widget.store?.unlockedRecords ?? const <String>[],
+                      justUnlocked: _sessionJustUnlockedRecords,
+                      onTap: _openRecordsSheet,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28),
                     child: _PrimaryCta(
@@ -278,11 +313,11 @@ class _ThreatenedKingHeroState extends State<_ThreatenedKingHero>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-  // G1.5 — 110 → 118 dp gives the silhouette more presence in the briefing
-  // composition while staying under the 800dp test viewport's vertical
-  // budget (122 was 0.5px over on Spanish locale). Still ~33% of a 360dp
-  // viewport, well under dominant.
-  static const double _kingSize = 118;
+  // R1B — reverted from G1.5's 118dp to 110dp to make room for the Records
+  // preview card on the 800dp test viewport. Spanish locale was 16px over
+  // at 118 with the preview added; 110 leaves enough headroom across all
+  // locales. Still well above the pre-G1.5 baseline composition.
+  static const double _kingSize = 110;
   static const Piece _king = Piece(
     id: 'home-hero-king',
     type: PieceType.king,
@@ -647,7 +682,7 @@ class _EpisodeProgressCard extends StatelessWidget {
     final showBestRun =
         episode.kind == EpisodeKind.endless && bestRunLabel != null;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),

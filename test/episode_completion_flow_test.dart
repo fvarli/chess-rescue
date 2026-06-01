@@ -3,11 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chess_rescue/core/storage/progress_store.dart';
+import 'package:chess_rescue/features/rescue_game/rescue_screen_pop_result.dart';
 import 'package:chess_rescue/main.dart';
 
 /// Pumps the app with the given prefs, drives Home to push RescueScreen, and
-/// programmatically pops with `result` to simulate a finale (`true`) or a
-/// system-back (`null`) return.
+/// programmatically pops with the requested `RescueScreenPopResult` (or null
+/// for system-back simulation).
 Future<void> _pumpAndPopWith({
   required WidgetTester tester,
   required Map<String, Object> prefs,
@@ -23,14 +24,23 @@ Future<void> _pumpAndPopWith({
   await tester.pumpWidget(ChessRescueApp(store: store));
   await tester.pump();
 
-  // Tap CTA → Home pushes RescueScreen (now awaiting a bool? result).
+  // Tap CTA → Home pushes RescueScreen.
   await tester.tap(find.text('Continue rescue  ↦'));
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 400));
 
   // Pop the just-pushed route with the requested result.
   final navigator = tester.state<NavigatorState>(find.byType(Navigator).first);
-  navigator.pop<bool>(result);
+  if (result == null) {
+    navigator.pop<RescueScreenPopResult>(null);
+  } else {
+    navigator.pop<RescueScreenPopResult>(
+      RescueScreenPopResult(
+        finishedEpisode: result,
+        newlyUnlockedRecordIds: const <String>[],
+      ),
+    );
+  }
   // Two pumps: one to deliver the result to the awaiter, one for setState.
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 100));

@@ -115,6 +115,69 @@ void main() {
     );
   });
 
+  group('EpisodeCompletionSheet — R1B inline records section', () {
+    testWidgets(
+      'renders the inline RECORD UNLOCKED section when unlockedRecords is non-empty',
+      (tester) async {
+        await tester.pumpWidget(
+          _wrapInTestApp(
+            child: EpisodeCompletionSheet(
+              eyebrow: '✓ EPISODE COMPLETE',
+              episodeLabel: 'Episode 1',
+              title: 'STRIKE BACK',
+              rescuesCount: '3 rescues completed',
+              continueLabel: 'Continue',
+              recordUnlockEyebrow: '✓ RECORD UNLOCKED',
+              unlockedRecords: const [
+                CompletionSheetRecordRow(
+                  title: 'Strike Back',
+                  description: 'Cleared Episode 1.',
+                ),
+                CompletionSheetRecordRow(
+                  title: 'Unshaken',
+                  description: 'Unshaken throughout.',
+                ),
+              ],
+              onContinue: () {},
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(
+          find.byKey(const ValueKey('episode-sheet-records-section')),
+          findsOneWidget,
+        );
+        expect(find.text('✓ RECORD UNLOCKED'), findsOneWidget);
+        expect(find.text('Strike Back'), findsOneWidget);
+        expect(find.text('Cleared Episode 1.'), findsOneWidget);
+        expect(find.text('Unshaken'), findsOneWidget);
+        expect(find.text('Unshaken throughout.'), findsOneWidget);
+      },
+    );
+
+    testWidgets('inline section absent when unlockedRecords is empty', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrapInTestApp(
+          child: EpisodeCompletionSheet(
+            eyebrow: '✓ EPISODE COMPLETE',
+            episodeLabel: 'Episode 1',
+            title: 'STRIKE BACK',
+            rescuesCount: '3 rescues completed',
+            continueLabel: 'Continue',
+            onContinue: () {},
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(
+        find.byKey(const ValueKey('episode-sheet-records-section')),
+        findsNothing,
+      );
+    });
+  });
+
   group('EpisodeCompletionSheet — root key + accessibility', () {
     testWidgets('mounts under the episode-completion-sheet ValueKey', (
       tester,

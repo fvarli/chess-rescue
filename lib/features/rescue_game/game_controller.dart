@@ -60,6 +60,13 @@ class GameController extends ChangeNotifier {
   // the Unshaken record (clear an episode with zero wrong moves). Pure
   // in-memory; never persisted.
   int _failureCount = 0;
+  // R1B — record ids unlocked on the MOST RECENT _commitMove rescue commit.
+  // Cleared at the start of every _commitMove; populated by
+  // _persistNewlyUnlockedRecords with the diff result. RescueScreen reads
+  // this on each notifyListeners cycle to dispatch records to either the
+  // completion-sheet inline section (if isEpisodeFinale) or the mid-rescue
+  // overlay queue. Empty in steady state.
+  final List<String> _recordsJustUnlocked = <String>[];
 
   late List<Piece> _pieces;
   Piece? _selected;
@@ -78,6 +85,12 @@ class GameController extends ChangeNotifier {
   int get completedCount => _completed.length;
   bool get allComplete => _completed.length == _puzzles.length;
   int get currentEndlessStreak => _currentEndlessStreak;
+
+  /// R1B — record ids unlocked on the most recent rescue commit
+  /// (chronological order, library order within the commit). Unmodifiable
+  /// view; consumed by RescueScreen.
+  List<String> get recordsJustUnlocked =>
+      List<String>.unmodifiable(_recordsJustUnlocked);
 
   int get sessionSeed => _seed;
 
@@ -172,6 +185,7 @@ class GameController extends ChangeNotifier {
   Future<void> _commitMove(Square target) async {
     final from = _selected!;
     _commitInFlight = true;
+    _recordsJustUnlocked.clear(); // R1B — reset per-commit record buffer
     Haptics.commitTap();
     _legalSquares = const [];
     notifyListeners();
@@ -298,6 +312,8 @@ class GameController extends ChangeNotifier {
     for (final id in newIds) {
       unawaited(_store?.addUnlockedRecord(id));
     }
+    // R1B — also surface to the per-commit buffer for RescueScreen.
+    _recordsJustUnlocked.addAll(newIds);
   }
 
   // True when the player has just rescued the last puzzle of a canonical or

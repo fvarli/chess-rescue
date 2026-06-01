@@ -12,6 +12,17 @@ import '../../core/theme/app_theme.dart';
 /// completion-signal protocol.
 ///
 /// Fade-in + tiny slide-up (~280 ms) — "relief, not victory royale".
+/// One row in the R1B "RECORD UNLOCKED" inline section that the
+/// EpisodeCompletionSheet renders above its Continue CTA.
+class CompletionSheetRecordRow {
+  const CompletionSheetRecordRow({
+    required this.title,
+    required this.description,
+  });
+  final String title;
+  final String description;
+}
+
 class EpisodeCompletionSheet extends StatefulWidget {
   const EpisodeCompletionSheet({
     super.key,
@@ -22,6 +33,8 @@ class EpisodeCompletionSheet extends StatefulWidget {
     required this.continueLabel,
     required this.onContinue,
     this.trilogyUnlockLabel,
+    this.recordUnlockEyebrow,
+    this.unlockedRecords = const <CompletionSheetRecordRow>[],
   });
 
   final String eyebrow;
@@ -31,6 +44,16 @@ class EpisodeCompletionSheet extends StatefulWidget {
   final String continueLabel;
   final String? trilogyUnlockLabel;
   final VoidCallback onContinue;
+
+  /// R1B — pre-resolved "✓ RECORD UNLOCKED" eyebrow string for the inline
+  /// section. Null when [unlockedRecords] is empty (no records earned at
+  /// this finale).
+  final String? recordUnlockEyebrow;
+
+  /// R1B — records earned AT this finale moment. Rendered as an inline
+  /// "✓ RECORD UNLOCKED" section between the rescues-count line and the
+  /// Continue button. Empty → no section rendered.
+  final List<CompletionSheetRecordRow> unlockedRecords;
 
   @override
   State<EpisodeCompletionSheet> createState() => _EpisodeCompletionSheetState();
@@ -144,6 +167,13 @@ class _EpisodeCompletionSheetState extends State<EpisodeCompletionSheet>
                   ),
                 ),
               ],
+              if (widget.unlockedRecords.isNotEmpty) ...[
+                const SizedBox(height: 18),
+                _RecordUnlockInlineSection(
+                  eyebrow: widget.recordUnlockEyebrow ?? '',
+                  rows: widget.unlockedRecords,
+                ),
+              ],
               const SizedBox(height: 22),
               _ContinueButton(
                 label: widget.continueLabel,
@@ -201,6 +231,58 @@ class _ContinueButtonState extends State<_ContinueButton> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// R1B — the "RECORD UNLOCKED" inline section inside the EpisodeCompletionSheet.
+/// Renders the eyebrow + one row per record. Hairline dividers between the
+/// section and surrounding content; no boxed-card styling — the journal
+/// register continues.
+class _RecordUnlockInlineSection extends StatelessWidget {
+  const _RecordUnlockInlineSection({required this.eyebrow, required this.rows});
+
+  final String eyebrow;
+  final List<CompletionSheetRecordRow> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      key: const ValueKey('episode-sheet-records-section'),
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(height: 1, color: AppColors.hairline, width: 80),
+        const SizedBox(height: 12),
+        Text(
+          eyebrow,
+          textAlign: TextAlign.center,
+          style: AppText.mono.copyWith(color: AppColors.rescue, fontSize: 10),
+        ),
+        const SizedBox(height: 8),
+        for (var i = 0; i < rows.length; i++) ...[
+          if (i > 0) const SizedBox(height: 6),
+          Text(
+            rows[i].title,
+            textAlign: TextAlign.center,
+            style: AppText.body.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.text,
+            ),
+          ),
+          Text(
+            rows[i].description,
+            textAlign: TextAlign.center,
+            style: AppText.body.copyWith(
+              fontSize: 12,
+              color: AppColors.textDim,
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Container(height: 1, color: AppColors.hairline, width: 80),
+      ],
     );
   }
 }
