@@ -65,6 +65,16 @@
   "puzzleB4FailureHint": "Bu şahı kırmıyor. Kendi şah çekişinle karşılık ver.",
   "puzzleB4SuccessExplanation": "ŞAHA ŞAH",
 
+  "puzzleCC2StatusText": "▮ Mat geliyor",
+  "puzzleCC2DangerHint": "Vezir şahı bir adımda köşeye sıkıştırmak üzere.",
+  "puzzleCC2FailureHint": "Bu hamle tehdidi kırmıyor. Diğer şaha vur.",
+  "puzzleCC2SuccessExplanation": "FİL İÇERİ DALAR",
+
+  "puzzleCAM1StatusText": "▮ Şahta",
+  "puzzleCAM1DangerHint": "Bir fil ısırıyor. Geri vur.",
+  "puzzleCAM1FailureHint": "Fil hâlâ orada. Al onu.",
+  "puzzleCAM1SuccessExplanation": "AT FİLİ ALIR",
+
   "settingsLanguage": "Dil",
   "settingsLanguageSystemDefault": "Sistem dili",
   "settingsLanguageEnglish": "İngilizce",

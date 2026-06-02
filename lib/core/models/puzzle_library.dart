@@ -212,6 +212,46 @@ class PuzzleLibrary {
         ),
       ],
     ),
+    // ── Sprint V1 — CC2 (counterCheck). Bxf7+: the c4 bishop captures the f7
+    // shield pawn and checks the black king on g8. Phase 2.5 8-check validated.
+    PuzzleTemplate(
+      archetype: RescueArchetype.counterCheck,
+      puzzle: _cc2BishopCapturesShield,
+      // d3: a chess-legal bishop diagonal from c4; doesn't reach bK-g8 (3,5 is
+      // not a diagonal), doesn't attack bQ-h3, doesn't defend g2. Honest decoy.
+      decoyPool: [Square(3, 2)],
+      // a7 is off the c4–f7 rescue diagonal and off any threat lane (bQ-h3
+      // has no slider line to g1 or c4); safe cosmetic.
+      removableScenery: ['bP-a7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-b7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 1,
+          rank: 6,
+        ),
+      ],
+    ),
+    // ── Sprint V1 — CAM1 (captureAttackerMinor). Nxh2: the g4 knight captures
+    // the bishop checking on h2. Phase 2.5 8-check validated. No decoyPool —
+    // every knight-reachable square from g4 is already in legalMoves (the
+    // single unoccupied alternative, f2, is blocked by wP-f2).
+    PuzzleTemplate(
+      archetype: RescueArchetype.captureAttackerMinor,
+      puzzle: _cam1KnightTakesBishop,
+      // a7 is off bB-h2's diagonal to g1 (one-square line, nothing between).
+      removableScenery: ['bP-a7'],
+      sceneryPool: [
+        Piece(
+          id: 'bP-b7',
+          type: PieceType.pawn,
+          color: PieceColor.dark,
+          file: 1,
+          rank: 6,
+        ),
+      ],
+    ),
   ];
 
   // ── Puzzle 1 — Knight rescue (REAL).
@@ -1155,6 +1195,247 @@ class PuzzleLibrary {
     failureHint:
         "That doesn't break the check. Answer with a check of your own.",
     successExplanation: 'CHECK MEETS CHECK',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ════════════════════════════════════════════════════════════════════
+  // Sprint V1 — Tier-1 expansion additions (in `expansionTemplates`).
+  // Each Phase 2.5–validated via the 8-check geometry gate documented at
+  // docs/sprint-v1-phase2.5-validation.md.
+  // ════════════════════════════════════════════════════════════════════
+
+  // ── CC2 — Bishop captures the shield (PROTOTYPE).
+  // Archetype: COUNTER-CHECK. The black queen on h3 threatens Qxg2# (the
+  // h2/g2 shelter pawns can't catch it because the queen captures with check
+  // and the wK has no flight). White answers with Bxf7+ — the c4 bishop
+  // captures the f7 shield pawn and checks the bK on g8, so black must respond
+  // to the check and the g2 mate never lands.
+  // Why it saves: an unexpected check redirects the position before the
+  // attack arrives.
+  // Decoys: bishop moves that neither check the bK nor stop the threat —
+  // d5/e6 (still on the same diagonal but stop short of f7), b5/a6 (wrong
+  // direction). Other bishop squares (b3/d3) are decoyPool candidates; b3 is
+  // excluded as a second check (b3→g8 is a real diagonal).
+  static const Puzzle _cc2BishopCapturesShield = Puzzle(
+    id: 'cc2-bishop-captures-shield',
+    title: 'Bishop captures the shield',
+    statusText: '▮ Mate is coming',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-a2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 0,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-g2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 6,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-h2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 7,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wB',
+        type: PieceType.bishop,
+        color: PieceColor.light,
+        file: 2,
+        rank: 3,
+      ),
+      Piece(
+        id: 'wR',
+        type: PieceType.rook,
+        color: PieceColor.light,
+        file: 0,
+        rank: 0,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 2,
+      ),
+      Piece(
+        id: 'bP-a7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(2, 3), // c4 (the bishop)
+    legalMoves: [
+      Square(5, 6), // f7 * (captures the shield, checks the bK on g8)
+      Square(3, 4), // d5
+      Square(4, 5), // e6
+      Square(1, 4), // b5
+      Square(0, 5), // a6
+    ],
+    rescueTo: Square(5, 6), // f7
+    rescueNotation: 'Bxf7+',
+    dangerHint: 'The queen is one step from sealing the king in.',
+    failureHint:
+        "That move doesn't break the threat. Strike at the other king.",
+    successExplanation: 'THE BISHOP CRASHES THROUGH',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── CAM1 — Knight takes the bishop (PROTOTYPE).
+  // Archetype: CAPTURE THE ATTACKER (minor). A black bishop has landed on h2
+  // and gives check along the h2–g1 diagonal. The g4 knight leaps to h2:
+  // Nxh2 — the checker is gone and the check is over in one move.
+  // Why it saves: you remove the piece that's attacking you.
+  // Decoys: the knight's other reachable squares (h6, f6, e5, e3) — they
+  // move but leave the bishop on h2 still giving check.
+  static const Puzzle _cam1KnightTakesBishop = Puzzle(
+    id: 'cam1-knight-takes-bishop',
+    title: 'Knight takes the bishop',
+    statusText: '▮ In check',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-a2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 0,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-b2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 1,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-c2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 2,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-g2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 6,
+        rank: 1,
+      ),
+      // No wP-h2 — the black bishop occupies h2 and checks the king.
+      Piece(
+        id: 'wN',
+        type: PieceType.knight,
+        color: PieceColor.light,
+        file: 6,
+        rank: 3,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bB',
+        type: PieceType.bishop,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bP-a7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(6, 3), // g4 (the knight)
+    legalMoves: [
+      Square(7, 1), // h2 * (captures the checking bishop)
+      Square(7, 5), // h6
+      Square(5, 5), // f6
+      Square(4, 4), // e5
+      Square(4, 2), // e3
+    ],
+    rescueTo: Square(7, 1), // h2
+    rescueNotation: 'Nxh2',
+    dangerHint: 'A bishop is biting. Hit it back.',
+    failureHint: 'The bishop is still there. Take it.',
+    successExplanation: 'THE KNIGHT TAKES THE BISHOP',
     threatenedKing: Square(6, 0), // g1
     isPrototype: true,
   );

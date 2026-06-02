@@ -183,6 +183,32 @@ class AppL10nTr extends AppL10n {
   String get puzzleB4SuccessExplanation => 'ŞAHA ŞAH';
 
   @override
+  String get puzzleCC2StatusText => '▮ Mat geliyor';
+
+  @override
+  String get puzzleCC2DangerHint =>
+      'Vezir şahı bir adımda köşeye sıkıştırmak üzere.';
+
+  @override
+  String get puzzleCC2FailureHint =>
+      'Bu hamle tehdidi kırmıyor. Diğer şaha vur.';
+
+  @override
+  String get puzzleCC2SuccessExplanation => 'FİL İÇERİ DALAR';
+
+  @override
+  String get puzzleCAM1StatusText => '▮ Şahta';
+
+  @override
+  String get puzzleCAM1DangerHint => 'Bir fil ısırıyor. Geri vur.';
+
+  @override
+  String get puzzleCAM1FailureHint => 'Fil hâlâ orada. Al onu.';
+
+  @override
+  String get puzzleCAM1SuccessExplanation => 'AT FİLİ ALIR';
+
+  @override
   String get settingsLanguage => 'Dil';
 
   @override

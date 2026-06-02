@@ -4,8 +4,8 @@ import 'variation.dart' show canonicalPuzzleId;
 
 // Localized per-puzzle copy resolved at the widget layer. The Puzzle model
 // keeps its authored EN strings as the golden source (and as the safe fallback
-// for any puzzle id not yet wired below). C3 covers the nine canonical ids:
-// p1–p5 plus expansion families a4, b1, b3, b4.
+// for any puzzle id not yet wired below). Covers the eleven canonical ids:
+// p1–p5, expansion families a4, b1, b3, b4, and Sprint V1 additions cc2, cam1.
 class PuzzleCopy {
   const PuzzleCopy({
     required this.statusText,
@@ -88,6 +88,20 @@ PuzzleCopy puzzleCopyFor(Puzzle puzzle, AppL10n t) {
         dangerHint: t.puzzleB4DangerHint,
         failureHint: t.puzzleB4FailureHint,
         successExplanation: t.puzzleB4SuccessExplanation,
+      );
+    case 'cc2-bishop-captures-shield':
+      return PuzzleCopy(
+        statusText: t.puzzleCC2StatusText,
+        dangerHint: t.puzzleCC2DangerHint,
+        failureHint: t.puzzleCC2FailureHint,
+        successExplanation: t.puzzleCC2SuccessExplanation,
+      );
+    case 'cam1-knight-takes-bishop':
+      return PuzzleCopy(
+        statusText: t.puzzleCAM1StatusText,
+        dangerHint: t.puzzleCAM1DangerHint,
+        failureHint: t.puzzleCAM1FailureHint,
+        successExplanation: t.puzzleCAM1SuccessExplanation,
       );
     default:
       // Future puzzles without an l10n entry render their authored EN strings.

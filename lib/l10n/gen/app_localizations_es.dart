@@ -187,6 +187,32 @@ class AppL10nEs extends AppL10n {
   String get puzzleB4SuccessExplanation => 'JAQUE CONTRA JAQUE';
 
   @override
+  String get puzzleCC2StatusText => '▮ Llega el mate';
+
+  @override
+  String get puzzleCC2DangerHint =>
+      'La dama está a un paso de encerrar al rey.';
+
+  @override
+  String get puzzleCC2FailureHint =>
+      'Ese movimiento no rompe la amenaza. Golpea al otro rey.';
+
+  @override
+  String get puzzleCC2SuccessExplanation => 'EL ALFIL IRRUMPE';
+
+  @override
+  String get puzzleCAM1StatusText => '▮ En jaque';
+
+  @override
+  String get puzzleCAM1DangerHint => 'Un alfil muerde. Devuelve el golpe.';
+
+  @override
+  String get puzzleCAM1FailureHint => 'El alfil sigue ahí. Cómelo.';
+
+  @override
+  String get puzzleCAM1SuccessExplanation => 'EL CABALLO COME AL ALFIL';
+
+  @override
   String get settingsLanguage => 'Idioma';
 
   @override

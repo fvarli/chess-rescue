@@ -429,6 +429,54 @@ abstract class AppL10n {
   /// **'CHECK MEETS CHECK'**
   String get puzzleB4SuccessExplanation;
 
+  /// Sprint V1 CC2 bishop-captures-the-shield (Bxf7+ counter-check) — danger-state status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Mate is coming'**
+  String get puzzleCC2StatusText;
+
+  /// CC2 danger hint — orients toward the queen's imminent mate threat without naming squares.
+  ///
+  /// In en, this message translates to:
+  /// **'The queen is one step from sealing the king in.'**
+  String get puzzleCC2DangerHint;
+
+  /// CC2 failure hint — redirects the player toward the counter-check shape.
+  ///
+  /// In en, this message translates to:
+  /// **'That move doesn\'t break the threat. Strike at the other king.'**
+  String get puzzleCC2FailureHint;
+
+  /// CC2 success explanation — mono small-caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'THE BISHOP CRASHES THROUGH'**
+  String get puzzleCC2SuccessExplanation;
+
+  /// Sprint V1 CAM1 knight-takes-the-bishop (Nxh2 capture-attacker) — status pill (independent of other 'In check' strings to allow translator variation).
+  ///
+  /// In en, this message translates to:
+  /// **'▮ In check'**
+  String get puzzleCAM1StatusText;
+
+  /// CAM1 danger hint — names the checker piece type without coordinates, prompts a return strike.
+  ///
+  /// In en, this message translates to:
+  /// **'A bishop is biting. Hit it back.'**
+  String get puzzleCAM1DangerHint;
+
+  /// CAM1 failure hint — redirects toward capturing the checking piece.
+  ///
+  /// In en, this message translates to:
+  /// **'The bishop is still there. Take it.'**
+  String get puzzleCAM1FailureHint;
+
+  /// CAM1 success explanation — mono small-caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'THE KNIGHT TAKES THE BISHOP'**
+  String get puzzleCAM1SuccessExplanation;
+
   /// Title of the language picker bottom sheet.
   ///
   /// In en, this message translates to:

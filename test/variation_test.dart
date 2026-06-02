@@ -85,6 +85,69 @@ void main() {
       expect(twice.rescueTo, base.rescueTo);
       expect(twice.threatenedKing, base.threatenedKing);
     });
+
+    test('Sprint V1 — CC2 mirror flips the bishop (c4 → f4, f7 → c7)', () {
+      final t = PuzzleLibrary.expansionTemplates.firstWhere(
+        (t) => t.puzzle.id == 'cc2-bishop-captures-shield',
+      );
+      final v = t.toPuzzle(Variation.mirror);
+      expect(v.id, 'cc2-bishop-captures-shield#mirror');
+      expect(v.tappableSquare, const Square(5, 3)); // c4 → f4
+      expect(v.rescueTo, const Square(2, 6)); // f7 → c7
+      expect(v.threatenedKing, const Square(1, 0)); // g1 → b1
+      expect(v.rescueTo, isIn(v.legalMoves));
+      expect(v.pieces.length, t.puzzle.pieces.length);
+      expect(
+        v.pieces.map((p) => p.id).toSet(),
+        t.puzzle.pieces.map((p) => p.id).toSet(),
+      );
+      // Every mirrored piece is on-board.
+      for (final p in v.pieces) {
+        expect(p.file, inInclusiveRange(0, 7), reason: p.id);
+        expect(p.rank, inInclusiveRange(0, 7), reason: p.id);
+      }
+    });
+
+    test('Sprint V1 — CAM1 mirror flips the knight (g4 → b4, h2 → a2)', () {
+      final t = PuzzleLibrary.expansionTemplates.firstWhere(
+        (t) => t.puzzle.id == 'cam1-knight-takes-bishop',
+      );
+      final v = t.toPuzzle(Variation.mirror);
+      expect(v.id, 'cam1-knight-takes-bishop#mirror');
+      expect(v.tappableSquare, const Square(1, 3)); // g4 → b4
+      expect(v.rescueTo, const Square(0, 1)); // h2 → a2
+      expect(v.threatenedKing, const Square(1, 0)); // g1 → b1
+      expect(v.rescueTo, isIn(v.legalMoves));
+      expect(v.pieces.length, t.puzzle.pieces.length);
+      expect(
+        v.pieces.map((p) => p.id).toSet(),
+        t.puzzle.pieces.map((p) => p.id).toSet(),
+      );
+      for (final p in v.pieces) {
+        expect(p.file, inInclusiveRange(0, 7), reason: p.id);
+        expect(p.rank, inInclusiveRange(0, 7), reason: p.id);
+      }
+    });
+
+    test('Sprint V1 — CC2 and CAM1 are valid + readable base AND mirror', () {
+      for (final id in const [
+        'cc2-bishop-captures-shield',
+        'cam1-knight-takes-bishop',
+      ]) {
+        final t = PuzzleLibrary.expansionTemplates.firstWhere(
+          (t) => t.puzzle.id == id,
+        );
+        final base = validatePuzzle(t.puzzle);
+        expect(base.isValid, isTrue, reason: '$id base: ${base.errors}');
+        final mirror = t.toPuzzle(Variation.mirror);
+        final mirrorR = validatePuzzle(mirror);
+        expect(
+          mirrorR.isValid,
+          isTrue,
+          reason: '$id mirror: ${mirrorR.errors}',
+        );
+      }
+    });
   });
 
   group('validatePuzzle', () {

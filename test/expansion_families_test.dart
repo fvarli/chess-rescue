@@ -34,13 +34,15 @@ void main() {
   final pool = PuzzleLibrary.expansionTemplates;
 
   group('expansion pool shape', () {
-    test('contains the four Tier-1 families', () {
-      expect(pool.length, 4);
+    test('contains the Tier-1 families and Sprint V1 additions', () {
+      expect(pool.length, 6);
       expect(pool.map((t) => t.puzzle.id).toList(), [
         'a4-the-breakaway',
         'b1-the-martyr',
         'b3-remove-the-defender',
         'b4-the-cross-check',
+        'cc2-bishop-captures-shield',
+        'cam1-knight-takes-bishop',
       ]);
     });
 

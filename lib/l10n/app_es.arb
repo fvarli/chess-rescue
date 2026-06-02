@@ -65,6 +65,16 @@
   "puzzleB4FailureHint": "Eso no rompe el jaque. Responde con tu propio jaque.",
   "puzzleB4SuccessExplanation": "JAQUE CONTRA JAQUE",
 
+  "puzzleCC2StatusText": "▮ Llega el mate",
+  "puzzleCC2DangerHint": "La dama está a un paso de encerrar al rey.",
+  "puzzleCC2FailureHint": "Ese movimiento no rompe la amenaza. Golpea al otro rey.",
+  "puzzleCC2SuccessExplanation": "EL ALFIL IRRUMPE",
+
+  "puzzleCAM1StatusText": "▮ En jaque",
+  "puzzleCAM1DangerHint": "Un alfil muerde. Devuelve el golpe.",
+  "puzzleCAM1FailureHint": "El alfil sigue ahí. Cómelo.",
+  "puzzleCAM1SuccessExplanation": "EL CABALLO COME AL ALFIL",
+
   "settingsLanguage": "Idioma",
   "settingsLanguageSystemDefault": "Idioma del sistema",
   "settingsLanguageEnglish": "Inglés",

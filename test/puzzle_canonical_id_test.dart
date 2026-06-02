@@ -19,6 +19,8 @@ void main() {
       'b1-the-martyr',
       'b3-remove-the-defender',
       'b4-the-cross-check',
+      'cc2-bishop-captures-shield',
+      'cam1-knight-takes-bishop',
     ];
 
     test('each canonical id maps to itself', () {

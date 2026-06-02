@@ -27,6 +27,28 @@ void main() {
     });
   });
 
+  group('readabilityScore — Sprint V1 additions (CC2, CAM1)', () {
+    test('CC2 passes base + mirror', () {
+      final t = PuzzleLibrary.expansionTemplates.firstWhere(
+        (t) => t.puzzle.id == 'cc2-bishop-captures-shield',
+      );
+      final base = readabilityScore(t.puzzle);
+      expect(base.passed, isTrue, reason: 'CC2 base: ${base.notes}');
+      final mirror = readabilityScore(t.toPuzzle(Variation.mirror));
+      expect(mirror.passed, isTrue, reason: 'CC2 mirror: ${mirror.notes}');
+    });
+
+    test('CAM1 passes base + mirror', () {
+      final t = PuzzleLibrary.expansionTemplates.firstWhere(
+        (t) => t.puzzle.id == 'cam1-knight-takes-bishop',
+      );
+      final base = readabilityScore(t.puzzle);
+      expect(base.passed, isTrue, reason: 'CAM1 base: ${base.notes}');
+      final mirror = readabilityScore(t.toPuzzle(Variation.mirror));
+      expect(mirror.passed, isTrue, reason: 'CAM1 mirror: ${mirror.notes}');
+    });
+  });
+
   group('readabilityScore — bad puzzle fails', () {
     test('jammed 2x2 with an unrelated rescue fails', () {
       // Everything crammed into a 2x2 corner; rescue lands on an empty,

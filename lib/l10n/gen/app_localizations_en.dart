@@ -186,6 +186,32 @@ class AppL10nEn extends AppL10n {
   String get puzzleB4SuccessExplanation => 'CHECK MEETS CHECK';
 
   @override
+  String get puzzleCC2StatusText => '▮ Mate is coming';
+
+  @override
+  String get puzzleCC2DangerHint =>
+      'The queen is one step from sealing the king in.';
+
+  @override
+  String get puzzleCC2FailureHint =>
+      'That move doesn\'t break the threat. Strike at the other king.';
+
+  @override
+  String get puzzleCC2SuccessExplanation => 'THE BISHOP CRASHES THROUGH';
+
+  @override
+  String get puzzleCAM1StatusText => '▮ In check';
+
+  @override
+  String get puzzleCAM1DangerHint => 'A bishop is biting. Hit it back.';
+
+  @override
+  String get puzzleCAM1FailureHint => 'The bishop is still there. Take it.';
+
+  @override
+  String get puzzleCAM1SuccessExplanation => 'THE KNIGHT TAKES THE BISHOP';
+
+  @override
   String get settingsLanguage => 'Language';
 
   @override
