@@ -154,6 +154,17 @@ class SessionComposer {
         : RescueArchetype.blockFile;
 
     final openerCands = candidates([RescueArchetype.captureAttackerMinor]);
+    // Seed-gated opener relief (§6.1 minimal fix): in ~25% of seeds, when an
+    // expansion captureAttackerMinor candidate exists, the opener picks
+    // expansion instead of the canonical anchor. Uses an independent
+    // `Random(seed)` so the main `rng` stream is unchanged — every other slot's
+    // draws stay bit-identical to the pre-relief baseline for any given seed.
+    final reliefRng = Random(seed);
+    final useExpansionOpener =
+        openerCands.length > 1 && reliefRng.nextInt(4) == 0;
+    final openerSlot = useExpansionOpener
+        ? openerCands[1 + reliefRng.nextInt(openerCands.length - 1)]
+        : openerCands.first;
     final risingCands = candidates([RescueArchetype.counterCheck]);
     final middleCands = candidates([
       middleInterpose,
@@ -186,7 +197,7 @@ class SessionComposer {
     }
 
     final chosen = <PuzzleTemplate>[
-      openerCands.first, // opener — canonical-locked, simple/readable
+      openerSlot, // opener — canonical-dominant; seed-gated expansion relief
       risingCands[risingIdx], // rising — counter-check / breakaway / cross-check
       middleCands[middleIdx], // middle — interpose (block / seal / martyr)
       peakCands[peakIdx], // peak — high-stakes resolution (queen / remove defender)

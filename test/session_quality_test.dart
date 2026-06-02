@@ -49,13 +49,32 @@ void main() {
       }
     });
 
-    test('canonical-anchored: ≤2 expansion families, ≥3 canonical', () {
+    test('canonical-anchored: finale canonical, ≤2 expansion middles, '
+        'opener mostly canonical', () {
+      // Sprint V1 §6.1 opener relief: opener is canonical-dominant
+      // (~75% of seeds) with seed-gated expansion in the remainder.
+      // Finale stays canonical-locked. Middle slots 1–3 still bounded
+      // by the canonical-anchored cap at ≤2 expansion.
+      var openerExpansionCount = 0;
       for (var s = 1; s <= 50; s++) {
         final session = PuzzleLibrary.session(s);
-        final expansion = session.where(_isExpansion).length;
-        expect(expansion, lessThanOrEqualTo(2), reason: 'seed $s');
-        expect(5 - expansion, greaterThanOrEqualTo(3), reason: 'seed $s');
+        final middleExpansion = session
+            .sublist(1, 4)
+            .where(_isExpansion)
+            .length;
+        expect(middleExpansion, lessThanOrEqualTo(2), reason: 'seed $s');
+        expect(_isExpansion(session.last), isFalse, reason: 'seed $s finale');
+        if (_isExpansion(session.first)) openerExpansionCount++;
       }
+      // Opener canonical in ≥60% of seeds (soft bound — preserves
+      // "opener is a soft landing" framing while admitting §6.1 relief).
+      expect(
+        50 - openerExpansionCount,
+        greaterThanOrEqualTo(30),
+        reason:
+            'opener should remain canonical-dominant '
+            '(saw ${50 - openerExpansionCount}/50 canonical openers)',
+      );
     });
 
     test('texture: ≤2 textured boards, only in slots 1–3 (clean bookends)', () {

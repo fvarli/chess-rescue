@@ -129,9 +129,7 @@ void main() {
     // 3 final report (Phase 3e) interprets them against the lead's 5
     // reporting requirements. Zero-frequency is a real possible finding — see
     // SessionComposer.compose() opener-slot logic.
-    final ids = {
-      for (final t in PuzzleLibrary.expansionTemplates) t.puzzle.id,
-    };
+    final ids = {for (final t in PuzzleLibrary.expansionTemplates) t.puzzle.id};
     expect(
       ids,
       containsAll(<String>[

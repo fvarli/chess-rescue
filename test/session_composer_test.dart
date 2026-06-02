@@ -156,16 +156,22 @@ void main() {
       }
     });
 
-    test('canonical-anchored: opener + finale canonical, >= 3/5 canonical', () {
+    test('canonical-anchored: finale canonical, ≤2 expansion middles', () {
+      // Sprint V1 §6.1 opener relief: the opener slot may be expansion in
+      // seed-gated relief sessions (~25%). Finale stays canonical; the
+      // canonical-anchored cap still bounds expansion in middle slots 1–3
+      // at ≤2.
       for (var s = 1; s <= 16; s++) {
         final session = compose(s);
-        expect(_isExpansion(session.first), isFalse, reason: 'seed $s opener');
         expect(_isExpansion(session.last), isFalse, reason: 'seed $s finale');
-        final expansionCount = session.where(_isExpansion).length;
+        final middleExpansion = session
+            .sublist(1, 4)
+            .where(_isExpansion)
+            .length;
         expect(
-          expansionCount,
+          middleExpansion,
           lessThanOrEqualTo(2),
-          reason: 'seed $s: ${_ids(session)}',
+          reason: 'seed $s middle: ${_ids(session)}',
         );
       }
     });
