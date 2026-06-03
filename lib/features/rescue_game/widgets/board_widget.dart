@@ -24,6 +24,7 @@ class BoardWidget extends StatefulWidget {
     required this.resetInFlight,
     required this.onTapSquare,
     this.focusSquare,
+    this.focusCueIsAmbient = false,
     this.extendedSettle = false,
   });
 
@@ -38,9 +39,15 @@ class BoardWidget extends StatefulWidget {
   final bool resetInFlight;
   final void Function(int file, int rank) onTapSquare;
 
-  // First-run only: a soft focus cue on this square during the opening danger
-  // state (null disables it), and a slightly longer rescue settle.
+  // A soft focus cue on this square during the danger state (null disables
+  // it). Intensity is controlled by [focusCueIsAmbient]: false uses the
+  // louder onboarding range; true uses the damped post-onboarding range.
   final Square? focusSquare;
+  // When true, the focus cue uses the quieter ambient alpha range
+  // (post-onboarding). When false, the louder onboarding range is used.
+  final bool focusCueIsAmbient;
+  // First-run only: a slightly longer rescue settle so the first survival
+  // lingers.
   final bool extendedSettle;
 
   @override
@@ -717,7 +724,14 @@ class _BoardWidgetState extends State<BoardWidget>
     if (fs == null) return const SizedBox.shrink();
     final visible = widget.state == GameState.danger && widget.selected == null;
     final origin = _squareOrigin(fs.file, fs.rank);
+    final alphaMin = widget.focusCueIsAmbient
+        ? MotionTokens.focusCueAmbientAlphaMin
+        : MotionTokens.focusCueAlphaMin;
+    final alphaMax = widget.focusCueIsAmbient
+        ? MotionTokens.focusCueAmbientAlphaMax
+        : MotionTokens.focusCueAlphaMax;
     return Positioned(
+      key: const ValueKey('focus-cue'),
       left: origin.dx,
       top: origin.dy,
       width: _sq,
@@ -731,11 +745,7 @@ class _BoardWidgetState extends State<BoardWidget>
             animation: _dangerPulseValue,
             builder: (context, _) {
               final t = _dangerPulseValue.value;
-              final glow = _lerp(
-                MotionTokens.focusCueAlphaMin,
-                MotionTokens.focusCueAlphaMax,
-                t,
-              );
+              final glow = _lerp(alphaMin, alphaMax, t);
               return DecoratedBox(
                 decoration: BoxDecoration(
                   color: AppColors.accent.withValues(

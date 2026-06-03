@@ -128,6 +128,11 @@ class MotionTokens {
   static const double focusCueAlphaMax = 0.58;
   static const double focusCueFillAlpha = 0.10;
 
+  // Ambient (post-onboarding) focus cue — quieter companion to the danger
+  // glow, never a competitor. Roughly half the onboarding amplitude.
+  static const double focusCueAmbientAlphaMin = 0.18;
+  static const double focusCueAmbientAlphaMax = 0.32;
+
   // — Curves
   static const Curve standard = Curves.easeOutCubic;
   static const Curve slide = Curves.easeInOutCubic;

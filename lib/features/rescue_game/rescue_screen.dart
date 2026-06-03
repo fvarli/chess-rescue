@@ -306,9 +306,8 @@ class _RescueScreenState extends State<RescueScreen> {
                               commitInFlight: _game.commitInFlight,
                               resetInFlight: _game.resetInFlight,
                               onTapSquare: _game.handleSquare,
-                              focusSquare: _game.isOnboarding
-                                  ? puzzle.tappableSquare
-                                  : null,
+                              focusSquare: puzzle.tappableSquare,
+                              focusCueIsAmbient: !_game.isOnboarding,
                               extendedSettle: _game.isOnboarding,
                             ),
                           ),
