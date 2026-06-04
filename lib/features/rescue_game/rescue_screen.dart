@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 
 import '../../core/models/episode.dart';
@@ -244,9 +244,15 @@ class _RescueScreenState extends State<RescueScreen> {
                                 const SizedBox(width: 12),
                                 SavedBadge(
                                   count: _game.completedCount,
-                                  // Debug-only affordance: inert in release.
-                                  onReset: kDebugMode
-                                      ? _game.resetProgress
+                                  // Developer reset surface — visible only in
+                                  // debug + profile builds. In release the
+                                  // callback is null and the long-press is
+                                  // inert exactly as before. A confirmation
+                                  // dialog guards against accidental wipes
+                                  // during QA testing; on confirm we pop back
+                                  // to Home so Home re-reads the fresh store.
+                                  onReset: !kReleaseMode
+                                      ? _confirmAndReset
                                       : null,
                                   complete: _game.allComplete,
                                 ),
@@ -462,6 +468,40 @@ class _RescueScreenState extends State<RescueScreen> {
         newlyUnlockedRecordIds: List<String>.unmodifiable(_sessionRecordIds),
       ),
     );
+  }
+
+  /// Developer reset surface — shows a destructive-action confirmation,
+  /// wipes all persisted progress on confirm, then pops back to Home so
+  /// Home re-reads the now-empty store and renders the first-run state.
+  /// Wired only via SavedBadge long-press in debug + profile builds
+  /// (release builds receive a null `onReset` and are unaffected).
+  Future<void> _confirmAndReset() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reset all progress?'),
+        content: const Text(
+          'This will erase every puzzle completed, all signatures, '
+          'records, streaks, and onboarding state. This cannot be undone.\n\n'
+          'Developer tool — not intended for normal play.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await _game.resetProgress();
+    if (!mounted) return;
+    Navigator.of(context).maybePop<RescueScreenPopResult>();
   }
 
   /// PR 2 — toggle the current puzzle's Signature membership. Reads the
