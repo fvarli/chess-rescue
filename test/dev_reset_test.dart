@@ -165,71 +165,78 @@ void main() {
   });
 
   group('RescueScreen — developer reset long-press flow', () {
-    testWidgets('(6a) confirm path — long-press → Reset → wipes store + resets controller', (
-      tester,
-    ) async {
-      SharedPreferences.setMockInitialValues({
-        'flutter.cr_onboarding_seen': true,
-        'flutter.cr_intro_seen': true,
-        'flutter.cr_completed_ids': <String>['p1-knight-rescue'],
-      });
-      final store = await ProgressStore.create();
-      final game = GameController(store: store);
-      // Mount RescueScreen directly. (`Navigator.maybePop()` inside
-      // `_confirmAndReset` is a no-op when there's no route below — this is
-      // fine; we verify the reset behavior, not the pop target.)
-      await tester.pumpWidget(
-        _wrap(RescueScreen(store: store, controller: game)),
-      );
-      await tester.pump();
+    testWidgets(
+      '(6a) confirm path — long-press → Reset → wipes store + resets controller',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_onboarding_seen': true,
+          'flutter.cr_intro_seen': true,
+          'flutter.cr_completed_ids': <String>['p1-knight-rescue'],
+        });
+        final store = await ProgressStore.create();
+        final game = GameController(store: store);
+        // Mount RescueScreen directly. (`Navigator.maybePop()` inside
+        // `_confirmAndReset` is a no-op when there's no route below — this is
+        // fine; we verify the reset behavior, not the pop target.)
+        await tester.pumpWidget(
+          _wrap(RescueScreen(store: store, controller: game)),
+        );
+        await tester.pump();
 
-      // SavedBadge should be present in the rescue screen header.
-      final badge = find.byType(SavedBadge);
-      expect(badge, findsOneWidget);
-      expect(game.isOnboarding, isFalse,
-          reason: 'pre-condition: returning player');
+        // SavedBadge should be present in the rescue screen header.
+        final badge = find.byType(SavedBadge);
+        expect(badge, findsOneWidget);
+        expect(
+          game.isOnboarding,
+          isFalse,
+          reason: 'pre-condition: returning player',
+        );
 
-      // Long-press → confirmation dialog appears.
-      await tester.longPress(badge);
-      // Pump enough for showDialog to mount.
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('Reset all progress?'), findsOneWidget);
-      // Disambiguate: RescueScreen has its own per-puzzle "Reset" footer
-      // button, so plain `find.text('Reset')` matches two widgets. Scope to
-      // the dialog.
-      final dialogResetBtn = find.descendant(
-        of: find.byType(AlertDialog),
-        matching: find.text('Reset'),
-      );
-      final dialogCancelBtn = find.descendant(
-        of: find.byType(AlertDialog),
-        matching: find.text('Cancel'),
-      );
-      expect(dialogCancelBtn, findsOneWidget);
-      expect(dialogResetBtn, findsOneWidget);
+        // Long-press → confirmation dialog appears.
+        await tester.longPress(badge);
+        // Pump enough for showDialog to mount.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.text('Reset all progress?'), findsOneWidget);
+        // Disambiguate: RescueScreen has its own per-puzzle "Reset" footer
+        // button, so plain `find.text('Reset')` matches two widgets. Scope to
+        // the dialog.
+        final dialogResetBtn = find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Reset'),
+        );
+        final dialogCancelBtn = find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Cancel'),
+        );
+        expect(dialogCancelBtn, findsOneWidget);
+        expect(dialogResetBtn, findsOneWidget);
 
-      // Confirm — `_confirmAndReset` awaits resetProgress (which awaits
-      // store.clear) and then maybePops. Pump the dialog dismissal +
-      // resetProgress future chain.
-      await tester.tap(dialogResetBtn);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-      await tester.pump(const Duration(milliseconds: 400));
+        // Confirm — `_confirmAndReset` awaits resetProgress (which awaits
+        // store.clear) and then maybePops. Pump the dialog dismissal +
+        // resetProgress future chain.
+        await tester.tap(dialogResetBtn);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 400));
 
-      // Dialog has dismissed.
-      expect(find.text('Reset all progress?'), findsNothing);
+        // Dialog has dismissed.
+        expect(find.text('Reset all progress?'), findsNothing);
 
-      // In-memory controller state is back to first-run.
-      expect(game.isOnboarding, isTrue,
-          reason: 'after reset, controller should re-enter onboarding');
+        // In-memory controller state is back to first-run.
+        expect(
+          game.isOnboarding,
+          isTrue,
+          reason: 'after reset, controller should re-enter onboarding',
+        );
 
-      // Disk is wiped — completedIds + intro + onboarding flags gone.
-      final reloaded = await ProgressStore.create();
-      expect(reloaded.completedIds, isEmpty);
-      expect(reloaded.introSeen, isFalse);
-      expect(reloaded.onboardingSeen, isFalse);
-    });
+        // Disk is wiped — completedIds + intro + onboarding flags gone.
+        final reloaded = await ProgressStore.create();
+        expect(reloaded.completedIds, isEmpty);
+        expect(reloaded.introSeen, isFalse);
+        expect(reloaded.onboardingSeen, isFalse);
+      },
+    );
 
     testWidgets('(6b) cancel path — dialog dismisses, store unchanged', (
       tester,
