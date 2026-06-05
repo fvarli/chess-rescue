@@ -315,10 +315,12 @@ Future<_ShotPrep> _buildRecordsShot() async {
     'cr_intro_seen': true,
     'cr_onboarding_seen': true,
     // ProgressStore.unlockedRecords reads `cr_unlocked_records` as a JSON-
-    // encoded string (not a StringList), so seed it that way.
+    // encoded string (not a StringList), so seed it that way. `familiarGround`
+    // was dropped from the list because its title doesn't resolve in this
+    // seeded context (records-library/l10n mismatch, separate from the
+    // harness) and it rendered as a blank row in the captured PNG.
     'cr_unlocked_records': jsonEncode(<String>[
       'firstRescue',
-      'familiarGround',
       'ep1StrikeBack',
       'ep2EndTheThreat',
       'endlessSpark',
@@ -333,7 +335,10 @@ Future<_ShotPrep> _buildRecordsShot() async {
       'b3-remove-the-defender',
       'b4-the-cross-check',
     ],
-    'cr_lifetime_saved': 12,
+    // Lowered from 12 → 5 so the records evaluator does NOT auto-unlock
+    // `familiarGround` (threshold ≈ 10), which previously rendered as a
+    // blank row in the captured PNG due to a separate library/l10n bug.
+    'cr_lifetime_saved': 5,
   });
   return _ShotPrep(
     widget: ColoredBox(
