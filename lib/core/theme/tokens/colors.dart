@@ -66,8 +66,18 @@ abstract final class ColorTokens {
   /// Light board squares — warm slate. Anchor for premium board look.
   static const Color boardLight = Color(0xFF3E4250);
 
-  /// Dark board squares — deep charcoal.
-  static const Color boardDark = Color(0xFF161823);
+  /// Dark board squares — deep charcoal with a slight L lift so the
+  /// silhouettes of dark pieces (`pieceDark #0C0D14`) read against the
+  /// surface without needing extra shadow.
+  static const Color boardDark = Color(0xFF181B26);
+
+  /// Grid line tint — 2.5% white. Whispers between squares once each
+  /// square carries its own subtle gradient.
+  static const Color boardGridLine = Color(0x06FFFFFF);
+
+  /// Board outer drop shadow (55% black). Separate from the generic
+  /// `shadow` token (25%) which is for inline card elevation.
+  static const Color boardShadow = Color(0x8C000000);
 
   // ── Piece materials ─────────────────────────────────────────────────────
   /// Light pieces — near-white ivory.

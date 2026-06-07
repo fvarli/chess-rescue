@@ -43,7 +43,17 @@ void main() {
 
     test('board materials are the warm-slate / charcoal pair', () {
       expect(ColorTokens.boardLight, const Color(0xFF3E4250));
-      expect(ColorTokens.boardDark, const Color(0xFF161823));
+      // boardDark carries a slight L lift over the shipped 1.1.1 value so
+      // dark-piece silhouettes separate against it.
+      expect(ColorTokens.boardDark, const Color(0xFF181B26));
+    });
+
+    test('boardGridLine whispers at ~2.5% white', () {
+      expect(ColorTokens.boardGridLine.a, closeTo(0.024, 0.005));
+    });
+
+    test('boardShadow is the dedicated 55% drop-shadow tint', () {
+      expect(ColorTokens.boardShadow.a, closeTo(0.55, 0.01));
     });
   });
 

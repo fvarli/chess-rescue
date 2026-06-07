@@ -13,13 +13,6 @@ class AppColors {
   static const Color textMuted = Color(0x52EAEAF2); // 32% alpha
   static const Color hairline = Color(0x12FFFFFF); // 7% white
 
-  // V1 polish: slight contrast nudge for the checker — lighter squares a hair
-  // brighter, darker squares a hair deeper — to deepen the surface read once
-  // the grain overlay and inner vignette are layered on top.
-  static const Color boardLight = Color(0xFF3E4250);
-  static const Color boardDark = Color(0xFF161823);
-  static const Color gridLine = Color(0x0AFFFFFF); // 4% white
-
   static const Color danger = Color(0xFFFF5A4C);
   static const Color rescue = Color(0xFF5EE2C0);
   static const Color accent = Color(0xFF8AA1FF);
@@ -29,7 +22,6 @@ class AppColors {
   static const Color backdropRescue = Color(0xFF0E2A23); // radial gradient core
   static const Color onRescue = Color(0xFF062019); // text on the mint footer
   static const Color pillFill = Color(0xB30D0E12); // status pill background
-  static const Color boardShadow = Color(0x8C000000); // board drop shadow
 }
 
 class AppText {

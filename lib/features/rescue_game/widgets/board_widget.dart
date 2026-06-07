@@ -7,6 +7,7 @@ import '../../../core/models/piece.dart';
 import '../../../core/models/square.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/theme/tokens.dart';
 import '../game_state.dart';
 import 'piece_widget.dart';
 
@@ -313,19 +314,20 @@ class _BoardWidgetState extends State<BoardWidget>
       height: widget.size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.boardDark,
+          color: ColorTokens.boardDark,
           boxShadow: const [
             BoxShadow(
-              color: AppColors.boardShadow,
-              offset: Offset(0, 30),
-              blurRadius: 60,
+              color: ColorTokens.boardShadow,
+              offset: Offset(0, 22),
+              blurRadius: 48,
+              spreadRadius: -2,
             ),
           ],
           border: Border.all(color: AppColors.hairline, width: 1),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(6),
           child: AnimatedBuilder(
             animation: _ambientBreath,
             builder: (context, child) {
@@ -345,6 +347,7 @@ class _BoardWidgetState extends State<BoardWidget>
                 // V1 depth polish: soft inner vignette deepens the edges
                 // without dimming the centre (where the action lives).
                 _buildInnerVignette(),
+                _buildInnerBezel(),
                 _buildDangerGlow(),
                 _buildFailedFlash(),
                 // V2 — coral rim flashes once on failed commits. Sits above
@@ -377,7 +380,7 @@ class _BoardWidgetState extends State<BoardWidget>
     return const Positioned.fill(
       child: IgnorePointer(
         child: Opacity(
-          opacity: 0.55,
+          opacity: 0.45,
           child: DecoratedBox(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -402,8 +405,27 @@ class _BoardWidgetState extends State<BoardWidget>
             gradient: RadialGradient(
               center: Alignment.center,
               radius: 0.95,
-              colors: [Color(0x00000000), Color(0x14000000)],
-              stops: [0.55, 1.0],
+              colors: [Color(0x00000000), Color(0x1C000000)],
+              stops: [0.62, 1.0],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Hairline inset stroke that reads as the polished inner edge of the
+  // board frame. ~6% white is barely visible; the eye registers the edge
+  // as a felt bezel, not a drawn line.
+  Widget _buildInnerBezel() {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(width: 0.5, color: const Color(0x0FEAEAF2)),
             ),
           ),
         ),
@@ -412,20 +434,43 @@ class _BoardWidgetState extends State<BoardWidget>
   }
 
   Widget _buildSquares() {
+    // Gate coordinate labels on a minimum board size so they never read as
+    // noise on tiny embedded previews. 280 covers every BoardWidget consumer
+    // in the current screens.
+    final showCoords = widget.size >= 280;
     final cells = <Widget>[];
     for (int j = 0; j < 8; j++) {
       for (int i = 0; i < 8; i++) {
         final file = i;
         final rank = 7 - j;
         final isLight = (file + rank) % 2 == 1;
+        final baseColor = isLight
+            ? ColorTokens.boardLight
+            : ColorTokens.boardDark;
+        // Asymmetric gradient: light squares symmetric ±3% (polished tile);
+        // dark squares lift +6% at top, -2% at bottom (perceptual ground for
+        // dark pieces without changing the body color identity).
+        final topColor = isLight
+            ? Color.lerp(baseColor, Colors.white, 0.03)!
+            : Color.lerp(baseColor, Colors.white, 0.06)!;
+        final bottomColor = isLight
+            ? Color.lerp(baseColor, Colors.black, 0.03)!
+            : Color.lerp(baseColor, Colors.black, 0.02)!;
         cells.add(
           Positioned(
             left: i * _sq,
             top: j * _sq,
             width: _sq,
             height: _sq,
-            child: ColoredBox(
-              color: isLight ? AppColors.boardLight : AppColors.boardDark,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [topColor, bottomColor],
+                ),
+              ),
+              child: showCoords ? _coordOverlay(file: file, rank: rank) : null,
             ),
           ),
         );
@@ -433,6 +478,59 @@ class _BoardWidgetState extends State<BoardWidget>
     }
     return Stack(children: cells);
   }
+
+  // Engraved coordinate labels — files (a–h) inside the bottom edge of
+  // rank-0 squares; ranks (1–8) inside the top edge of file-0 squares.
+  // Effective alpha ~19% (coordinateAccent 35% × Opacity 0.55) so they feel
+  // engraved into the board rather than overlaid as labels.
+  Widget? _coordOverlay({required int file, required int rank}) {
+    final isBottomRow = rank == 0;
+    final isLeftCol = file == 0;
+    if (!isBottomRow && !isLeftCol) return null;
+    final pad = _sq * 0.06;
+    final children = <Widget>[];
+    if (isBottomRow) {
+      children.add(
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: EdgeInsets.only(right: pad, bottom: pad * 0.6),
+            child: _coordLabel(_fileLetter(file)),
+          ),
+        ),
+      );
+    }
+    if (isLeftCol) {
+      children.add(
+        Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.only(left: pad, top: pad * 0.6),
+            child: _coordLabel('${rank + 1}'),
+          ),
+        ),
+      );
+    }
+    return IgnorePointer(child: Stack(children: children));
+  }
+
+  Widget _coordLabel(String text) => Opacity(
+    opacity: 0.55,
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 9,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.4,
+        color: ColorTokens.coordinateAccent,
+        height: 1.0,
+      ),
+    ),
+  );
+
+  static String _fileLetter(int file) =>
+      const ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][file];
 
   Widget _buildGridLines() {
     return IgnorePointer(
@@ -1020,7 +1118,7 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.gridLine
+      ..color = ColorTokens.boardGridLine
       ..strokeWidth = 0.5;
     for (int k = 1; k < 8; k++) {
       final x = k * squareSize;
