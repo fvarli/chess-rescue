@@ -24,11 +24,6 @@ class AppColors {
   static const Color rescue = Color(0xFF5EE2C0);
   static const Color accent = Color(0xFF8AA1FF);
 
-  static const Color pieceLight = Color(0xFFEAEAF2);
-  static const Color pieceDark = Color(0xFF0C0D14);
-  static const Color pieceLightStroke = Color(0x8C0C0D14); // 55% alpha
-  static const Color pieceDarkStroke = Color(0x38EAEAF2); // 22% alpha
-
   // Atmosphere / surfaces
   static const Color backdropDanger = Color(0xFF1A1C28); // radial gradient core
   static const Color backdropRescue = Color(0xFF0E2A23); // radial gradient core

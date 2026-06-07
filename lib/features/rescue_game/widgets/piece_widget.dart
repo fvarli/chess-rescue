@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/models/piece.dart';
-import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/theme/tokens.dart';
 
 class PieceWidget extends StatelessWidget {
   const PieceWidget({
@@ -51,22 +51,19 @@ class _PiecePainter extends CustomPainter {
     canvas.scale(scale, scale);
 
     final isLight = color == PieceColor.light;
-    final fillColor = isLight ? AppColors.pieceLight : AppColors.pieceDark;
+    final fillColor = isLight ? ColorTokens.pieceLight : ColorTokens.pieceDark;
     final strokeColor = isLight
-        ? AppColors.pieceLightStroke
-        : AppColors.pieceDarkStroke;
+        ? ColorTokens.pieceLightStroke
+        : ColorTokens.pieceDarkStroke;
 
-    // V1 polish: soft vertical gradient over the silhouette gives the piece a
-    // calm volume cue (top highlight → body color). Bézier shapes are
-    // identity-preserved. Light pieces get a slight white-bias top + ~10%
-    // darker bottom; dark pieces get a ~14% lighter top + body bottom so the
-    // gradient reads even on a dark board.
+    // Asymmetric gradient: light pieces darken at the bottom (carved cue);
+    // dark pieces lift at the top (separation from the deep charcoal board).
     final topColor = isLight
-        ? Color.lerp(fillColor, Colors.white, 0.06)!
-        : Color.lerp(fillColor, Colors.white, 0.14)!;
+        ? Color.lerp(fillColor, Colors.white, 0.08)!
+        : Color.lerp(fillColor, Colors.white, 0.18)!;
     final bottomColor = isLight
-        ? Color.lerp(fillColor, Colors.black, 0.10)!
-        : fillColor;
+        ? Color.lerp(fillColor, Colors.black, 0.16)!
+        : Color.lerp(fillColor, Colors.black, 0.06)!;
 
     final fill = Paint()
       ..style = PaintingStyle.fill
@@ -85,24 +82,27 @@ class _PiecePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true;
 
+    // Must paint before the silhouette so the body overpaints any overlap.
+    _paintFloorShadow(canvas);
+
     switch (type) {
       case PieceType.king:
-        _paintKing(canvas, fill, stroke);
+        _paintKing(canvas, fill, stroke, isLight);
         break;
       case PieceType.queen:
-        _paintQueen(canvas, fill, stroke);
+        _paintQueen(canvas, fill, stroke, isLight);
         break;
       case PieceType.rook:
-        _paintRook(canvas, fill, stroke);
+        _paintRook(canvas, fill, stroke, isLight);
         break;
       case PieceType.bishop:
-        _paintBishop(canvas, fill, stroke, strokeColor);
+        _paintBishop(canvas, fill, stroke, strokeColor, isLight);
         break;
       case PieceType.knight:
-        _paintKnight(canvas, fill, stroke, strokeColor);
+        _paintKnight(canvas, fill, stroke, strokeColor, isLight);
         break;
       case PieceType.pawn:
-        _paintPawn(canvas, fill, stroke);
+        _paintPawn(canvas, fill, stroke, isLight);
         break;
     }
 
@@ -150,7 +150,55 @@ class _PiecePainter extends CustomPainter {
       ..close();
   }
 
-  void _paintKing(Canvas canvas, Paint fill, Paint stroke) {
+  // Width 56 (narrower than the 64-wide foot ellipse) keeps the blurred
+  // edge inside the inner 84%-padded square in board_widget.dart, so the
+  // shadow can never bleed into an adjacent square.
+  void _paintFloorShadow(Canvas canvas) {
+    final shadow = Paint()
+      ..color = ColorTokens.pieceFloorShadow
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.5)
+      ..isAntiAlias = true;
+    canvas.drawOval(
+      Rect.fromCenter(center: const Offset(50, 92), width: 56, height: 7),
+      shadow,
+    );
+  }
+
+  // No clip path: the 8/12% alpha forgives any silhouette overflow, and
+  // skipping clipPath keeps the rasterizer cheap for 16–32 pieces on screen.
+  void _paintTopSheen(Canvas canvas, Offset center, bool isLight) {
+    final sheen = Paint()
+      ..color = isLight
+          ? ColorTokens.pieceLightHighlight
+          : ColorTokens.pieceDarkHighlight
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4)
+      ..isAntiAlias = true;
+    canvas.drawOval(
+      Rect.fromCenter(center: center, width: 28, height: 10),
+      sheen,
+    );
+  }
+
+  // Uses ColorTokens.shadow + 0.8px stroke so the rim accents the contact
+  // without competing with the body stroke.
+  void _paintFootRim(Canvas canvas) {
+    final rim = Paint()
+      ..color = ColorTokens.shadow
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true;
+    // Upper-half arc of the foot ellipse at y≈84, width 64.
+    final arc = Path()
+      ..addArc(
+        Rect.fromCenter(center: const Offset(50, 87), width: 64, height: 6),
+        3.14159, // π — start at left side
+        3.14159, // sweep π — top half only
+      );
+    canvas.drawPath(arc, rim);
+  }
+
+  void _paintKing(Canvas canvas, Paint fill, Paint stroke, bool isLight) {
     // Cross: M47 4 H53 V12 H60 V18 H53 V26 H47 V18 H40 V12 H47 Z
     final cross = Path()
       ..moveTo(47, 4)
@@ -189,12 +237,14 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, body, fill, stroke);
 
+    _paintTopSheen(canvas, const Offset(50, 42), isLight);
     _drawPath(canvas, _collarPath(), fill, stroke);
     _drawPath(canvas, _basePath(), fill, stroke);
     _drawPath(canvas, _footEllipse(), fill, stroke);
+    _paintFootRim(canvas);
   }
 
-  void _paintQueen(Canvas canvas, Paint fill, Paint stroke) {
+  void _paintQueen(Canvas canvas, Paint fill, Paint stroke, bool isLight) {
     // Five crown beads.
     const beads = [
       [28.0, 16.0, 3.6],
@@ -238,12 +288,14 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, body, fill, stroke);
 
+    _paintTopSheen(canvas, const Offset(50, 40), isLight);
     _drawPath(canvas, _collarPath(), fill, stroke);
     _drawPath(canvas, _basePath(), fill, stroke);
     _drawPath(canvas, _footEllipse(), fill, stroke);
+    _paintFootRim(canvas);
   }
 
-  void _paintRook(Canvas canvas, Paint fill, Paint stroke) {
+  void _paintRook(Canvas canvas, Paint fill, Paint stroke, bool isLight) {
     // Battlements: M24 6 H34 V14 H40 V6 H47 V14 H53 V6 H60 V14 H66 V6 H76 V24 H24 Z
     final battlements = Path()
       ..moveTo(24, 6)
@@ -287,9 +339,11 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, body, fill, stroke);
 
+    _paintTopSheen(canvas, const Offset(50, 38), isLight);
     _drawPath(canvas, _collarPath(left: 28, right: 72), fill, stroke);
     _drawPath(canvas, _wideBasePath(), fill, stroke);
     _drawPath(canvas, _footEllipse(), fill, stroke);
+    _paintFootRim(canvas);
   }
 
   void _paintBishop(
@@ -297,6 +351,7 @@ class _PiecePainter extends CustomPainter {
     Paint fill,
     Paint stroke,
     Color strokeColor,
+    bool isLight,
   ) {
     // Head: M50 5 Q40 14 38 28 Q40 34 50 35 Q60 34 62 28 Q60 14 50 5 Z
     final head = Path()
@@ -341,9 +396,11 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, body, fill, stroke);
 
+    _paintTopSheen(canvas, const Offset(50, 44), isLight);
     _drawPath(canvas, _collarPath(), fill, stroke);
     _drawPath(canvas, _basePath(), fill, stroke);
     _drawPath(canvas, _footEllipse(), fill, stroke);
+    _paintFootRim(canvas);
   }
 
   void _paintKnight(
@@ -351,6 +408,7 @@ class _PiecePainter extends CustomPainter {
     Paint fill,
     Paint stroke,
     Color strokeColor,
+    bool isLight,
   ) {
     // Horse head silhouette — verbatim from primitives.jsx:98-117.
     final head = Path()
@@ -406,12 +464,14 @@ class _PiecePainter extends CustomPainter {
       nostril,
     );
 
+    _paintTopSheen(canvas, const Offset(52, 28), isLight);
     _drawPath(canvas, _collarPath(left: 28, right: 72), fill, stroke);
     _drawPath(canvas, _wideBasePath(), fill, stroke);
     _drawPath(canvas, _footEllipse(), fill, stroke);
+    _paintFootRim(canvas);
   }
 
-  void _paintPawn(Canvas canvas, Paint fill, Paint stroke) {
+  void _paintPawn(Canvas canvas, Paint fill, Paint stroke, bool isLight) {
     // Head: circle cx=50 cy=22 r=10.
     final head = Path()
       ..addOval(Rect.fromCircle(center: const Offset(50, 22), radius: 10));
@@ -440,9 +500,11 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, body, fill, stroke);
 
+    _paintTopSheen(canvas, const Offset(50, 24), isLight);
     _drawPath(canvas, _collarPath(left: 32, right: 68), fill, stroke);
     _drawPath(canvas, _basePath(), fill, stroke);
     _drawPath(canvas, _footEllipse(), fill, stroke);
+    _paintFootRim(canvas);
   }
 
   @override

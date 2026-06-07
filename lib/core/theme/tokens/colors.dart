@@ -69,6 +69,31 @@ abstract final class ColorTokens {
   /// Dark board squares — deep charcoal.
   static const Color boardDark = Color(0xFF161823);
 
+  // ── Piece materials ─────────────────────────────────────────────────────
+  /// Light pieces — near-white ivory.
+  static const Color pieceLight = Color(0xFFEAEAF2);
+
+  /// Dark pieces — near-black ebony.
+  static const Color pieceDark = Color(0xFF0C0D14);
+
+  /// Stroke on light pieces — 55% alpha dark for soft contour.
+  static const Color pieceLightStroke = Color(0x8C0C0D14);
+
+  /// Stroke on dark pieces — 22% alpha light, hairline-faint so the
+  /// silhouette reads from the gradient, not from a hard outline.
+  static const Color pieceDarkStroke = Color(0x38EAEAF2);
+
+  /// Soft contact shadow under every piece (40% black). Uniform across
+  /// light and dark pieces; tunable here without touching the painter.
+  static const Color pieceFloorShadow = Color(0x66000000);
+
+  /// Top sheen on light pieces (8% white) — subtle polished-resin cue.
+  static const Color pieceLightHighlight = Color(0x14FFFFFF);
+
+  /// Top sheen on dark pieces (12% white) — slightly stronger so the
+  /// carved body reads against the deep-charcoal board.
+  static const Color pieceDarkHighlight = Color(0x1FFFFFFF);
+
   // ── Accents ─────────────────────────────────────────────────────────────
   /// Mint at 35% alpha — for coordinate labels and quiet accent strokes.
   /// Designed to recede; never used for primary signal.
