@@ -90,6 +90,32 @@ class MotionTokens {
   static const double rescueRingStrokeStart = 1.6;
   static const double rescueRingStrokeEnd = 0.4;
 
+  // — Ambient board presence (felt, not seen)
+  // Three desynchronized layers tint and breathe the board surface so it
+  // feels like a physical object resting in a quiet room. If a tester
+  // consciously notices any of these, the values get dropped one step.
+  static const Duration ambientBrightnessPeriod = Duration(milliseconds: 7000);
+  static const double ambientBrightnessAmplitude = 0.015; // ±1.5% alpha
+  static const Duration ambientLightDriftPeriod = Duration(milliseconds: 28000);
+  static const double ambientLightDriftPeakAlpha = 0.025; // ≤3% room light
+  static const double ambientGrainAmplitude = 0.02; // ±2% around the 0.45 base
+  // On rescued transition the brightness pauses for an emotional beat, then
+  // resumes at a softer amplitude — the board exhales without freezing.
+  static const Duration ambientRescueExhale = Duration(milliseconds: 250);
+  static const double ambientRescuedAmplitudeMul = 0.6;
+
+  // — Move arrow (post-rescue cinematic confirmation)
+  // Three-phase: draw-in → strong hold → fade to a calmer presence so the
+  // rescued board doesn't feel cluttered. See feedback_cinematic_confirmation_fade.
+  static const Duration moveArrowDraw = Duration(milliseconds: 220);
+  static const Duration moveArrowHold = Duration(milliseconds: 240);
+  static const Duration moveArrowFade = Duration(milliseconds: 320);
+  // Inside the draw phase, the arrowhead fades in over the final 20% so it
+  // arrives with the shaft rather than punctuating after it.
+  static const double moveArrowHeadStart = 0.80;
+  static const double moveArrowPeakAlpha = 0.88;
+  static const double moveArrowSettledAlpha = 0.50;
+
   // — Background gradient transition
   static const Duration gradientTransition = Duration(milliseconds: 600);
 

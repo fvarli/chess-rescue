@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:chess_rescue/core/theme/motion.dart';
 import 'package:chess_rescue/core/theme/tokens.dart';
 
 // v1.2.0 "Threshold" foundation — token-value regression net.
@@ -216,6 +217,46 @@ void main() {
       expect(CurveTokens.exit, isNotNull);
       expect(CurveTokens.overshoot, isNotNull);
       expect(CurveTokens.spring, isNotNull);
+    });
+  });
+
+  group('MotionTokens — ambient board presence', () {
+    test('long-period durations land at 7s / 28s / 250ms', () {
+      expect(
+        MotionTokens.ambientBrightnessPeriod,
+        const Duration(milliseconds: 7000),
+      );
+      expect(
+        MotionTokens.ambientLightDriftPeriod,
+        const Duration(milliseconds: 28000),
+      );
+      expect(
+        MotionTokens.ambientRescueExhale,
+        const Duration(milliseconds: 250),
+      );
+    });
+
+    test('amplitudes + rescued multiplier stay subtle', () {
+      expect(MotionTokens.ambientBrightnessAmplitude, closeTo(0.015, 0.001));
+      expect(MotionTokens.ambientLightDriftPeakAlpha, closeTo(0.025, 0.001));
+      expect(MotionTokens.ambientGrainAmplitude, closeTo(0.02, 0.001));
+      expect(MotionTokens.ambientRescuedAmplitudeMul, closeTo(0.6, 0.001));
+      // Light drift must stay under the brief's 3% cap.
+      expect(MotionTokens.ambientLightDriftPeakAlpha, lessThan(0.03));
+    });
+  });
+
+  group('MotionTokens — move arrow', () {
+    test('three-phase durations land at 220 / 240 / 320 ms', () {
+      expect(MotionTokens.moveArrowDraw, const Duration(milliseconds: 220));
+      expect(MotionTokens.moveArrowHold, const Duration(milliseconds: 240));
+      expect(MotionTokens.moveArrowFade, const Duration(milliseconds: 320));
+    });
+
+    test('alpha + head-start ratios reflect subtlety directive', () {
+      expect(MotionTokens.moveArrowHeadStart, closeTo(0.80, 0.001));
+      expect(MotionTokens.moveArrowPeakAlpha, closeTo(0.88, 0.001));
+      expect(MotionTokens.moveArrowSettledAlpha, closeTo(0.50, 0.001));
     });
   });
 }

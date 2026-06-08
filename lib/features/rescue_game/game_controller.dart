@@ -82,6 +82,10 @@ class GameController extends ChangeNotifier {
   List<Square> _legalSquares = const [];
   bool _commitInFlight = false;
   bool _resetInFlight = false;
+  // Origin square of the most recent successful rescue commit. Drives the
+  // cinematic move-arrow in BoardWidget. Cleared on every puzzle load and
+  // on reset.
+  Square? _lastMoveFrom;
 
   // — Episode + puzzle sequencing
   Episode get episode => _episode;
@@ -125,6 +129,7 @@ class GameController extends ChangeNotifier {
   List<Square> get legalSquares => _legalSquares;
   bool get commitInFlight => _commitInFlight;
   bool get resetInFlight => _resetInFlight;
+  Square? get lastMoveFrom => _lastMoveFrom;
 
   void _loadPuzzle(int i) {
     _index = i;
@@ -135,6 +140,7 @@ class GameController extends ChangeNotifier {
     _state = GameState.danger;
     _statusMsg = p.statusText;
     _commitInFlight = false;
+    _lastMoveFrom = null;
     // PR 3 Familiarity — snapshot whether the player has completed this
     // canonical puzzle before, either earlier this session (any mode)
     // OR in any prior canonical-mode session. Captured at load time so
@@ -235,6 +241,7 @@ class GameController extends ChangeNotifier {
     _selected = null;
     _commitInFlight = false;
     if (isRescue) {
+      _lastMoveFrom = Square(from.file, from.rank);
       // R1 — snapshot pre-rescue state BEFORE any side-effects, so the
       // evaluator diff sees a clean "before" vs the derived "after".
       final preLifetime = _store?.lifetimeSaved ?? 0;
@@ -452,6 +459,7 @@ class GameController extends ChangeNotifier {
     _state = GameState.danger;
     _statusMsg = p.statusText;
     _commitInFlight = false;
+    _lastMoveFrom = null;
     notifyListeners();
 
     await Future<void>.delayed(MotionTokens.resetSettle);

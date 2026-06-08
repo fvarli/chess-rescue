@@ -315,6 +315,7 @@ class _RescueScreenState extends State<RescueScreen> {
                               focusSquare: puzzle.tappableSquare,
                               focusCueIsAmbient: !_game.isOnboarding,
                               extendedSettle: _game.isOnboarding,
+                              lastMoveFrom: _game.lastMoveFrom,
                             ),
                           ),
                           const SizedBox(height: 28),

@@ -27,6 +27,7 @@ class BoardWidget extends StatefulWidget {
     this.focusSquare,
     this.focusCueIsAmbient = false,
     this.extendedSettle = false,
+    this.lastMoveFrom,
   });
 
   final double size;
@@ -51,6 +52,11 @@ class BoardWidget extends StatefulWidget {
   // lingers.
   final bool extendedSettle;
 
+  // Origin square of the rescuer piece for the just-committed move. Drives
+  // the cinematic move-arrow that draws from origin → rescueTo during the
+  // rescued state. Null suppresses the arrow.
+  final Square? lastMoveFrom;
+
   @override
   State<BoardWidget> createState() => _BoardWidgetState();
 }
@@ -71,6 +77,18 @@ class _BoardWidgetState extends State<BoardWidget>
   // state transitions to rescued. Paired with the existing rescueBloom (which
   // paints the square); together the figure and its ground respond.
   late final AnimationController _kingPulse;
+  // Post-rescue cinematic confirmation arrow. Three-phase sequence: draw-in,
+  // strong hold, fade to a calmer presence. Driven by a single controller;
+  // the painter derives shaft-progress + alpha per frame.
+  late final AnimationController _moveArrow;
+  // PR-5 ambient layers. Long-period repeating controllers that drive a
+  // ±1.5% brightness sine on the board material and a slow elliptical
+  // light drift. The grain overlay shares the brightness controller.
+  late final AnimationController _ambientBrightness;
+  late final AnimationController _ambientLightDrift;
+  // Brief pause on rescue transition before the brightness resumes at a
+  // softer amplitude — the board's "exhale."
+  Timer? _ambientExhaleTimer;
 
   late final Animation<double> _dangerPulseValue;
 
@@ -144,6 +162,21 @@ class _BoardWidgetState extends State<BoardWidget>
       vsync: this,
       duration: MotionTokens.kingRescuePulse,
     );
+    _moveArrow = AnimationController(
+      vsync: this,
+      duration:
+          MotionTokens.moveArrowDraw +
+          MotionTokens.moveArrowHold +
+          MotionTokens.moveArrowFade,
+    );
+    _ambientBrightness = AnimationController(
+      vsync: this,
+      duration: MotionTokens.ambientBrightnessPeriod,
+    )..repeat();
+    _ambientLightDrift = AnimationController(
+      vsync: this,
+      duration: MotionTokens.ambientLightDriftPeriod,
+    )..repeat();
 
     _dangerPulse.repeat();
     _retuneAmbientBreath();
@@ -183,6 +216,20 @@ class _BoardWidgetState extends State<BoardWidget>
           _kingPulse
             ..reset()
             ..forward();
+          // Same gating for the cinematic move arrow.
+          _moveArrow
+            ..reset()
+            ..forward();
+          // Ambient exhale: pause brightness for a brief emotional beat,
+          // then resume at the softer rescued amplitude (handled in the
+          // painter). The light drift is never paused.
+          _ambientBrightness.stop();
+          _ambientExhaleTimer?.cancel();
+          _ambientExhaleTimer = Timer(MotionTokens.ambientRescueExhale, () {
+            if (mounted && widget.state == GameState.rescued) {
+              _ambientBrightness.repeat();
+            }
+          });
         }
         _failedFlash.value = 0;
         _microShake.value = 0;
@@ -205,6 +252,8 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueBreath.stop();
         _rescueRing.value = 0;
         _kingPulse.value = 0;
+        _moveArrow.value = 0;
+        _ensureAmbientBrightnessRunning();
         break;
       case GameState.danger:
       case GameState.selected:
@@ -215,7 +264,19 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueRing.value = 0;
         _failRim.value = 0;
         _kingPulse.value = 0;
+        _moveArrow.value = 0;
+        _ensureAmbientBrightnessRunning();
         break;
+    }
+  }
+
+  // Resume the brightness controller from its current value if a prior
+  // rescued-state pause left it stopped. Cancels any pending exhale timer.
+  void _ensureAmbientBrightnessRunning() {
+    _ambientExhaleTimer?.cancel();
+    _ambientExhaleTimer = null;
+    if (!_ambientBrightness.isAnimating) {
+      _ambientBrightness.repeat();
     }
   }
 
@@ -284,6 +345,10 @@ class _BoardWidgetState extends State<BoardWidget>
     _rescueRing.dispose();
     _failRim.dispose();
     _kingPulse.dispose();
+    _moveArrow.dispose();
+    _ambientExhaleTimer?.cancel();
+    _ambientBrightness.dispose();
+    _ambientLightDrift.dispose();
     super.dispose();
   }
 
@@ -341,6 +406,10 @@ class _BoardWidgetState extends State<BoardWidget>
             child: Stack(
               children: [
                 _buildSquares(),
+                // PR-5 ambient layer: brightness breath + slow light drift.
+                // Tints the raw board material; grid / grain / vignette /
+                // gameplay overlays all draw on top.
+                _buildAmbient(),
                 _buildGridLines(),
                 // V1 surface polish: tiled grain → "made of something" read.
                 _buildGrainOverlay(),
@@ -348,6 +417,11 @@ class _BoardWidgetState extends State<BoardWidget>
                 // without dimming the centre (where the action lives).
                 _buildInnerVignette(),
                 _buildInnerBezel(),
+                // Cinematic move-arrow sits low — above the board surface,
+                // below every gameplay-state overlay — so pieces, glows, and
+                // rings overlay it cleanly. The arrow connects; it does not
+                // crown.
+                _buildMoveArrow(),
                 _buildDangerGlow(),
                 _buildFailedFlash(),
                 // V2 — coral rim flashes once on failed commits. Sits above
@@ -377,18 +451,98 @@ class _BoardWidgetState extends State<BoardWidget>
   // grid lines but beneath every gameplay overlay (danger glow, rescue glow,
   // focus cue, pieces) so it never competes with the action.
   Widget _buildGrainOverlay() {
-    return const Positioned.fill(
+    return Positioned.fill(
       child: IgnorePointer(
-        child: Opacity(
-          opacity: 0.45,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/textures/board-grain.png'),
-                repeat: ImageRepeat.repeat,
+        child: AnimatedBuilder(
+          animation: _ambientBrightness,
+          builder: (context, _) {
+            final phase = math.sin(2 * math.pi * _ambientBrightness.value);
+            final opacity = (0.45 + phase * MotionTokens.ambientGrainAmplitude)
+                .clamp(0.0, 1.0);
+            return Opacity(
+              opacity: opacity,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/textures/board-grain.png'),
+                    repeat: ImageRepeat.repeat,
+                  ),
+                ),
               ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // PR-5 ambient layer — two felt-but-not-seen overlays. Brightness
+  // crossfade (white/black @ ±1.5%, ~7s period) + slow elliptical light
+  // drift (~28s). Sits below grid/grain/vignette/gameplay so every
+  // existing layer's contrast is preserved.
+  Widget _buildAmbient() {
+    return Positioned.fill(
+      key: const ValueKey('ambient-layer'),
+      child: IgnorePointer(
+        child: Stack(
+          children: [
+            AnimatedBuilder(
+              animation: _ambientBrightness,
+              builder: (context, _) {
+                final phase = math.sin(2 * math.pi * _ambientBrightness.value);
+                final effective =
+                    MotionTokens.ambientBrightnessAmplitude *
+                    (widget.state == GameState.rescued
+                        ? MotionTokens.ambientRescuedAmplitudeMul
+                        : 1.0);
+                final whiteAlpha = phase > 0 ? phase * effective : 0.0;
+                final blackAlpha = phase < 0 ? -phase * effective : 0.0;
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: whiteAlpha),
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: blackAlpha),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ),
+            AnimatedBuilder(
+              animation: _ambientLightDrift,
+              builder: (context, _) {
+                final t = _ambientLightDrift.value;
+                final cx = math.cos(2 * math.pi * t) * 0.4;
+                final cy = math.sin(2 * math.pi * t * 0.7) * 0.3;
+                return Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment(cx, cy),
+                        radius: 1.2,
+                        colors: [
+                          Colors.white.withValues(
+                            alpha: MotionTokens.ambientLightDriftPeakAlpha,
+                          ),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.7],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -817,6 +971,57 @@ class _BoardWidgetState extends State<BoardWidget>
     );
   }
 
+  Widget _buildMoveArrow() {
+    final from = widget.lastMoveFrom;
+    if (widget.state != GameState.rescued ||
+        from == null ||
+        (from.file == widget.rescueTo.file &&
+            from.rank == widget.rescueTo.rank)) {
+      return const SizedBox.shrink(key: ValueKey('move-arrow-hidden'));
+    }
+    final originOrigin = _squareOrigin(from.file, from.rank);
+    final destOrigin = _squareOrigin(
+      widget.rescueTo.file,
+      widget.rescueTo.rank,
+    );
+    final originCenter = Offset(
+      originOrigin.dx + _sq / 2,
+      originOrigin.dy + _sq / 2,
+    );
+    final destCenter = Offset(destOrigin.dx + _sq / 2, destOrigin.dy + _sq / 2);
+    final totalMs =
+        (MotionTokens.moveArrowDraw +
+                MotionTokens.moveArrowHold +
+                MotionTokens.moveArrowFade)
+            .inMilliseconds;
+    final drawEnd = MotionTokens.moveArrowDraw.inMilliseconds / totalMs;
+    final holdEnd =
+        (MotionTokens.moveArrowDraw + MotionTokens.moveArrowHold)
+            .inMilliseconds /
+        totalMs;
+    return Positioned.fill(
+      key: const ValueKey('move-arrow'),
+      child: IgnorePointer(
+        child: AnimatedBuilder(
+          animation: _moveArrow,
+          builder: (context, _) => CustomPaint(
+            painter: _MoveArrowPainter(
+              sequenceProgress: _moveArrow.value,
+              originCenter: originCenter,
+              destCenter: destCenter,
+              squareSize: _sq,
+              color: ColorTokens.reliefPrimary,
+              drawEnd: drawEnd,
+              holdEnd: holdEnd,
+              peakAlpha: MotionTokens.moveArrowPeakAlpha,
+              settledAlpha: MotionTokens.moveArrowSettledAlpha,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFocusCue() {
     final fs = widget.focusSquare;
     if (fs == null) return const SizedBox.shrink();
@@ -1175,4 +1380,151 @@ class _RescueRingPainter extends CustomPainter {
       old.t != t ||
       old.center != center ||
       old.squareSize != squareSize;
+}
+
+// Cinematic move-arrow painter. One-shot tapered shaft (5 → 9 px) capped by
+// a wider-than-tall editorial head. Single controller; phase boundaries
+// drive shaft progress and alpha from MotionTokens.moveArrow*.
+class _MoveArrowPainter extends CustomPainter {
+  _MoveArrowPainter({
+    required this.sequenceProgress,
+    required this.originCenter,
+    required this.destCenter,
+    required this.squareSize,
+    required this.color,
+    required this.drawEnd,
+    required this.holdEnd,
+    required this.peakAlpha,
+    required this.settledAlpha,
+  });
+
+  final double sequenceProgress;
+  final Offset originCenter;
+  final Offset destCenter;
+  final double squareSize;
+  final Color color;
+  final double drawEnd;
+  final double holdEnd;
+  final double peakAlpha;
+  final double settledAlpha;
+
+  // Tapered shaft widths and head geometry, in logical pixels.
+  static const double _tailWidth = 5.0;
+  static const double _neckWidth = 9.0;
+  static const double _headWidth = 18.0;
+  static const double _headLength = 12.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Phase 1: derive shaft progress + alpha.
+    double shaftProgress;
+    double alpha;
+    if (sequenceProgress <= 0.0) {
+      return;
+    } else if (sequenceProgress <= drawEnd) {
+      shaftProgress = (sequenceProgress / drawEnd).clamp(0.0, 1.0);
+      alpha = peakAlpha;
+    } else if (sequenceProgress <= holdEnd) {
+      shaftProgress = 1.0;
+      alpha = peakAlpha;
+    } else {
+      shaftProgress = 1.0;
+      final fadeT = ((sequenceProgress - holdEnd) / (1.0 - holdEnd)).clamp(
+        0.0,
+        1.0,
+      );
+      alpha = peakAlpha + (settledAlpha - peakAlpha) * fadeT;
+    }
+    if (shaftProgress <= 0.0) return;
+
+    // Phase 2: trim 30% of square size inward at both endpoints so the
+    // arrow sits between the origin and dest piece silhouettes.
+    final delta = destCenter - originCenter;
+    final totalDist = delta.distance;
+    if (totalDist <= 0) return;
+    final dirX = delta.dx / totalDist;
+    final dirY = delta.dy / totalDist;
+    final trim = squareSize * 0.30;
+    final usableLength = totalDist - 2 * trim;
+    if (usableLength <= 0) return; // origin/dest too close
+    final start = Offset(
+      originCenter.dx + dirX * trim,
+      originCenter.dy + dirY * trim,
+    );
+    final end = Offset(
+      destCenter.dx - dirX * trim,
+      destCenter.dy - dirY * trim,
+    );
+
+    // Phase 3: head fade-in across the final 20% of the shaft draw.
+    final headT =
+        ((shaftProgress - MotionTokens.moveArrowHeadStart) /
+                (1.0 - MotionTokens.moveArrowHeadStart))
+            .clamp(0.0, 1.0);
+
+    // Tip of the shaft at this progress (independent of head).
+    final shaftTipX = start.dx + dirX * (usableLength * shaftProgress);
+    final shaftTipY = start.dy + dirY * (usableLength * shaftProgress);
+    final shaftTip = Offset(shaftTipX, shaftTipY);
+
+    // Head is anchored at the trimmed end; its visible length scales by
+    // headT during the final 20% of the draw, then stays at full length.
+    final headLen = _headLength * headT;
+    final headBase = Offset(end.dx - dirX * headLen, end.dy - dirY * headLen);
+
+    // Where does the shaft visually stop? If the head is visible, the
+    // shaft ends at the head base (not under the head). Otherwise the
+    // shaft ends at shaftTip from progress alone.
+    final shaftEnd = headT > 0
+        ? (shaftTip - end).distance < headLen
+              ? shaftTip
+              : headBase
+        : shaftTip;
+
+    final shaftEndDist = (shaftEnd - start).distance;
+    if (shaftEndDist > 0) {
+      // Perpendicular for shaft width.
+      final perpX = -dirY;
+      final perpY = dirX;
+      // Linear width interpolation along the shaft.
+      final wStart = _tailWidth / 2;
+      final wEndRatio = (shaftEndDist / usableLength).clamp(0.0, 1.0);
+      final wEnd = (_tailWidth + (_neckWidth - _tailWidth) * wEndRatio) / 2;
+      final shaftPath = Path()
+        ..moveTo(start.dx + perpX * wStart, start.dy + perpY * wStart)
+        ..lineTo(shaftEnd.dx + perpX * wEnd, shaftEnd.dy + perpY * wEnd)
+        ..lineTo(shaftEnd.dx - perpX * wEnd, shaftEnd.dy - perpY * wEnd)
+        ..lineTo(start.dx - perpX * wStart, start.dy - perpY * wStart)
+        ..close();
+      final shaftPaint = Paint()
+        ..style = PaintingStyle.fill
+        ..isAntiAlias = true
+        ..color = color.withValues(alpha: alpha);
+      canvas.drawPath(shaftPath, shaftPaint);
+    }
+
+    if (headT > 0 && headLen > 0) {
+      final perpX = -dirY;
+      final perpY = dirX;
+      final hw = _headWidth / 2;
+      final headPath = Path()
+        ..moveTo(end.dx, end.dy)
+        ..lineTo(headBase.dx + perpX * hw, headBase.dy + perpY * hw)
+        ..lineTo(headBase.dx - perpX * hw, headBase.dy - perpY * hw)
+        ..close();
+      final headPaint = Paint()
+        ..style = PaintingStyle.fill
+        ..isAntiAlias = true
+        ..color = color.withValues(alpha: alpha * headT);
+      canvas.drawPath(headPath, headPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _MoveArrowPainter old) =>
+      old.sequenceProgress != sequenceProgress ||
+      old.originCenter != originCenter ||
+      old.destCenter != destCenter ||
+      old.squareSize != squareSize ||
+      old.color != color;
 }
