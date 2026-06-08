@@ -255,6 +255,27 @@ class AppL10nEn extends AppL10n {
   String get homeStart => 'Start rescue  ↦';
 
   @override
+  String get homeDailyRescueEyebrow => 'DAILY RESCUE';
+
+  @override
+  String get homeHeroLine1 => 'A short rescue';
+
+  @override
+  String get homeHeroLine2 => 'for today.';
+
+  @override
+  String get homeSupportingLine1 => 'You\'ll start in trouble.';
+
+  @override
+  String get homeSupportingLine2 => 'One move will get you out.';
+
+  @override
+  String get homePrimaryCta => 'Begin today\'s rescue  ↦';
+
+  @override
+  String get homeRecordsLabel => 'RECORDS';
+
+  @override
   String episodeBadge(int number) {
     return 'EPISODE $number';
   }

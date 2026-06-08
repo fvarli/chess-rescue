@@ -25,7 +25,7 @@ Future<void> _pumpAndPopWith({
   await tester.pump();
 
   // Tap CTA → Home pushes RescueScreen.
-  await tester.tap(find.text('Continue rescue  ↦'));
+  await tester.tap(find.text('Begin today\'s rescue  ↦'));
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 400));
 

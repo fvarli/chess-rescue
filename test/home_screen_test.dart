@@ -15,9 +15,16 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
   }
 
-  group('HomeScreen (P3 episode shell)', () {
+  void useSmallPhoneViewport(WidgetTester tester, {required Size size}) {
+    tester.view.physicalSize = size;
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+  }
+
+  group('HomeScreen (v1.2.0 editorial Daily Rescue landing)', () {
     testWidgets(
-      'renders king hero + title + tagline + episode strip + episode card + CTA',
+      'hero block + episode strip + chip card + quiet progress + records line render',
       (tester) async {
         useLargePhoneViewport(tester);
         SharedPreferences.setMockInitialValues({
@@ -28,15 +35,20 @@ void main() {
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
 
-        // Identity layer (P2).
-        expect(find.byKey(const ValueKey('home-king-hero')), findsOneWidget);
-        expect(find.text('Chess Rescue'), findsOneWidget);
+        // ── Hero block ───────────────────────────────────────────────
+        expect(find.text('DAILY RESCUE'), findsOneWidget);
+        expect(find.textContaining('A short rescue'), findsOneWidget);
+        expect(find.text('You\'ll start in trouble.'), findsOneWidget);
+        expect(find.text('One move will get you out.'), findsOneWidget);
+
+        // ── Legacy king hero must NOT be present ─────────────────────
         expect(
-          find.text('Your king is in danger.\nFind the rescue.'),
-          findsOneWidget,
+          find.byKey(const ValueKey('home-king-hero')),
+          findsNothing,
+          reason: 'v1.2.0 Home is text-hero-only — king hero removed',
         );
 
-        // Episode strip — 5 chips present (P3 identity layer).
+        // ── Episode strip (preserved) ────────────────────────────────
         expect(
           find.byKey(const ValueKey('home-episode-card-list')),
           findsOneWidget,
@@ -49,20 +61,22 @@ void main() {
           );
         }
 
-        // Episode 1 panel — Strike Back, 3-puzzle pacing.
+        // ── Quiet progress block (preserved content, no card frame) ──
         expect(find.text('EPISODE 1 · STRIKE BACK'), findsOneWidget);
-        expect(find.text('Turn the attack back.'), findsOneWidget);
         expect(find.text('Current run'), findsOneWidget);
         expect(find.text('Rescue 1 / 3'), findsOneWidget);
-        expect(find.text('Total rescues: 12'), findsOneWidget);
 
-        // Returning CTA.
-        expect(find.text('Continue rescue  ↦'), findsOneWidget);
+        // ── Records quiet line ───────────────────────────────────────
+        expect(find.text('RECORDS'), findsOneWidget);
+
+        // ── New single CTA ───────────────────────────────────────────
+        expect(find.text('Begin today\'s rescue  ↦'), findsOneWidget);
+        expect(find.text('Continue rescue  ↦'), findsNothing);
         expect(find.text('Start rescue  ↦'), findsNothing);
       },
     );
 
-    testWidgets('first-time player sees the Start rescue CTA, not Continue', (
+    testWidgets('first-time and returning players see the SAME single CTA', (
       tester,
     ) async {
       useLargePhoneViewport(tester);
@@ -70,9 +84,9 @@ void main() {
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
-      expect(find.text('Start rescue  ↦'), findsOneWidget);
+      expect(find.text('Begin today\'s rescue  ↦'), findsOneWidget);
+      expect(find.text('Start rescue  ↦'), findsNothing);
       expect(find.text('Continue rescue  ↦'), findsNothing);
-      expect(find.text('Total rescues: 0'), findsOneWidget);
     });
 
     testWidgets(
@@ -86,7 +100,6 @@ void main() {
         final store = await ProgressStore.create();
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
-        // Ep1 player has done p1 (1 of 3) — resumes at puzzle 2.
         expect(find.text('Rescue 2 / 3'), findsOneWidget);
       },
     );
@@ -102,7 +115,7 @@ void main() {
 
       expect(find.text('Save the king.'), findsNothing);
 
-      await tester.tap(find.text('Continue rescue  ↦'));
+      await tester.tap(find.text('Begin today\'s rescue  ↦'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
@@ -118,7 +131,6 @@ void main() {
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
 
-        // Ep3 should be locked (ep1 not complete).
         await tester.tap(find.byKey(const ValueKey('home-episode-card-3')));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 100));
@@ -136,7 +148,6 @@ void main() {
         useLargePhoneViewport(tester);
         SharedPreferences.setMockInitialValues({
           'flutter.cr_intro_seen': true,
-          // ep1 complete → ep2 unlocked
           'flutter.cr_completed_ids': [
             'p1-knight-rescue',
             'a4-the-breakaway',
@@ -147,7 +158,6 @@ void main() {
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
 
-        // Defaults to ep2 (first non-complete after ep1).
         expect(find.text('EPISODE 2 · END THE THREAT'), findsOneWidget);
 
         await tester.tap(find.byKey(const ValueKey('home-episode-card-1')));
@@ -156,6 +166,28 @@ void main() {
         expect(find.text('EPISODE 1 · STRIKE BACK'), findsOneWidget);
       },
     );
+
+    testWidgets('renders without overflow on a small phone (360×640)', (
+      tester,
+    ) async {
+      useSmallPhoneViewport(tester, size: const Size(360, 640));
+      SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(ChessRescueApp(store: store));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('renders without overflow on a very narrow phone (320×568)', (
+      tester,
+    ) async {
+      useSmallPhoneViewport(tester, size: const Size(320, 568));
+      SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(ChessRescueApp(store: store));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    });
   });
 
   group('HomeScreen Ep5 Best Run line', () {
@@ -165,7 +197,6 @@ void main() {
       useLargePhoneViewport(tester);
       SharedPreferences.setMockInitialValues({
         'flutter.cr_intro_seen': true,
-        // Clear all 3 canonical episodes so ep5 is unlocked + can be focused.
         'flutter.cr_completed_ids': [
           'p1-knight-rescue',
           'a4-the-breakaway',
@@ -227,13 +258,12 @@ void main() {
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
 
-      expect(find.text('Şahın tehlikede.\nKurtarışı bul.'), findsOneWidget);
+      expect(find.text('GÜNLÜK KURTARIŞ'), findsOneWidget);
+      expect(find.text('Tehlikede başlayacaksın.'), findsOneWidget);
       expect(find.text('BÖLÜM 1 · KARŞI VUR'), findsOneWidget);
-      expect(find.text('Saldırıyı geri çevir.'), findsOneWidget);
       expect(find.text('Mevcut seri'), findsOneWidget);
       expect(find.text('Kurtarış 1 / 3'), findsOneWidget);
-      expect(find.text('Toplam kurtarış: 0'), findsOneWidget);
-      expect(find.text('Kurtarışa devam et  ↦'), findsOneWidget);
+      expect(find.text('Bugünün kurtarışına başla  ↦'), findsOneWidget);
     });
 
     testWidgets('Spanish locale renders Home + episode strings in Spanish', (
@@ -248,16 +278,12 @@ void main() {
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
 
-      expect(
-        find.text('Tu rey está en peligro.\nEncuentra el rescate.'),
-        findsOneWidget,
-      );
+      expect(find.text('RESCATE DIARIO'), findsOneWidget);
+      expect(find.text('Empezarás en problemas.'), findsOneWidget);
       expect(find.text('EPISODIO 1 · CONTRAATAQUE'), findsOneWidget);
-      expect(find.text('Devuelve el ataque.'), findsOneWidget);
       expect(find.text('Racha actual'), findsOneWidget);
       expect(find.text('Rescate 1 / 3'), findsOneWidget);
-      expect(find.text('Rescates totales: 0'), findsOneWidget);
-      expect(find.text('Continuar rescate  ↦'), findsOneWidget);
+      expect(find.text('Comenzar rescate de hoy  ↦'), findsOneWidget);
     });
   });
 

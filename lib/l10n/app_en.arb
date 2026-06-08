@@ -236,9 +236,24 @@
     }
   },
   "homeContinue": "Continue rescue  ↦",
-  "@homeContinue": { "description": "Home CTA for returning players (introSeen=true)." },
+  "@homeContinue": { "description": "Legacy CTA — replaced by homePrimaryCta in v1.2.0 Home redesign. Retained to avoid breaking unused-key tooling." },
   "homeStart": "Start rescue  ↦",
-  "@homeStart": { "description": "Home CTA for first-time players (introSeen=false)." },
+  "@homeStart": { "description": "Legacy CTA — replaced by homePrimaryCta in v1.2.0 Home redesign. Retained to avoid breaking unused-key tooling." },
+
+  "homeDailyRescueEyebrow": "DAILY RESCUE",
+  "@homeDailyRescueEyebrow": { "description": "Pre-uppercased eyebrow at the top of the v1.2.0 editorial Home. Stored pre-uppercased per the project's locale-safe casing convention." },
+  "homeHeroLine1": "A short rescue",
+  "@homeHeroLine1": { "description": "Home hero, first line. Pairs with homeHeroLine2 to form 'A short rescue / for today.' Display-typography size; calm editorial register." },
+  "homeHeroLine2": "for today.",
+  "@homeHeroLine2": { "description": "Home hero, second line. See homeHeroLine1." },
+  "homeSupportingLine1": "You'll start in trouble.",
+  "@homeSupportingLine1": { "description": "Home supporting body, first line. Names the panic beat of the emotional loop without describing the system." },
+  "homeSupportingLine2": "One move will get you out.",
+  "@homeSupportingLine2": { "description": "Home supporting body, second line. Promises the one-move rescue without giving it away." },
+  "homePrimaryCta": "Begin today's rescue  ↦",
+  "@homePrimaryCta": { "description": "Single Home primary CTA in v1.2.0. Replaces homeStart + homeContinue — same target for first-time and returning players." },
+  "homeRecordsLabel": "RECORDS",
+  "@homeRecordsLabel": { "description": "Pre-uppercased label for the quiet records tap line in v1.2.0 Home (renders as 'RECORDS · N / 13')." },
 
   "episodeBadge": "EPISODE {number}",
   "@episodeBadge": {

@@ -4,16 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../../core/models/episode.dart';
 import '../../core/models/episode_library.dart';
-import '../../core/models/piece.dart';
+import '../../core/models/rescue_record_library.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/theme/motion.dart';
+import '../../core/theme/tokens.dart';
 import '../../l10n/gen/app_localizations.dart';
-import '../records/records_preview.dart';
 import '../records/records_sheet.dart';
 import '../rescue_game/rescue_screen.dart';
 import '../rescue_game/rescue_screen_pop_result.dart';
-import '../rescue_game/widgets/piece_widget.dart';
 import '../settings/language_picker.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,15 +25,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Episode _focused;
-  // P3.1 — the chip currently rendering the one-shot "just unlocked" mint
-  // glow. Set when auto-focus fires after an episode completion; cleared by a
-  // 1500ms post-frame timer. Null in steady state.
   String? _newlyUnlockedId;
   Timer? _pulseTimer;
-  // R1B — set by the new RescueScreenPopResult when the just-popped rescue
-  // session unlocked at least one record. Drives the mint glow pulse on the
-  // RecordsPreview's open-page row. Cleared on any chip tap / focus change /
-  // next rescue push / preview tap.
   bool _sessionJustUnlockedRecords = false;
 
   @override
@@ -59,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (ep != null) return ep;
     }
     final fallback = EpisodeLibrary.firstNonCompleteFor(store.completedIds);
-    // Persist the derived default so subsequent boots skip derivation.
     unawaited(store.setCurrentEpisodeId(fallback.id));
     return fallback;
   }
@@ -68,15 +58,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (ep.id == _focused.id) return;
     setState(() {
       _focused = ep;
-      _sessionJustUnlockedRecords = false; // R1B — clear glow on focus change
+      _sessionJustUnlockedRecords = false;
     });
     unawaited(widget.store?.setCurrentEpisodeId(ep.id));
   }
 
   Future<void> _openRescue(BuildContext context) async {
     final justCompletedEp = _focused;
-    // R1B — clear the just-unlocked glow on re-entering a rescue (the player
-    // has acknowledged the prior recognition).
     _sessionJustUnlockedRecords = false;
     final result = await Navigator.of(context).push<RescueScreenPopResult>(
       MaterialPageRoute<RescueScreenPopResult>(
@@ -99,15 +87,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openRecordsSheet() {
     setState(() {
-      _sessionJustUnlockedRecords = false; // R1B — tap acknowledges
+      _sessionJustUnlockedRecords = false;
     });
     showRecordsSheet(context, widget.store);
   }
 
   void _handleEpisodeCompleted(Episode justCompletedEp) {
-    // G1.1 — the EpisodeCompletionSheet on RescueScreen has already delivered
-    // the celebration. Home's job after the pop is just auto-focus + persist
-    // + light a brief mint glow on the newly unlocked card.
     final next = EpisodeLibrary.nextAfter(justCompletedEp);
     if (next == null) {
       setState(() {});
@@ -141,8 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final t = AppL10n.of(context)!;
     final store = widget.store;
     final completedIds = store?.completedIds ?? const <String>{};
-    final lifetime = store?.lifetimeSaved ?? 0;
-    final introSeen = store?.introSeen ?? false;
     final bestEndless = store?.bestEndlessStreak ?? 0;
 
     final progress = EpisodeLibrary.progressFor(_focused, completedIds);
@@ -150,66 +133,66 @@ class _HomeScreenState extends State<HomeScreen> {
     final currentInEpisode = progress.completedCount + 1 > puzzleCount
         ? puzzleCount
         : progress.completedCount + 1;
-
-    final ctaLabel = introSeen ? t.homeContinue : t.homeStart;
+    final recordsUnlocked = store?.unlockedRecords.length ?? 0;
+    final recordsTotal = RescueRecordLibrary.all.length;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          // G1.5 — radius 1.1 → 1.35 and stops [0, 0.85] → [0, 1.0] so the
-          // backdrop coral haze reaches further down the screen, ending at
-          // the viewport edge instead of fading to solid black at 85%.
-          gradient: RadialGradient(
-            center: Alignment(0, -0.4),
-            radius: 1.35,
-            colors: [AppColors.backdropDanger, AppColors.bg],
-            stops: [0.0, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+      backgroundColor: ColorTokens.surfacePrimary,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.only(
+                top: SpacingTokens.s64,
+                bottom: SpacingTokens.s32,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // G1.5 — weighted spacers pull the eye to the hero block on
-                  // first render; hero side heavier than progress-card side.
-                  const Spacer(flex: 13),
-                  const _ThreatenedKingHero(key: ValueKey('home-king-hero')),
-                  const SizedBox(height: 24),
+                  // ── Hero block ────────────────────────────────────────
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
-                    child: Text(
-                      t.appTitle,
-                      textAlign: TextAlign.center,
-                      // G1.5 — letter-spacing −0.22 → −0.6 sculpts the title
-                      // slightly more, gives it logo-weight on Home.
-                      style: AppText.headline.copyWith(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w700,
-                        height: 1.1,
-                        letterSpacing: -0.6,
-                      ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: SpacingTokens.s24,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.homeDailyRescueEyebrow,
+                          style: TextTokens.label.copyWith(
+                            color: ColorTokens.coordinateAccent,
+                          ),
+                        ),
+                        const SizedBox(height: SpacingTokens.s16),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '${t.homeHeroLine1}\n${t.homeHeroLine2}',
+                            style: TextTokens.displayMedium.copyWith(
+                              height: 1.05,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: SpacingTokens.s16),
+                        Text(t.homeSupportingLine1, style: TextTokens.body),
+                        Text(t.homeSupportingLine2, style: TextTokens.body),
+                      ],
                     ),
                   ),
-                  // R1B — title-tagline gap reverted from G1.5's 18dp to 14dp
-                  // to free vertical budget for the Records preview card on
-                  // the 800dp test viewport.
-                  const SizedBox(height: 14),
+                  const SizedBox(height: SpacingTokens.s48),
+                  // ── Primary CTA ──────────────────────────────────────
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
-                    child: Text(
-                      t.homeTagline,
-                      textAlign: TextAlign.center,
-                      style: AppText.body.copyWith(
-                        fontSize: 16,
-                        color: AppColors.textDim,
-                        height: 1.35,
-                      ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: SpacingTokens.s24,
+                    ),
+                    child: _PrimaryCta(
+                      label: t.homePrimaryCta,
+                      onTap: () => _openRescue(context),
                     ),
                   ),
-                  const Spacer(flex: 10),
+                  const SizedBox(height: SpacingTokens.s64),
+                  // ── Quiet secondary block ────────────────────────────
                   _EpisodeCardList(
                     focused: _focused,
                     completedIds: completedIds,
@@ -217,53 +200,43 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTapEpisode: _setFocus,
                     onTapLocked: () => _showLockedSnack(t.episodeLockedLabel),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: SpacingTokens.s24),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
-                    child: _EpisodeProgressCard(
-                      episode: _focused,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: SpacingTokens.s24,
+                    ),
+                    child: _QuietProgressBlock(
+                      badge: t.episodeBadge(_focused.number),
                       title: _titleFor(_focused, t),
-                      tagline: _taglineFor(_focused, t),
                       subLabel: t.homeCurrentRun,
                       counter: t.homeRescueCounter(
                         currentInEpisode,
                         puzzleCount,
                       ),
-                      lifetime: t.homeTotalRescues(lifetime),
-                      badge: t.episodeBadge(_focused.number),
-                      bestRunLabel: bestEndless > 0
+                      bestRunLabel:
+                          _focused.kind == EpisodeKind.endless &&
+                              bestEndless > 0
                           ? t.episodeBestRun(bestEndless)
                           : null,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: SpacingTokens.s24),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
-                    child: RecordsPreview(
-                      unlockedRecords:
-                          widget.store?.unlockedRecords ?? const <String>[],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: SpacingTokens.s24,
+                    ),
+                    child: _RecordsLine(
+                      label: t.homeRecordsLabel,
+                      countLabel: t.recordsCount(recordsUnlocked, recordsTotal),
                       justUnlocked: _sessionJustUnlockedRecords,
                       onTap: _openRecordsSheet,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
-                    child: _PrimaryCta(
-                      label: ctaLabel,
-                      onTap: () => _openRescue(context),
-                    ),
-                  ),
-                  const Spacer(),
                 ],
               ),
-              const Positioned(
-                top: 12,
-                right: 12,
-                child: LanguagePickerButton(),
-              ),
-            ],
-          ),
+            ),
+            const Positioned(top: 12, right: 12, child: LanguagePickerButton()),
+          ],
         ),
       ),
     );
@@ -286,92 +259,113 @@ String _titleFor(Episode ep, AppL10n l) {
   return '';
 }
 
-String _taglineFor(Episode ep, AppL10n l) {
-  switch (ep.id) {
-    case 'ep1-strike-back':
-      return l.episodeEp1Tagline;
-    case 'ep2-end-the-threat':
-      return l.episodeEp2Tagline;
-    case 'ep3-hold-the-line':
-      return l.episodeEp3Tagline;
-    case 'ep4-the-other-side':
-      return l.episodeEp4Tagline;
-    case 'ep5-endless-rescue':
-      return l.episodeEp5Tagline;
-  }
-  return '';
-}
+class _QuietProgressBlock extends StatelessWidget {
+  const _QuietProgressBlock({
+    required this.badge,
+    required this.title,
+    required this.subLabel,
+    required this.counter,
+    required this.bestRunLabel,
+  });
 
-class _ThreatenedKingHero extends StatefulWidget {
-  const _ThreatenedKingHero({super.key});
-
-  @override
-  State<_ThreatenedKingHero> createState() => _ThreatenedKingHeroState();
-}
-
-class _ThreatenedKingHeroState extends State<_ThreatenedKingHero>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  // R1B — reverted from G1.5's 118dp to 110dp to make room for the Records
-  // preview card on the 800dp test viewport. Spanish locale was 16px over
-  // at 118 with the preview added; 110 leaves enough headroom across all
-  // locales. Still well above the pre-G1.5 baseline composition.
-  static const double _kingSize = 110;
-  static const Piece _king = Piece(
-    id: 'home-hero-king',
-    type: PieceType.king,
-    color: PieceColor.light,
-    file: 4,
-    rank: 0,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: MotionTokens.dangerPulse,
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  final String badge;
+  final String title;
+  final String subLabel;
+  final String counter;
+  final String? bestRunLabel;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: _kingSize * 1.6,
-      height: _kingSize * 1.25,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          final glow = 0.12 + (_controller.value * 0.10);
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.danger.withValues(alpha: glow),
-                        AppColors.danger.withValues(alpha: 0.0),
-                      ],
-                      stops: const [0.0, 0.75],
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$badge · $title',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextTokens.label.copyWith(color: ColorTokens.textSecondary),
+        ),
+        const SizedBox(height: SpacingTokens.s8),
+        Text(
+          subLabel,
+          style: TextTokens.bodySmall.copyWith(
+            color: ColorTokens.textSecondary,
+          ),
+        ),
+        const SizedBox(height: SpacingTokens.s4),
+        Text(
+          counter,
+          style: TextTokens.title.copyWith(color: ColorTokens.textPrimary),
+        ),
+        if (bestRunLabel != null) ...[
+          const SizedBox(height: SpacingTokens.s8),
+          Text(
+            bestRunLabel!,
+            style: TextTokens.bodySmall.copyWith(
+              color: ColorTokens.reliefPrimary,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _RecordsLine extends StatelessWidget {
+  const _RecordsLine({
+    required this.label,
+    required this.countLabel,
+    required this.justUnlocked,
+    required this.onTap,
+  });
+
+  final String label;
+  final String countLabel;
+  final bool justUnlocked;
+  final VoidCallback onTap;
+
+  static const Duration _pulseDuration = Duration(milliseconds: 1500);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: justUnlocked ? 1.0 : 0.0, end: 0.0),
+        duration: _pulseDuration,
+        curve: Curves.easeOut,
+        builder: (context, glow, _) {
+          final accentColor = Color.lerp(
+            ColorTokens.textSecondary,
+            ColorTokens.reliefPrimary,
+            glow,
+          )!;
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: SpacingTokens.s4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  label,
+                  style: TextTokens.label.copyWith(color: accentColor),
+                ),
+                Text(
+                  '  ·  ',
+                  style: TextTokens.label.copyWith(
+                    color: ColorTokens.textSecondary,
                   ),
                 ),
-              ),
-              child!,
-            ],
+                Text(
+                  countLabel,
+                  style: TextTokens.mono.copyWith(color: accentColor),
+                ),
+              ],
+            ),
           );
         },
-        child: const PieceWidget(piece: _king, size: _kingSize),
       ),
     );
   }
@@ -392,14 +386,12 @@ class _EpisodeCardList extends StatefulWidget {
   final ValueChanged<Episode> onTapEpisode;
   final VoidCallback onTapLocked;
 
-  static const double cardWidth = 120;
-  // Trimmed from 132 → 116 so the 5-card Home composition fits the
-  // 800dp test-viewport vertical budget across all locales (Spanish was
-  // overflowing by 21px at 132). Eyebrow + 2-line title + progress row
-  // still fits with comfortable padding.
-  static const double cardHeight = 116;
-  static const double gap = 12;
-  static const double listPaddingHorizontal = 28;
+  // Smaller than the legacy 120×116 so the strip reads as quiet secondary
+  // nav rather than competing with the hero block.
+  static const double cardWidth = 104;
+  static const double cardHeight = 100;
+  static const double gap = SpacingTokens.s12;
+  static const double listPaddingHorizontal = SpacingTokens.s24;
 
   @override
   State<_EpisodeCardList> createState() => _EpisodeCardListState();
@@ -460,10 +452,6 @@ class _EpisodeCardListState extends State<_EpisodeCardList> {
 
   @override
   Widget build(BuildContext context) {
-    // SingleChildScrollView + Row is intentional over ListView.builder: the
-    // 5-episode roster is small + bounded, eager build keeps test-finders
-    // discovering off-screen cards by ValueKey, and the horizontal-scroll
-    // peek affordance still works identically.
     return SizedBox(
       key: const ValueKey('home-episode-card-list'),
       height: _EpisodeCardList.cardHeight,
@@ -528,17 +516,21 @@ class _EpisodeCard extends StatelessWidget {
     final t = AppL10n.of(context)!;
     final title = _titleFor(episode, t);
 
-    final bg = isFocused ? AppColors.surface2 : AppColors.surface;
+    final bg = isFocused
+        ? ColorTokens.surfaceElevated
+        : ColorTokens.surfaceSecondary;
     final border = isFocused
-        ? AppColors.danger
+        ? ColorTokens.reliefPrimary.withValues(alpha: 0.45)
         : (progress.isComplete && episode.kind == EpisodeKind.canonical
-              ? AppColors.rescue.withValues(alpha: 0.30)
+              ? ColorTokens.reliefPrimary.withValues(alpha: 0.30)
               : AppColors.hairline);
-    final borderWidth = isFocused ? 2.0 : 1.5;
-    final eyebrowColor = isFocused ? AppColors.danger : AppColors.textMuted;
+    final borderWidth = isFocused ? 1.5 : 1.0;
+    final eyebrowColor = isFocused
+        ? ColorTokens.coordinateAccent
+        : ColorTokens.textSecondary;
     final titleColor = progress.isUnlocked
-        ? AppColors.text
-        : AppColors.textMuted.withValues(alpha: 0.55);
+        ? ColorTokens.textPrimary
+        : ColorTokens.disabled;
 
     return GestureDetector(
       onTap: onTap,
@@ -553,19 +545,24 @@ class _EpisodeCard extends StatelessWidget {
             height: _EpisodeCardList.cardHeight,
             decoration: BoxDecoration(
               color: bg,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: RadiusTokens.brMedium,
               border: Border.all(color: border, width: borderWidth),
               boxShadow: glow > 0
                   ? [
                       BoxShadow(
-                        color: AppColors.rescue.withValues(alpha: 0.4 * glow),
+                        color: ColorTokens.reliefPrimary.withValues(
+                          alpha: 0.30 * glow,
+                        ),
                         blurRadius: 14 * glow,
                         spreadRadius: 2 * glow,
                       ),
                     ]
                   : null,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+            padding: const EdgeInsets.symmetric(
+              horizontal: SpacingTokens.s12,
+              vertical: SpacingTokens.s12,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -573,21 +570,19 @@ class _EpisodeCard extends StatelessWidget {
                   t.episodeBadge(episode.number),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppText.mono.copyWith(
+                  style: TextTokens.mono.copyWith(
                     color: eyebrowColor,
                     fontSize: 10,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: SpacingTokens.s8),
                 Text(
                   title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: AppText.headline.copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                  style: TextTokens.title.copyWith(
+                    fontSize: 16,
                     height: 1.05,
-                    letterSpacing: -0.4,
                     color: titleColor,
                   ),
                 ),
@@ -613,7 +608,10 @@ class _CardProgressRow extends StatelessWidget {
     if (!progress.isUnlocked) {
       return Text(
         '🔒',
-        style: AppText.mono.copyWith(color: AppColors.textMuted, fontSize: 12),
+        style: TextTokens.mono.copyWith(
+          color: ColorTokens.disabled,
+          fontSize: 11,
+        ),
       );
     }
     switch (episode.kind) {
@@ -622,26 +620,29 @@ class _CardProgressRow extends StatelessWidget {
           _canonicalPipString(),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: AppText.mono.copyWith(
-            color: progress.isComplete ? AppColors.rescue : AppColors.textDim,
-            fontSize: 11,
-            letterSpacing: 0.4,
+          style: TextTokens.mono.copyWith(
+            color: progress.isComplete
+                ? ColorTokens.reliefPrimary
+                : ColorTokens.textSecondary,
+            fontSize: 10,
           ),
         );
       case EpisodeKind.master:
         return Text(
           '★  ▮▮▮',
           maxLines: 1,
-          style: AppText.mono.copyWith(
-            color: AppColors.accent,
-            fontSize: 11,
-            letterSpacing: 0.4,
+          style: TextTokens.mono.copyWith(
+            color: ColorTokens.coordinateAccent,
+            fontSize: 10,
           ),
         );
       case EpisodeKind.endless:
         return Text(
           '∞',
-          style: AppText.mono.copyWith(color: AppColors.rescue, fontSize: 16),
+          style: TextTokens.mono.copyWith(
+            color: ColorTokens.reliefPrimary,
+            fontSize: 14,
+          ),
         );
     }
   }
@@ -653,114 +654,6 @@ class _CardProgressRow extends StatelessWidget {
     final empty = '▯' * (total - done);
     if (done == 0) return empty;
     return '$filled$empty  $done/$total';
-  }
-}
-
-class _EpisodeProgressCard extends StatelessWidget {
-  const _EpisodeProgressCard({
-    required this.episode,
-    required this.title,
-    required this.tagline,
-    required this.subLabel,
-    required this.counter,
-    required this.lifetime,
-    required this.badge,
-    required this.bestRunLabel,
-  });
-
-  final Episode episode;
-  final String title;
-  final String tagline;
-  final String subLabel;
-  final String counter;
-  final String lifetime;
-  final String badge;
-  final String? bestRunLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final showBestRun =
-        episode.kind == EpisodeKind.endless && bestRunLabel != null;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.hairline, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: const BoxDecoration(
-                  color: AppColors.danger,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  '$badge · $title',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppText.mono.copyWith(color: AppColors.textMuted),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            tagline,
-            style: AppText.body.copyWith(
-              fontSize: 13.5,
-              color: AppColors.textDim,
-              height: 1.35,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            subLabel,
-            style: AppText.body.copyWith(
-              fontSize: 13,
-              color: AppColors.textDim,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            counter,
-            style: AppText.headline.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          if (showBestRun) ...[
-            const SizedBox(height: 6),
-            Text(
-              bestRunLabel!,
-              style: AppText.body.copyWith(
-                fontSize: 13,
-                color: AppColors.rescue,
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
-          Container(height: 1, color: AppColors.hairline),
-          const SizedBox(height: 14),
-          Text(
-            lifetime,
-            style: AppText.body.copyWith(
-              fontSize: 15,
-              color: AppColors.textDim,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -792,11 +685,11 @@ class _PrimaryCtaState extends State<_PrimaryCta> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 18),
           decoration: BoxDecoration(
-            color: AppColors.rescue,
-            borderRadius: BorderRadius.circular(12),
+            color: ColorTokens.reliefPrimary,
+            borderRadius: RadiusTokens.brMedium,
             boxShadow: [
               BoxShadow(
-                color: AppColors.rescue.withValues(alpha: 0.32),
+                color: ColorTokens.reliefPrimary.withValues(alpha: 0.28),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -805,7 +698,7 @@ class _PrimaryCtaState extends State<_PrimaryCta> {
           child: Text(
             widget.label,
             textAlign: TextAlign.center,
-            style: AppText.button.copyWith(color: AppColors.onRescue),
+            style: TextTokens.button.copyWith(color: AppColors.onRescue),
           ),
         ),
       ),

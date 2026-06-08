@@ -95,7 +95,7 @@ void main() {
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
-      await openRescue(tester, 'Kurtarışa devam et  ↦');
+      await openRescue(tester, 'Bugünün kurtarışına başla  ↦');
       expect(find.text('Şahı kurtar.'), findsOneWidget);
     });
 
@@ -114,7 +114,7 @@ void main() {
       final store = await ProgressStore.create();
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
-      await openRescue(tester, 'Continue rescue  ↦');
+      await openRescue(tester, 'Begin today\'s rescue  ↦');
       expect(find.text('Save the king.'), findsOneWidget);
     });
 
@@ -129,7 +129,7 @@ void main() {
         final store = await ProgressStore.create();
         await tester.pumpWidget(ChessRescueApp(store: store));
         await tester.pump();
-        await openRescue(tester, 'Continue rescue  ↦');
+        await openRescue(tester, 'Begin today\'s rescue  ↦');
         expect(find.text('Save the king.'), findsOneWidget);
 
         // Reach the LanguageScope from any element below ChessRescueApp.

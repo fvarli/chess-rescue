@@ -89,6 +89,13 @@
   "homeTotalRescues": "Toplam kurtarış: {count}",
   "homeContinue": "Kurtarışa devam et  ↦",
   "homeStart": "Kurtarışa başla  ↦",
+  "homeDailyRescueEyebrow": "GÜNLÜK KURTARIŞ",
+  "homeHeroLine1": "Bugün için",
+  "homeHeroLine2": "kısa bir kurtarış.",
+  "homeSupportingLine1": "Tehlikede başlayacaksın.",
+  "homeSupportingLine2": "Tek bir hamle seni kurtaracak.",
+  "homePrimaryCta": "Bugünün kurtarışına başla  ↦",
+  "homeRecordsLabel": "REKORLAR",
 
   "episodeBadge": "BÖLÜM {number}",
   "episodeEp1Title": "KARŞI VUR",

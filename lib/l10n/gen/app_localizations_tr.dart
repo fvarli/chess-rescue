@@ -252,6 +252,27 @@ class AppL10nTr extends AppL10n {
   String get homeStart => 'Kurtarışa başla  ↦';
 
   @override
+  String get homeDailyRescueEyebrow => 'GÜNLÜK KURTARIŞ';
+
+  @override
+  String get homeHeroLine1 => 'Bugün için';
+
+  @override
+  String get homeHeroLine2 => 'kısa bir kurtarış.';
+
+  @override
+  String get homeSupportingLine1 => 'Tehlikede başlayacaksın.';
+
+  @override
+  String get homeSupportingLine2 => 'Tek bir hamle seni kurtaracak.';
+
+  @override
+  String get homePrimaryCta => 'Bugünün kurtarışına başla  ↦';
+
+  @override
+  String get homeRecordsLabel => 'REKORLAR';
+
+  @override
   String episodeBadge(int number) {
     return 'BÖLÜM $number';
   }

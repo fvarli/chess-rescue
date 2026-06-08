@@ -543,17 +543,59 @@ abstract class AppL10n {
   /// **'Total rescues: {count}'**
   String homeTotalRescues(int count);
 
-  /// Home CTA for returning players (introSeen=true).
+  /// Legacy CTA — replaced by homePrimaryCta in v1.2.0 Home redesign. Retained to avoid breaking unused-key tooling.
   ///
   /// In en, this message translates to:
   /// **'Continue rescue  ↦'**
   String get homeContinue;
 
-  /// Home CTA for first-time players (introSeen=false).
+  /// Legacy CTA — replaced by homePrimaryCta in v1.2.0 Home redesign. Retained to avoid breaking unused-key tooling.
   ///
   /// In en, this message translates to:
   /// **'Start rescue  ↦'**
   String get homeStart;
+
+  /// Pre-uppercased eyebrow at the top of the v1.2.0 editorial Home. Stored pre-uppercased per the project's locale-safe casing convention.
+  ///
+  /// In en, this message translates to:
+  /// **'DAILY RESCUE'**
+  String get homeDailyRescueEyebrow;
+
+  /// Home hero, first line. Pairs with homeHeroLine2 to form 'A short rescue / for today.' Display-typography size; calm editorial register.
+  ///
+  /// In en, this message translates to:
+  /// **'A short rescue'**
+  String get homeHeroLine1;
+
+  /// Home hero, second line. See homeHeroLine1.
+  ///
+  /// In en, this message translates to:
+  /// **'for today.'**
+  String get homeHeroLine2;
+
+  /// Home supporting body, first line. Names the panic beat of the emotional loop without describing the system.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll start in trouble.'**
+  String get homeSupportingLine1;
+
+  /// Home supporting body, second line. Promises the one-move rescue without giving it away.
+  ///
+  /// In en, this message translates to:
+  /// **'One move will get you out.'**
+  String get homeSupportingLine2;
+
+  /// Single Home primary CTA in v1.2.0. Replaces homeStart + homeContinue — same target for first-time and returning players.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin today\'s rescue  ↦'**
+  String get homePrimaryCta;
+
+  /// Pre-uppercased label for the quiet records tap line in v1.2.0 Home (renders as 'RECORDS · N / 13').
+  ///
+  /// In en, this message translates to:
+  /// **'RECORDS'**
+  String get homeRecordsLabel;
 
   /// Pre-uppercased badge prefix for the episode panel title on Home (e.g. 'EPISODE 1'). Stored pre-uppercased because Dart's String.toUpperCase() is locale-insensitive — see homeRescueMission precedent.
   ///

@@ -89,6 +89,13 @@
   "homeTotalRescues": "Rescates totales: {count}",
   "homeContinue": "Continuar rescate  ↦",
   "homeStart": "Comenzar rescate  ↦",
+  "homeDailyRescueEyebrow": "RESCATE DIARIO",
+  "homeHeroLine1": "Un rescate breve",
+  "homeHeroLine2": "para hoy.",
+  "homeSupportingLine1": "Empezarás en problemas.",
+  "homeSupportingLine2": "Un movimiento te sacará.",
+  "homePrimaryCta": "Comenzar rescate de hoy  ↦",
+  "homeRecordsLabel": "RÉCORDS",
 
   "episodeBadge": "EPISODIO {number}",
   "episodeEp1Title": "CONTRAATAQUE",
