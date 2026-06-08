@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/tokens.dart';
 import '../game_state.dart';
 
 class StatusBar extends StatelessWidget {
@@ -18,8 +19,8 @@ class StatusBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = switch (state) {
-      GameState.rescued => AppColors.rescue,
-      _ => AppColors.danger,
+      GameState.rescued => ColorTokens.reliefPrimary,
+      _ => ColorTokens.dangerPrimary,
     };
     // Hug content when short; when the row is given a bounded width (the
     // header wraps this in an Expanded), the message ellipsizes instead of
@@ -36,19 +37,13 @@ class StatusBar extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // PR-8 — dropped the 8 px accent glow. The dot stays as the
+            // per-state signal; the glow was the only game-UI-coded tell
+            // on the HUD.
             Container(
               width: 6,
               height: 6,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: accent,
-                boxShadow: [
-                  BoxShadow(
-                    color: accent.withValues(alpha: 0.7),
-                    blurRadius: 8,
-                  ),
-                ],
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
             ),
             const SizedBox(width: 8),
             Flexible(
@@ -64,7 +59,7 @@ class StatusBar extends StatelessWidget {
             Text(
               counter,
               style: AppText.mono.copyWith(
-                color: AppColors.textMuted,
+                color: ColorTokens.textSecondary,
                 fontSize: 9.5,
               ),
             ),

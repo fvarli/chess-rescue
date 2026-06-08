@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/tokens.dart';
 
 // Quiet top-right motivation: how many kings you've saved this session.
 // Long-press is a hidden debug reset (wired via onReset) — it knows nothing
@@ -30,9 +31,11 @@ class SavedBadge extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Text(
-          '$count SAVED',
+          'SAVED · $count',
           style: AppText.mono.copyWith(
-            color: complete ? AppColors.rescue : AppColors.textMuted,
+            color: complete
+                ? ColorTokens.reliefPrimary
+                : ColorTokens.textSecondary,
             fontSize: 9.5,
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/haptics.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/theme/tokens.dart';
 import '../game_state.dart';
 
 class FooterButton extends StatefulWidget {
@@ -97,18 +98,24 @@ class _FooterButtonState extends State<FooterButton>
             curve: MotionTokens.standard,
             padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
-              color: isRescued ? AppColors.rescue : Colors.transparent,
+              color: isRescued ? ColorTokens.reliefPrimary : Colors.transparent,
               border: Border.all(
                 color: isRescued ? Colors.transparent : AppColors.hairline,
                 width: 1,
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: RadiusTokens.brMedium,
+              // PR-8 — tone down the rescued-state shadow from
+              // (0,8) blur 24 @ 35% to (0,4) blur 16 @ 22%. The mint fill +
+              // dark text still carry the primary-action cue; the shadow
+              // stops floating like a game button.
               boxShadow: isRescued
                   ? [
                       BoxShadow(
-                        color: AppColors.rescue.withValues(alpha: 0.35),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
+                        color: ColorTokens.reliefPrimary.withValues(
+                          alpha: 0.22,
+                        ),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
                     ]
                   : null,
@@ -116,8 +123,10 @@ class _FooterButtonState extends State<FooterButton>
             child: Center(
               child: Text(
                 label,
-                style: AppText.button.copyWith(
-                  color: isRescued ? AppColors.onRescue : AppColors.text,
+                style: TextTokens.button.copyWith(
+                  color: isRescued
+                      ? AppColors.onRescue
+                      : ColorTokens.textPrimary,
                 ),
               ),
             ),

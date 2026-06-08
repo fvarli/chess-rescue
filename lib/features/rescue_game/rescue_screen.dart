@@ -12,6 +12,7 @@ import '../../core/models/variation.dart' show canonicalPuzzleId;
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/motion.dart';
+import '../../core/theme/tokens.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../familiarity/familiar_cue.dart';
 import '../familiarity/familiarity_first_seen_overlay.dart';
@@ -248,7 +249,7 @@ class _RescueScreenState extends State<RescueScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: [
-                          const SizedBox(height: 8),
+                          const SizedBox(height: SpacingTokens.s8),
                           Row(
                             children: [
                               // Expanded caps the pill to (width − badge) so a
@@ -266,7 +267,7 @@ class _RescueScreenState extends State<RescueScreen> {
                                 ),
                               ),
                               if (_game.completedCount > 0) ...[
-                                const SizedBox(width: 12),
+                                const SizedBox(width: SpacingTokens.s12),
                                 SavedBadge(
                                   count: _game.completedCount,
                                   // Developer reset surface — visible only in
@@ -289,7 +290,7 @@ class _RescueScreenState extends State<RescueScreen> {
                               // dim, no mint accent. 12dp gap so it sits a
                               // bit removed from the SavedBadge cluster.
                               if (isRescued && widget.store != null) ...[
-                                const SizedBox(width: 12),
+                                const SizedBox(width: SpacingTokens.s12),
                                 SignatureBookmarkGlyph(
                                   isSaved: widget.store!.isSignatureSaved(
                                     canonicalPuzzleId(puzzle.id),
@@ -366,7 +367,7 @@ class _RescueScreenState extends State<RescueScreen> {
                                   )
                                 : _game.onPrimaryAction,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: SpacingTokens.s16),
                         ],
                       ),
                     );
