@@ -270,7 +270,7 @@ class GameController extends ChangeNotifier {
         ),
       );
       _state = GameState.rescued;
-      _statusMsg = '◐ Attack broken';
+      _statusMsg = 'Attack broken';
       Haptics.rescue();
       if (_onboarding) unawaited(_store?.setOnboardingSeen());
       // Lifetime counter fires for every rescue across every episode kind.

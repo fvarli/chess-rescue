@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/tokens.dart';
 
 /// G1.1 — Episode Completion Sheet.
 ///
 /// In-context modal sheet that appears ON the RescueScreen *before* the
-/// navigator pop, anchored over a dimmed board. Renders "✓ EPISODE COMPLETE"
-/// (or "✓ TRILOGY COMPLETE" for Ep3), the episode number, the pre-uppercased
-/// title, the rescue count, and a mint Continue CTA that fires [onContinue]
-/// — which should call `Navigator.maybePop<bool>(true)` to preserve the P3.1
-/// completion-signal protocol.
+/// navigator pop, anchored over a dimmed board. Renders the eyebrow,
+/// the episode number, the pre-uppercased title, the rescue count, and
+/// a mint Continue CTA that fires [onContinue] — which should call
+/// `Navigator.maybePop<bool>(true)` to preserve the P3.1 completion-signal
+/// protocol.
 ///
-/// Fade-in + tiny slide-up (~280 ms) — "relief, not victory royale".
+/// Fade-in + tiny slide-up (~280 ms) — relief, not victory royale.
 /// One row in the R1B "RECORD UNLOCKED" inline section that the
 /// EpisodeCompletionSheet renders above its Continue CTA.
 class CompletionSheetRecordRow {
@@ -45,13 +46,13 @@ class EpisodeCompletionSheet extends StatefulWidget {
   final String? trilogyUnlockLabel;
   final VoidCallback onContinue;
 
-  /// R1B — pre-resolved "✓ RECORD UNLOCKED" eyebrow string for the inline
+  /// R1B — pre-resolved RECORD UNLOCKED eyebrow string for the inline
   /// section. Null when [unlockedRecords] is empty (no records earned at
   /// this finale).
   final String? recordUnlockEyebrow;
 
   /// R1B — records earned AT this finale moment. Rendered as an inline
-  /// "✓ RECORD UNLOCKED" section between the rescues-count line and the
+  /// RECORD UNLOCKED section between the rescues-count line and the
   /// Continue button. Empty → no section rendered.
   final List<CompletionSheetRecordRow> unlockedRecords;
 
@@ -88,10 +89,13 @@ class _EpisodeCompletionSheetState extends State<EpisodeCompletionSheet>
         return Stack(
           fit: StackFit.expand,
           children: [
-            ColoredBox(color: Colors.black.withValues(alpha: 0.55 * t)),
+            // PR-7 — backdrop 0.55 → 0.45 alpha; subtler dim per the
+            // editorial-over-celebration register.
+            ColoredBox(color: Colors.black.withValues(alpha: 0.45 * t)),
             Center(
               child: Transform.translate(
-                offset: Offset(0, 12 * (1 - t)),
+                // PR-7 — slide 12 → 8 dp; gentler settle.
+                offset: Offset(0, 8 * (1 - t)),
                 child: Opacity(opacity: t, child: child),
               ),
             ),
@@ -99,19 +103,22 @@ class _EpisodeCompletionSheetState extends State<EpisodeCompletionSheet>
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28),
+        padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.s24),
         child: Container(
           key: const ValueKey('episode-completion-sheet'),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SpacingTokens.s24,
+            vertical: SpacingTokens.s24,
+          ),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
+            color: ColorTokens.surfaceElevated,
+            borderRadius: RadiusTokens.brLarge,
             border: Border.all(color: AppColors.hairline, width: 1),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
+                color: Color(0x59000000),
                 blurRadius: 32,
-                offset: const Offset(0, 12),
+                offset: Offset(0, 12),
               ),
             ],
           ),
@@ -122,59 +129,50 @@ class _EpisodeCompletionSheetState extends State<EpisodeCompletionSheet>
               Text(
                 widget.eyebrow,
                 textAlign: TextAlign.center,
-                style: AppText.mono.copyWith(
-                  color: AppColors.danger,
-                  fontSize: 11,
+                style: TextTokens.label.copyWith(
+                  color: ColorTokens.dangerPrimary,
                 ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: SpacingTokens.s24),
               Text(
                 widget.episodeLabel,
                 textAlign: TextAlign.center,
-                style: AppText.body.copyWith(
-                  fontSize: 13,
-                  color: AppColors.textDim,
+                style: TextTokens.label.copyWith(
+                  color: ColorTokens.textSecondary,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: SpacingTokens.s8),
               Text(
                 widget.title,
                 textAlign: TextAlign.center,
-                style: AppText.headline.copyWith(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                ),
+                style: TextTokens.headline,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: SpacingTokens.s16),
               Text(
                 widget.rescuesCount,
                 textAlign: TextAlign.center,
-                style: AppText.body.copyWith(
-                  fontSize: 15,
-                  color: AppColors.textDim,
+                style: TextTokens.bodySmall.copyWith(
+                  color: ColorTokens.textSecondary,
                 ),
               ),
               if (hasTrilogy) ...[
-                const SizedBox(height: 10),
+                const SizedBox(height: SpacingTokens.s12),
                 Text(
                   widget.trilogyUnlockLabel!,
                   textAlign: TextAlign.center,
-                  style: AppText.body.copyWith(
-                    fontSize: 14,
-                    color: AppColors.rescue,
-                    fontWeight: FontWeight.w600,
+                  style: TextTokens.label.copyWith(
+                    color: ColorTokens.reliefPrimary,
                   ),
                 ),
               ],
               if (widget.unlockedRecords.isNotEmpty) ...[
-                const SizedBox(height: 18),
+                const SizedBox(height: SpacingTokens.s24),
                 _RecordUnlockInlineSection(
                   eyebrow: widget.recordUnlockEyebrow ?? '',
                   rows: widget.unlockedRecords,
                 ),
               ],
-              const SizedBox(height: 22),
+              const SizedBox(height: SpacingTokens.s24),
               _ContinueButton(
                 label: widget.continueLabel,
                 onTap: widget.onContinue,
@@ -214,11 +212,11 @@ class _ContinueButtonState extends State<_ContinueButton> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
           decoration: BoxDecoration(
-            color: AppColors.rescue,
-            borderRadius: BorderRadius.circular(12),
+            color: ColorTokens.reliefPrimary,
+            borderRadius: RadiusTokens.brMedium,
             boxShadow: [
               BoxShadow(
-                color: AppColors.rescue.withValues(alpha: 0.32),
+                color: ColorTokens.reliefPrimary.withValues(alpha: 0.28),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -227,7 +225,7 @@ class _ContinueButtonState extends State<_ContinueButton> {
           child: Text(
             widget.label,
             textAlign: TextAlign.center,
-            style: AppText.button.copyWith(color: AppColors.onRescue),
+            style: TextTokens.button.copyWith(color: AppColors.onRescue),
           ),
         ),
       ),
@@ -253,34 +251,32 @@ class _RecordUnlockInlineSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(height: 1, color: AppColors.hairline, width: 80),
-        const SizedBox(height: 12),
+        const SizedBox(height: SpacingTokens.s16),
         Text(
           eyebrow,
           textAlign: TextAlign.center,
-          style: AppText.mono.copyWith(color: AppColors.rescue, fontSize: 10),
+          style: TextTokens.label.copyWith(color: ColorTokens.reliefPrimary),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: SpacingTokens.s12),
         for (var i = 0; i < rows.length; i++) ...[
-          if (i > 0) const SizedBox(height: 6),
+          if (i > 0) const SizedBox(height: SpacingTokens.s8),
           Text(
             rows[i].title,
             textAlign: TextAlign.center,
-            style: AppText.body.copyWith(
-              fontSize: 14,
+            style: TextTokens.bodySmall.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: ColorTokens.textPrimary,
             ),
           ),
           Text(
             rows[i].description,
             textAlign: TextAlign.center,
-            style: AppText.body.copyWith(
-              fontSize: 12,
-              color: AppColors.textDim,
+            style: TextTokens.caption.copyWith(
+              color: ColorTokens.textSecondary,
             ),
           ),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: SpacingTokens.s16),
         Container(height: 1, color: AppColors.hairline, width: 80),
       ],
     );

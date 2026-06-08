@@ -696,13 +696,13 @@ abstract class AppL10n {
   /// G1.1 Episode Completion Sheet eyebrow for canonical / master episodes. Pre-uppercased per locale — Dart's String.toUpperCase() is locale-insensitive.
   ///
   /// In en, this message translates to:
-  /// **'✓ EPISODE COMPLETE'**
+  /// **'EPISODE COMPLETE'**
   String get episodeSheetCompleteEyebrow;
 
   /// G1.1 Episode Completion Sheet eyebrow for the Ep3 (canonical trilogy) finale.
   ///
   /// In en, this message translates to:
-  /// **'✓ TRILOGY COMPLETE'**
+  /// **'TRILOGY COMPLETE'**
   String get episodeSheetTrilogyEyebrow;
 
   /// G1.1 Episode Completion Sheet — the 'Episode N' label above the title.

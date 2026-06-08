@@ -104,6 +104,13 @@ class MotionTokens {
   static const Duration ambientRescueExhale = Duration(milliseconds: 250);
   static const double ambientRescuedAmplitudeMul = 0.6;
 
+  // — Rescue ceremony stagger
+  // Delay between the rescued-state transition and the moment the "Rescued."
+  // headline starts its 320 ms fade-in. Lets the board's bloom + arrow phase
+  // land first so the headline reads as the relief beat, not a simultaneous
+  // announcement. Conservative initial value; never raise above ~460 ms.
+  static const Duration rescueHeadlineSettleDelay = Duration(milliseconds: 280);
+
   // — Move arrow (post-rescue cinematic confirmation)
   // Three-phase: draw-in → strong hold → fade to a calmer presence so the
   // rescued board doesn't feel cluttered. See feedback_cinematic_confirmation_fade.

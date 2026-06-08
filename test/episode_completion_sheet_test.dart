@@ -23,7 +23,7 @@ void main() {
         await tester.pumpWidget(
           _wrapInTestApp(
             child: EpisodeCompletionSheet(
-              eyebrow: '✓ EPISODE COMPLETE',
+              eyebrow: 'EPISODE COMPLETE',
               episodeLabel: 'Episode 1',
               title: 'STRIKE BACK',
               rescuesCount: '3 rescues completed',
@@ -34,7 +34,7 @@ void main() {
         );
         // Pump past the 280ms fade-in.
         await tester.pump(const Duration(milliseconds: 300));
-        expect(find.text('✓ EPISODE COMPLETE'), findsOneWidget);
+        expect(find.text('EPISODE COMPLETE'), findsOneWidget);
         expect(find.text('Episode 1'), findsOneWidget);
         expect(find.text('STRIKE BACK'), findsOneWidget);
         expect(find.text('3 rescues completed'), findsOneWidget);
@@ -49,7 +49,7 @@ void main() {
       await tester.pumpWidget(
         _wrapInTestApp(
           child: EpisodeCompletionSheet(
-            eyebrow: '✓ EPISODE COMPLETE',
+            eyebrow: 'EPISODE COMPLETE',
             episodeLabel: 'Episode 1',
             title: 'STRIKE BACK',
             rescuesCount: '3 rescues completed',
@@ -71,7 +71,7 @@ void main() {
       await tester.pumpWidget(
         _wrapInTestApp(
           child: EpisodeCompletionSheet(
-            eyebrow: '✓ EPISODE COMPLETE',
+            eyebrow: 'EPISODE COMPLETE',
             episodeLabel: 'Episode 1',
             title: 'STRIKE BACK',
             rescuesCount: '3 rescues completed',
@@ -95,7 +95,7 @@ void main() {
         await tester.pumpWidget(
           _wrapInTestApp(
             child: EpisodeCompletionSheet(
-              eyebrow: '✓ TRILOGY COMPLETE',
+              eyebrow: 'TRILOGY COMPLETE',
               episodeLabel: 'Episode 3',
               title: 'HOLD THE LINE',
               rescuesCount: '3 rescues completed',
@@ -106,7 +106,7 @@ void main() {
           ),
         );
         await tester.pump(const Duration(milliseconds: 300));
-        expect(find.text('✓ TRILOGY COMPLETE'), findsOneWidget);
+        expect(find.text('TRILOGY COMPLETE'), findsOneWidget);
         expect(find.text('Episode 3'), findsOneWidget);
         expect(find.text('HOLD THE LINE'), findsOneWidget);
         expect(find.text('Master and Endless unlocked'), findsOneWidget);
@@ -122,7 +122,7 @@ void main() {
         await tester.pumpWidget(
           _wrapInTestApp(
             child: EpisodeCompletionSheet(
-              eyebrow: '✓ EPISODE COMPLETE',
+              eyebrow: 'EPISODE COMPLETE',
               episodeLabel: 'Episode 1',
               title: 'STRIKE BACK',
               rescuesCount: '3 rescues completed',
@@ -161,7 +161,7 @@ void main() {
       await tester.pumpWidget(
         _wrapInTestApp(
           child: EpisodeCompletionSheet(
-            eyebrow: '✓ EPISODE COMPLETE',
+            eyebrow: 'EPISODE COMPLETE',
             episodeLabel: 'Episode 1',
             title: 'STRIKE BACK',
             rescuesCount: '3 rescues completed',
@@ -185,7 +185,7 @@ void main() {
       await tester.pumpWidget(
         _wrapInTestApp(
           child: EpisodeCompletionSheet(
-            eyebrow: '✓ EPISODE COMPLETE',
+            eyebrow: 'EPISODE COMPLETE',
             episodeLabel: 'Episode 1',
             title: 'STRIKE BACK',
             rescuesCount: '3 rescues completed',

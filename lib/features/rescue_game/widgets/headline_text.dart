@@ -10,10 +10,16 @@ class HeadlineText extends StatelessWidget {
     super.key,
     required this.state,
     required this.hasSelection,
+    this.rescuedSettled = true,
   });
 
   final GameState state;
   final bool hasSelection;
+  // PR-7 — gate the rescued headline behind a brief settle delay. While
+  // false, the AnimatedSwitcher renders an empty placeholder; when it
+  // flips true the existing rescueHeadlineFade carries the "Rescued."
+  // text in. Other states ignore this flag entirely.
+  final bool rescuedSettled;
 
   String _textFor(AppL10n t) => switch (state) {
     GameState.rescued => t.headlineRescued,
@@ -33,6 +39,7 @@ class HeadlineText extends StatelessWidget {
     final duration = state == GameState.rescued
         ? MotionTokens.rescueHeadlineFade
         : MotionTokens.headlineFade;
+    final isPending = state == GameState.rescued && !rescuedSettled;
     return AnimatedSwitcher(
       duration: duration,
       switchInCurve: MotionTokens.standard,
@@ -49,13 +56,16 @@ class HeadlineText extends StatelessWidget {
       },
       // ValueKey(text) preserves the "no animation when state changes but text
       // is identical" behaviour (e.g. selected ↔ danger+selection both say
-      // "Where will it go?").
-      child: Text(
-        text,
-        key: ValueKey(text),
-        style: AppText.headline.copyWith(color: _color),
-        textAlign: TextAlign.center,
-      ),
+      // "Where will it go?"). The pending placeholder uses its own key so
+      // the switcher fades the empty → text transition naturally.
+      child: isPending
+          ? const SizedBox.shrink(key: ValueKey('rescued-pending'))
+          : Text(
+              text,
+              key: ValueKey(text),
+              style: AppText.headline.copyWith(color: _color),
+              textAlign: TextAlign.center,
+            ),
     );
   }
 }
@@ -70,6 +80,7 @@ class HintText extends StatelessWidget {
     required this.successExplanation,
     this.onboarding = false,
     this.complete = false,
+    this.rescuedSettled = true,
   });
 
   final GameState state;
@@ -85,6 +96,10 @@ class HintText extends StatelessWidget {
   // True only on the final puzzle's rescued screen once all five are saved.
   // Adds a quiet completion footnote beneath the success explanation.
   final bool complete;
+
+  // PR-7 — rides the same settle delay as HeadlineText so the success
+  // explanation lands with the headline rather than ahead of it.
+  final bool rescuedSettled;
 
   @override
   Widget build(BuildContext context) {
@@ -122,8 +137,11 @@ class HintText extends StatelessWidget {
               AppText.body,
             ),
           };
+    final isPending = state == GameState.rescued && !rescuedSettled;
     // On the final completion, a quiet footnote sits beneath the success line.
-    final Widget child = complete
+    final Widget child = isPending
+        ? const SizedBox.shrink(key: ValueKey('rescued-pending'))
+        : complete
         ? Column(
             key: const ValueKey('complete'),
             mainAxisSize: MainAxisSize.min,

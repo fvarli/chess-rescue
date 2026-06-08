@@ -333,10 +333,10 @@ class AppL10nEs extends AppL10n {
       'Trilogía completada. Master y Endless desbloqueados.';
 
   @override
-  String get episodeSheetCompleteEyebrow => '✓ EPISODIO COMPLETADO';
+  String get episodeSheetCompleteEyebrow => 'EPISODIO COMPLETADO';
 
   @override
-  String get episodeSheetTrilogyEyebrow => '✓ TRILOGÍA COMPLETADA';
+  String get episodeSheetTrilogyEyebrow => 'TRILOGÍA COMPLETADA';
 
   @override
   String episodeSheetEpisodeLabel(int number) {

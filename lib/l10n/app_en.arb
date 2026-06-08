@@ -297,9 +297,9 @@
   "@episodeCompleteToast": { "description": "Home snackbar shown once after returning from a completed canonical or master episode (except ep3 — see episodeTrilogyCompleteToast). Triggered by the navigator pop result; ephemeral, no persistence." },
   "episodeTrilogyCompleteToast": "Trilogy complete. Master and Endless unlocked.",
   "@episodeTrilogyCompleteToast": { "description": "Home snackbar shown once after completing Ep3 (the canonical trilogy finale) — Ep4 (master) and Ep5 (endless) unlock simultaneously." },
-  "episodeSheetCompleteEyebrow": "✓ EPISODE COMPLETE",
+  "episodeSheetCompleteEyebrow": "EPISODE COMPLETE",
   "@episodeSheetCompleteEyebrow": { "description": "G1.1 Episode Completion Sheet eyebrow for canonical / master episodes. Pre-uppercased per locale — Dart's String.toUpperCase() is locale-insensitive." },
-  "episodeSheetTrilogyEyebrow": "✓ TRILOGY COMPLETE",
+  "episodeSheetTrilogyEyebrow": "TRILOGY COMPLETE",
   "@episodeSheetTrilogyEyebrow": { "description": "G1.1 Episode Completion Sheet eyebrow for the Ep3 (canonical trilogy) finale." },
   "episodeSheetEpisodeLabel": "Episode {number}",
   "@episodeSheetEpisodeLabel": {

@@ -330,10 +330,10 @@ class AppL10nEn extends AppL10n {
       'Trilogy complete. Master and Endless unlocked.';
 
   @override
-  String get episodeSheetCompleteEyebrow => '✓ EPISODE COMPLETE';
+  String get episodeSheetCompleteEyebrow => 'EPISODE COMPLETE';
 
   @override
-  String get episodeSheetTrilogyEyebrow => '✓ TRILOGY COMPLETE';
+  String get episodeSheetTrilogyEyebrow => 'TRILOGY COMPLETE';
 
   @override
   String episodeSheetEpisodeLabel(int number) {

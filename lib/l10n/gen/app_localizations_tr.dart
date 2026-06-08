@@ -328,10 +328,10 @@ class AppL10nTr extends AppL10n {
       'Üçleme tamamlandı. Master ve Sonsuz açıldı.';
 
   @override
-  String get episodeSheetCompleteEyebrow => '✓ BÖLÜM TAMAMLANDI';
+  String get episodeSheetCompleteEyebrow => 'BÖLÜM TAMAMLANDI';
 
   @override
-  String get episodeSheetTrilogyEyebrow => '✓ ÜÇLEME TAMAMLANDI';
+  String get episodeSheetTrilogyEyebrow => 'ÜÇLEME TAMAMLANDI';
 
   @override
   String episodeSheetEpisodeLabel(int number) {

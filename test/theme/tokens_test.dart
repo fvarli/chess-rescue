@@ -246,6 +246,15 @@ void main() {
     });
   });
 
+  group('MotionTokens — rescue ceremony', () {
+    test('headline settle delay is the conservative 280 ms', () {
+      expect(
+        MotionTokens.rescueHeadlineSettleDelay,
+        const Duration(milliseconds: 280),
+      );
+    });
+  });
+
   group('MotionTokens — move arrow', () {
     test('three-phase durations land at 220 / 240 / 320 ms', () {
       expect(MotionTokens.moveArrowDraw, const Duration(milliseconds: 220));

@@ -80,6 +80,13 @@ class _RescueScreenState extends State<RescueScreen> {
   // the FamiliarityFirstSeenOverlay clears it via onDismissed after
   // the fade-out completes.
   bool _showFirstFamiliarityHint = false;
+  // PR-7 — gates the "Rescued." headline + hint behind a brief settle delay
+  // so the board's bloom + arrow phase lands first. Flipped true by the
+  // _rescuedSettleTimer after rescueHeadlineSettleDelay; reset to false when
+  // the state leaves rescued.
+  bool _rescuedSettled = false;
+  bool _wasRescued = false;
+  Timer? _rescuedSettleTimer;
 
   @override
   void initState() {
@@ -98,12 +105,30 @@ class _RescueScreenState extends State<RescueScreen> {
 
   @override
   void dispose() {
+    _rescuedSettleTimer?.cancel();
     _game.removeListener(_handleControllerChange);
     if (_ownsController) _game.dispose();
     super.dispose();
   }
 
   void _handleControllerChange() {
+    // PR-7 — drive the rescue ceremony stagger from the rescued transition.
+    // The headline + hint stay hidden until rescueHeadlineSettleDelay
+    // elapses, letting the board's bloom + arrow phase land first.
+    final isNowRescued = _game.state == GameState.rescued;
+    if (isNowRescued && !_wasRescued) {
+      _rescuedSettleTimer?.cancel();
+      setState(() => _rescuedSettled = false);
+      _rescuedSettleTimer = Timer(MotionTokens.rescueHeadlineSettleDelay, () {
+        if (mounted) setState(() => _rescuedSettled = true);
+      });
+    } else if (!isNowRescued && _wasRescued) {
+      _rescuedSettleTimer?.cancel();
+      _rescuedSettleTimer = null;
+      if (_rescuedSettled) setState(() => _rescuedSettled = false);
+    }
+    _wasRescued = isNowRescued;
+
     // R1B — only consume records when a fresh rescue commit lands. The
     // controller's rescued state is the cleanest signal: it transitions
     // from non-rescued → rescued once per successful commit.
@@ -294,6 +319,7 @@ class _RescueScreenState extends State<RescueScreen> {
                           HeadlineText(
                             state: _game.state,
                             hasSelection: _game.selected != null,
+                            rescuedSettled: _rescuedSettled,
                           ),
                           const Spacer(),
                           AnimatedSwitcher(
@@ -327,6 +353,7 @@ class _RescueScreenState extends State<RescueScreen> {
                             successExplanation: puzzleCopy.successExplanation,
                             onboarding: _game.isOnboarding,
                             complete: sequenceComplete,
+                            rescuedSettled: _rescuedSettled,
                           ),
                           const Spacer(),
                           FooterButton(
