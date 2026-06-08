@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/motion.dart';
 import '../../../core/theme/tokens.dart';
 import '../game_state.dart';
 
@@ -34,36 +35,46 @@ class StatusBar extends StatelessWidget {
           border: Border.all(color: AppColors.hairline, width: 1),
           borderRadius: BorderRadius.circular(999),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // PR-8 — dropped the 8 px accent glow. The dot stays as the
-            // per-state signal; the glow was the only game-UI-coded tell
-            // on the HUD.
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                message.toUpperCase(),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                style: AppText.mono.copyWith(color: accent),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Text(
-              counter,
-              style: AppText.mono.copyWith(
-                color: ColorTokens.textSecondary,
-                fontSize: 9.5,
-              ),
-            ),
-          ],
+        // PR-9A — smooth color interpolation across state changes.
+        // TweenAnimationBuilder rebuilds the dot + message text with the
+        // lerped accent over statusPillTransitionDuration; no flash, no
+        // new state, no new Timer. The counter color is state-invariant
+        // and renders outside the tween.
+        child: TweenAnimationBuilder<Color?>(
+          tween: ColorTween(end: accent),
+          duration: MotionTokens.statusPillTransitionDuration,
+          curve: MotionTokens.standard,
+          builder: (context, lerpedColor, _) {
+            final c = lerpedColor ?? accent;
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: c),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    message.toUpperCase(),
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.mono.copyWith(color: c),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Text(
+                  counter,
+                  style: AppText.mono.copyWith(
+                    color: ColorTokens.textSecondary,
+                    fontSize: 9.5,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

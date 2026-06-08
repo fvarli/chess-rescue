@@ -879,15 +879,15 @@ class _BoardWidgetState extends State<BoardWidget>
         if (!bloomDone) {
           final v = _rescueBloom.value;
           if (v <= bloomEnd) {
-            // Bloom phase
+            // Bloom phase — PR-9A: easeOutQuart for "grow / slow / linger".
             final n = (v / bloomEnd).clamp(0.0, 1.0);
-            final t = MotionTokens.standard.transform(n);
+            final t = CurveTokens.entrance.transform(n);
             scale = _lerp(1.0, MotionTokens.rescueScalePeak, t);
             alpha = _lerp(0.0, MotionTokens.rescueGlowPeak, t);
           } else {
-            // Settle phase
+            // Settle phase — PR-9A: easeOutQuart continues the exhale.
             final n = ((v - bloomEnd) / (1 - bloomEnd)).clamp(0.0, 1.0);
-            final t = MotionTokens.standard.transform(n);
+            final t = CurveTokens.entrance.transform(n);
             scale = _lerp(
               MotionTokens.rescueScalePeak,
               MotionTokens.rescueScaleSettled,
@@ -1357,10 +1357,17 @@ class _RescueRingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (!visible || t <= 0.0 || t >= 1.0) return;
+    // PR-9A — opacity decays 1.4× faster than radius; ring grows almost
+    // to full radius before fully fading (ripple losing energy into water).
+    final alphaT = (t * MotionTokens.rescueRingOpacityVsRadiusRatio).clamp(
+      0.0,
+      1.0,
+    );
+    if (alphaT >= 1.0) return; // ring fully transparent — skip the draw.
     final r0 = squareSize * MotionTokens.rescueRingStartScale / 2;
     final r1 = squareSize * MotionTokens.rescueRingEndScale / 2;
     final radius = r0 + (r1 - r0) * t;
-    final alpha = MotionTokens.rescueRingAlphaStart * (1.0 - t);
+    final alpha = MotionTokens.rescueRingAlphaStart * (1.0 - alphaT);
     final stroke =
         MotionTokens.rescueRingStrokeStart +
         (MotionTokens.rescueRingStrokeEnd -

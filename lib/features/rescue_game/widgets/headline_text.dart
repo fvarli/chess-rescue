@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
+import '../../../core/theme/tokens.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../game_state.dart';
 
@@ -42,7 +43,13 @@ class HeadlineText extends StatelessWidget {
     final isPending = state == GameState.rescued && !rescuedSettled;
     return AnimatedSwitcher(
       duration: duration,
-      switchInCurve: MotionTokens.standard,
+      // PR-9A — easeOutQuart on the victory headline gives a non-linear
+      // 0 / 15 / 40 / 72 / 100 opacity shape. Editorial typography settles
+      // into place rather than appearing. Other states keep the original
+      // easeOutCubic register.
+      switchInCurve: state == GameState.rescued
+          ? CurveTokens.entrance
+          : MotionTokens.standard,
       switchOutCurve: Curves.easeIn,
       transitionBuilder: (child, anim) {
         final offset = Tween<Offset>(

@@ -246,6 +246,19 @@ void main() {
     });
   });
 
+  group('MotionTokens — PR-9A rescue motion polish', () {
+    test('ring opacity-vs-radius ratio is the conservative 1.4', () {
+      expect(MotionTokens.rescueRingOpacityVsRadiusRatio, closeTo(1.4, 0.001));
+    });
+
+    test('status pill transition is 180 ms', () {
+      expect(
+        MotionTokens.statusPillTransitionDuration,
+        const Duration(milliseconds: 180),
+      );
+    });
+  });
+
   group('MotionTokens — rescue ceremony', () {
     test('headline settle delay is the conservative 280 ms', () {
       expect(

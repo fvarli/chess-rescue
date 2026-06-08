@@ -104,6 +104,17 @@ class MotionTokens {
   static const Duration ambientRescueExhale = Duration(milliseconds: 250);
   static const double ambientRescuedAmplitudeMul = 0.6;
 
+  // — Rescue animation polish (PR-9A: curve / timing only)
+  // Ring alpha decays 1.4× faster than radius — ripple loses energy before
+  // it loses size. Conservative initial value; raise to 1.6 only on
+  // device-review evidence.
+  static const double rescueRingOpacityVsRadiusRatio = 1.4;
+  // Status pill accent color interpolates over 180 ms on state change;
+  // no flash, no instant swap.
+  static const Duration statusPillTransitionDuration = Duration(
+    milliseconds: 180,
+  );
+
   // — Rescue ceremony stagger
   // Delay between the rescued-state transition and the moment the "Rescued."
   // headline starts its 320 ms fade-in. Lets the board's bloom + arrow phase
