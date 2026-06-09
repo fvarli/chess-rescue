@@ -99,6 +99,19 @@ class _BoardWidgetState extends State<BoardWidget>
   // Both fire on the danger → rescued transition, gated by !initial.
   late final AnimationController _releaseSettle;
   late final AnimationController _arrivalMemory;
+  // PR-10D — selection continuity. Sticky pattern + fade controller keep
+  // the selected ring visually alive for selectionRingExitDuration after
+  // the controller clears the real selection (or when state goes failed).
+  late final AnimationController _selectionRingFade;
+  Piece? _lastSelected;
+  Timer? _selectionRingFadeClearTimer;
+  // PR-10D — arrow dissolve on rescued → next/danger. Sticky from/to plus
+  // a dedicated dissolve controller let the arrow fade gently instead of
+  // teleporting away.
+  late final AnimationController _moveArrowDissolve;
+  Square? _arrowFromSticky;
+  Square? _arrowToSticky;
+  Timer? _moveArrowDissolveClearTimer;
 
   late final Animation<double> _dangerPulseValue;
 
@@ -203,6 +216,14 @@ class _BoardWidgetState extends State<BoardWidget>
       vsync: this,
       duration: MotionTokens.arrivalMemoryDuration,
     );
+    _selectionRingFade = AnimationController(
+      vsync: this,
+      duration: MotionTokens.selectionRingExitDuration,
+    );
+    _moveArrowDissolve = AnimationController(
+      vsync: this,
+      duration: MotionTokens.moveArrowDissolveDuration,
+    );
 
     _dangerPulse.repeat();
     _retuneAmbientBreath();
@@ -219,7 +240,47 @@ class _BoardWidgetState extends State<BoardWidget>
       _retuneAmbientBreath();
     }
     _syncSelectionBreath();
+    _syncSelectionRingFade(old);
     _updateStickyDots();
+  }
+
+  // PR-10D — sticky selection ring fade-out. When the controller clears
+  // the selection (either by tapping the same piece or by entering
+  // failed/illegal state), the ring lingers at its last square and fades
+  // out smoothly instead of vanishing. When a new selection arrives, any
+  // pending fade is cancelled so the ring is immediately ready to glide
+  // to the new square.
+  void _syncSelectionRingFade(BoardWidget old) {
+    final wasSelected = old.selected != null;
+    final isSelected = widget.selected != null;
+    if (wasSelected && !isSelected) {
+      // Selection just cleared — keep the previous square visible during
+      // the fade window.
+      _lastSelected = old.selected;
+      _selectionRingFade
+        ..reset()
+        ..forward();
+      _selectionRingFadeClearTimer?.cancel();
+      _selectionRingFadeClearTimer = Timer(
+        MotionTokens.selectionRingExitDuration,
+        () {
+          if (!mounted) return;
+          setState(() {
+            _lastSelected = null;
+            _selectionRingFade.value = 0;
+          });
+        },
+      );
+    } else if (isSelected) {
+      // New / continued selection: cancel any pending fade so the ring
+      // snaps to its visible baseline immediately.
+      _selectionRingFadeClearTimer?.cancel();
+      _selectionRingFadeClearTimer = null;
+      if (_lastSelected != null || _selectionRingFade.value != 0) {
+        _lastSelected = null;
+        _selectionRingFade.value = 0;
+      }
+    }
   }
 
   // PR-10B.1 — gate the selection halo breath on the current selection.
@@ -269,6 +330,11 @@ class _BoardWidgetState extends State<BoardWidget>
           _arrivalMemory
             ..reset()
             ..forward();
+          // PR-10D — reset the arrow's dissolve cycle. Any pending exit
+          // timer from a prior rescued cycle is cancelled.
+          _moveArrowDissolveClearTimer?.cancel();
+          _moveArrowDissolveClearTimer = null;
+          _moveArrowDissolve.value = 0;
           // Ambient exhale: pause brightness for a brief emotional beat,
           // then resume at the softer rescued amplitude (handled in the
           // painter). The light drift is never paused.
@@ -301,7 +367,7 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueBreath.stop();
         _rescueRing.value = 0;
         _kingPulse.value = 0;
-        _moveArrow.value = 0;
+        _startMoveArrowDissolveOrReset();
         _releaseSettle.value = 0;
         _arrivalMemory.value = 0;
         _ensureAmbientBrightnessRunning();
@@ -315,12 +381,49 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueRing.value = 0;
         _failRim.value = 0;
         _kingPulse.value = 0;
-        _moveArrow.value = 0;
+        _startMoveArrowDissolveOrReset();
         _releaseSettle.value = 0;
         _arrivalMemory.value = 0;
         _ensureAmbientBrightnessRunning();
         break;
     }
+  }
+
+  // PR-10D — gentle arrow exit. If the arrow was visible (_moveArrow.value
+  // > 0) and we have sticky from/to coords cached from the last render,
+  // start the dissolve and schedule a clear timer that finalises the
+  // reset once the fade completes. Otherwise (no arrow drawn this cycle),
+  // reset immediately as the prior behaviour.
+  void _startMoveArrowDissolveOrReset() {
+    final hasActiveArrow =
+        _moveArrow.value > 0 &&
+        _arrowFromSticky != null &&
+        _arrowToSticky != null;
+    if (!hasActiveArrow) {
+      _moveArrow.value = 0;
+      _moveArrowDissolve.value = 0;
+      _arrowFromSticky = null;
+      _arrowToSticky = null;
+      _moveArrowDissolveClearTimer?.cancel();
+      _moveArrowDissolveClearTimer = null;
+      return;
+    }
+    _moveArrowDissolve
+      ..reset()
+      ..forward();
+    _moveArrowDissolveClearTimer?.cancel();
+    _moveArrowDissolveClearTimer = Timer(
+      MotionTokens.moveArrowDissolveDuration,
+      () {
+        if (!mounted) return;
+        setState(() {
+          _moveArrow.value = 0;
+          _moveArrowDissolve.value = 0;
+          _arrowFromSticky = null;
+          _arrowToSticky = null;
+        });
+      },
+    );
   }
 
   // Resume the brightness controller from its current value if a prior
@@ -405,6 +508,10 @@ class _BoardWidgetState extends State<BoardWidget>
     _selectionBreath.dispose();
     _releaseSettle.dispose();
     _arrivalMemory.dispose();
+    _selectionRingFadeClearTimer?.cancel();
+    _selectionRingFade.dispose();
+    _moveArrowDissolveClearTimer?.cancel();
+    _moveArrowDissolve.dispose();
     super.dispose();
   }
 
@@ -494,7 +601,7 @@ class _BoardWidgetState extends State<BoardWidget>
                 // concentric.
                 _buildRescueRing(),
                 _buildFocusCue(),
-                if (widget.selected != null) _buildSelectedRing(),
+                _buildSelectedRing(),
                 ..._buildLegalDots(),
                 ..._buildPieces(),
                 _buildTapLayer(),
@@ -890,13 +997,16 @@ class _BoardWidgetState extends State<BoardWidget>
                 (MotionTokens.failRimIn.inMilliseconds +
                     MotionTokens.failRimHold.inMilliseconds) /
                 total;
-            // 3-segment ramp: ease in → hold → ease out.
+            // PR-10C — 3-segment ramp: ease in → hold → ease out.
+            // Exit swapped from easeInCubic (slow start + sharp tail) to
+            // easeInOut for symmetric softening — the rim fades politely
+            // instead of dropping. "Not there," not "wrong!"
             final double k = t <= inEnd
                 ? Curves.easeOutCubic.transform(t / inEnd)
                 : t <= holdEnd
                 ? 1.0
                 : 1.0 -
-                      Curves.easeInCubic.transform(
+                      Curves.easeInOut.transform(
                         (t - holdEnd) / (1.0 - holdEnd),
                       );
             final alpha = k * MotionTokens.failRimAlphaPeak;
@@ -1066,18 +1176,32 @@ class _BoardWidgetState extends State<BoardWidget>
   }
 
   Widget _buildMoveArrow() {
-    final from = widget.lastMoveFrom;
-    if (widget.state != GameState.rescued ||
-        from == null ||
-        (from.file == widget.rescueTo.file &&
-            from.rank == widget.rescueTo.rank)) {
+    // PR-10D — sticky from/to. During the rescued state we render from
+    // the live widget values AND refresh the sticky cache so the dissolve
+    // can use them after the controller has cleared lastMoveFrom. Outside
+    // rescued, we still render the arrow while the dissolve controller is
+    // active, using the cached sticky values.
+    final liveValid =
+        widget.state == GameState.rescued &&
+        widget.lastMoveFrom != null &&
+        !(widget.lastMoveFrom!.file == widget.rescueTo.file &&
+            widget.lastMoveFrom!.rank == widget.rescueTo.rank);
+    if (liveValid) {
+      _arrowFromSticky = widget.lastMoveFrom;
+      _arrowToSticky = widget.rescueTo;
+    }
+    final dissolveActive =
+        !liveValid &&
+        _moveArrowDissolve.value > 0 &&
+        _arrowFromSticky != null &&
+        _arrowToSticky != null;
+    if (!liveValid && !dissolveActive) {
       return const SizedBox.shrink(key: ValueKey('move-arrow-hidden'));
     }
+    final from = liveValid ? widget.lastMoveFrom! : _arrowFromSticky!;
+    final to = liveValid ? widget.rescueTo : _arrowToSticky!;
     final originOrigin = _squareOrigin(from.file, from.rank);
-    final destOrigin = _squareOrigin(
-      widget.rescueTo.file,
-      widget.rescueTo.rank,
-    );
+    final destOrigin = _squareOrigin(to.file, to.rank);
     final originCenter = Offset(
       originOrigin.dx + _sq / 2,
       originOrigin.dy + _sq / 2,
@@ -1096,8 +1220,10 @@ class _BoardWidgetState extends State<BoardWidget>
     return Positioned.fill(
       key: const ValueKey('move-arrow'),
       child: IgnorePointer(
+        // PR-10D — listen to the dissolve controller as well so the
+        // painter rebuilds with the live dissolveProgress during exit.
         child: AnimatedBuilder(
-          animation: _moveArrow,
+          animation: Listenable.merge([_moveArrow, _moveArrowDissolve]),
           builder: (context, _) => CustomPaint(
             painter: _MoveArrowPainter(
               sequenceProgress: _moveArrow.value,
@@ -1109,6 +1235,7 @@ class _BoardWidgetState extends State<BoardWidget>
               holdEnd: holdEnd,
               peakAlpha: MotionTokens.moveArrowPeakAlpha,
               settledAlpha: MotionTokens.moveArrowSettledAlpha,
+              dissolveProgress: _moveArrowDissolve.value,
             ),
           ),
         ),
@@ -1165,13 +1292,25 @@ class _BoardWidgetState extends State<BoardWidget>
   }
 
   Widget _buildSelectedRing() {
-    final sel = widget.selected!;
+    // PR-10D — sticky selection. Prefer the live selection; fall back to
+    // the last-known selection while it's fading out. When neither is
+    // available, the ring is fully absent from the tree.
+    final sel = widget.selected ?? _lastSelected;
+    if (sel == null) {
+      return const SizedBox.shrink(key: ValueKey('selected-ring-hidden'));
+    }
     final origin = _squareOrigin(sel.file, sel.rank);
     // During commit, contract the ring (scale 0.96, opacity 0.6) — the wind-up.
     final contracted = widget.commitInFlight;
     final targetScale = contracted ? MotionTokens.ringContractScale : 1.0;
     final targetOpacity = contracted ? MotionTokens.ringContractOpacity : 1.0;
-    return Positioned(
+    // PR-10D — selectionRingMoveDuration glides the ring from old square
+    // to new on selection change. AnimatedPositioned does the right thing
+    // on first mount (no animation) + subsequent changes (smooth glide).
+    return AnimatedPositioned(
+      key: const ValueKey('selected-ring'),
+      duration: MotionTokens.selectionRingMoveDuration,
+      curve: MotionTokens.standard,
       left: origin.dx,
       top: origin.dy,
       width: _sq,
@@ -1199,8 +1338,15 @@ class _BoardWidgetState extends State<BoardWidget>
                 // PR-10B.1 — gentle fill-alpha breath. Contract phase
                 // suppresses the breath at midpoint; the contract is its
                 // own statement and the breath shouldn't compete.
+                // PR-10D — sticky exit fade. When the controller cleared
+                // the selection we render at _lastSelected with opacity
+                // decaying through (1 - _selectionRingFade.value); the
+                // multiplier composes with the existing contract opacity.
                 return AnimatedBuilder(
-                  animation: _selectionBreath,
+                  animation: Listenable.merge([
+                    _selectionBreath,
+                    _selectionRingFade,
+                  ]),
                   builder: (context, _) {
                     final breathT = contracted
                         ? 0.5
@@ -1210,8 +1356,11 @@ class _BoardWidgetState extends State<BoardWidget>
                       MotionTokens.selectedHaloMaxAlpha,
                       breathT,
                     );
+                    final fadeMul = widget.selected != null
+                        ? 1.0
+                        : (1.0 - _selectionRingFade.value).clamp(0.0, 1.0);
                     return Opacity(
-                      opacity: opacity,
+                      opacity: opacity * fadeMul,
                       child: Transform.scale(
                         scale: scale,
                         child: DecoratedBox(
@@ -1562,6 +1711,7 @@ class _MoveArrowPainter extends CustomPainter {
     required this.holdEnd,
     required this.peakAlpha,
     required this.settledAlpha,
+    this.dissolveProgress = 0.0,
   });
 
   final double sequenceProgress;
@@ -1573,6 +1723,9 @@ class _MoveArrowPainter extends CustomPainter {
   final double holdEnd;
   final double peakAlpha;
   final double settledAlpha;
+  // PR-10D — 0 at full opacity, 1 fully dissolved. Multiplies the computed
+  // alpha for both shaft and head. At 1.0 the painter early-returns.
+  final double dissolveProgress;
 
   // Tapered shaft widths and head geometry, in logical pixels.
   static const double _tailWidth = 5.0;
@@ -1582,6 +1735,10 @@ class _MoveArrowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // PR-10D — dissolve gate. At dissolveProgress >= 1.0 the arrow has
+    // fully faded; skip the paint pass entirely.
+    final dissolveMul = (1.0 - dissolveProgress).clamp(0.0, 1.0);
+    if (dissolveMul <= 0.0) return;
     // Phase 1: derive shaft progress + alpha.
     double shaftProgress;
     double alpha;
@@ -1665,7 +1822,9 @@ class _MoveArrowPainter extends CustomPainter {
       final shaftPaint = Paint()
         ..style = PaintingStyle.fill
         ..isAntiAlias = true
-        ..color = color.withValues(alpha: alpha);
+        // PR-10D — dissolveMul multiplies the shaft alpha so the arrow
+        // fades smoothly on state exit.
+        ..color = color.withValues(alpha: alpha * dissolveMul);
       canvas.drawPath(shaftPath, shaftPaint);
     }
 
@@ -1681,7 +1840,8 @@ class _MoveArrowPainter extends CustomPainter {
       final headPaint = Paint()
         ..style = PaintingStyle.fill
         ..isAntiAlias = true
-        ..color = color.withValues(alpha: alpha * headT);
+        // PR-10D — same dissolveMul applied to the head.
+        ..color = color.withValues(alpha: alpha * headT * dissolveMul);
       canvas.drawPath(headPath, headPaint);
     }
   }
@@ -1692,5 +1852,6 @@ class _MoveArrowPainter extends CustomPainter {
       old.originCenter != originCenter ||
       old.destCenter != destCenter ||
       old.squareSize != squareSize ||
-      old.color != color;
+      old.color != color ||
+      old.dissolveProgress != dissolveProgress;
 }

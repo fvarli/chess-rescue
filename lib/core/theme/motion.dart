@@ -42,6 +42,23 @@ class MotionTokens {
   // intentional, fast enough to be subliminal.
   static const Duration attentionFadeDuration = Duration(milliseconds: 180);
 
+  // PR-10D — selection continuity polish. Three durations smooth the
+  // transitions around selection state changes and the arrow's exit.
+  // selectionRingExitDuration: opacity fade when selection clears (sticky).
+  // selectionRingMoveDuration: ring glide from old square to new square.
+  // moveArrowDissolveDuration: arrow alpha decay on rescued → next/danger.
+  static const Duration selectionRingExitDuration = Duration(milliseconds: 140);
+  static const Duration selectionRingMoveDuration = Duration(milliseconds: 140);
+  static const Duration moveArrowDissolveDuration = Duration(milliseconds: 120);
+
+  // PR-10C — piece floor-shadow softens on selected lift. Visible only
+  // side-by-side; the shadow widens, softens, and lightens proportional
+  // to the lift amount (lift t = 0 at scale 1.0, 1 at the selected lift
+  // ceiling). No effect at rest.
+  static const double pieceLiftShadowScale = 1.08;
+  static const double pieceLiftShadowAlphaMultiplier = 0.85;
+  static const double pieceLiftShadowBlurDelta = 1.0;
+
   // PR-10B.2 — tactile closure on successful rescue.
   // Release / settle compression on the rescuer piece. Sine bell
   // over 90 ms: scale 1.0 → minScale → 1.0. No overshoot above 1.0.
@@ -109,7 +126,10 @@ class MotionTokens {
   static const Duration failRimIn = Duration(milliseconds: 80);
   static const Duration failRimHold = Duration(milliseconds: 90);
   static const Duration failRimOut = Duration(milliseconds: 200);
-  static const double failRimAlphaPeak = 0.32;
+  // PR-10C — softer failed feedback. 0.32 → 0.28 keeps the boardwide rim
+  // visible without reading as rejection. Pair with the easeInOut exit
+  // curve in _FailRimPainter for smooth fade-out instead of a sharp tail.
+  static const double failRimAlphaPeak = 0.28;
   static const double failRimWidthPx = 2.0;
 
   // V2 — rescue expansion ring. Single concentric mint ring radiates outward

@@ -40,4 +40,55 @@ void main() {
       }
     }
   }
+
+  // PR-10C — render at lifted scales (selected 1.025, rescued held 1.04) so
+  // the new lift-aware shadow path is exercised. The TweenAnimationBuilder
+  // animates over MotionTokens.pieceLift (180 ms); pump past it so the
+  // painter receives non-1.0 liftedScale and the modulated alpha/blur path
+  // runs without exception.
+  group('PieceWidget — PR-10C lifted shadow paths', () {
+    for (final lifted in const [1.025, 1.04]) {
+      testWidgets('renders at liftedScale $lifted without exception', (
+        tester,
+      ) async {
+        const piece = Piece(
+          id: 'knight-light-lifted',
+          type: PieceType.knight,
+          color: PieceColor.light,
+          file: 0,
+          rank: 0,
+        );
+        await tester.pumpWidget(
+          harness(PieceWidget(piece: piece, size: 48, liftedScale: lifted)),
+        );
+        await tester.pump();
+        // Cross the lift tween + a frame for the lifted-shadow path.
+        await tester.pump(const Duration(milliseconds: 200));
+        expect(find.byType(CustomPaint), findsWidgets);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('settled lift transition does not throw', (tester) async {
+      const piece = Piece(
+        id: 'queen-dark-transition',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 0,
+      );
+      // Start at rest.
+      await tester.pumpWidget(harness(PieceWidget(piece: piece, size: 48)));
+      await tester.pump();
+      // Lift.
+      await tester.pumpWidget(
+        harness(PieceWidget(piece: piece, size: 48, liftedScale: 1.025)),
+      );
+      await tester.pump(const Duration(milliseconds: 200));
+      // Back to rest.
+      await tester.pumpWidget(harness(PieceWidget(piece: piece, size: 48)));
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(tester.takeException(), isNull);
+    });
+  });
 }

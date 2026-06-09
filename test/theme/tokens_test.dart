@@ -246,6 +246,67 @@ void main() {
     });
   });
 
+  group('MotionTokens — PR-10D selection continuity', () {
+    test('selection ring exit + relocate are both 140 ms', () {
+      expect(
+        MotionTokens.selectionRingExitDuration,
+        const Duration(milliseconds: 140),
+      );
+      expect(
+        MotionTokens.selectionRingMoveDuration,
+        const Duration(milliseconds: 140),
+      );
+    });
+
+    test('move arrow dissolve is 120 ms', () {
+      expect(
+        MotionTokens.moveArrowDissolveDuration,
+        const Duration(milliseconds: 120),
+      );
+    });
+
+    test('continuity durations are short enough to feel subliminal', () {
+      // All three windows must stay below the perceptual "this is an
+      // animation" threshold (~200 ms for slow interaction polish).
+      expect(
+        MotionTokens.selectionRingExitDuration.inMilliseconds,
+        lessThan(200),
+      );
+      expect(
+        MotionTokens.selectionRingMoveDuration.inMilliseconds,
+        lessThan(200),
+      );
+      expect(
+        MotionTokens.moveArrowDissolveDuration.inMilliseconds,
+        lessThan(200),
+      );
+    });
+  });
+
+  group('MotionTokens — PR-10C piece-lift shadow + softer failed rim', () {
+    test('piece lift shadow tokens pin documented values', () {
+      expect(MotionTokens.pieceLiftShadowScale, closeTo(1.08, 0.0001));
+      expect(
+        MotionTokens.pieceLiftShadowAlphaMultiplier,
+        closeTo(0.85, 0.0001),
+      );
+      expect(MotionTokens.pieceLiftShadowBlurDelta, closeTo(1.0, 0.0001));
+    });
+
+    test('piece lift shadow widens, softens, dims (not the inverse)', () {
+      // Scale > 1 → wider; multiplier < 1 → dimmer; blur delta > 0 → softer.
+      expect(MotionTokens.pieceLiftShadowScale, greaterThan(1.0));
+      expect(MotionTokens.pieceLiftShadowAlphaMultiplier, lessThan(1.0));
+      expect(MotionTokens.pieceLiftShadowBlurDelta, greaterThan(0.0));
+    });
+
+    test('failRimAlphaPeak softened to 0.28 (was 0.32)', () {
+      expect(MotionTokens.failRimAlphaPeak, closeTo(0.28, 0.0001));
+      // Still visible; not invisible.
+      expect(MotionTokens.failRimAlphaPeak, greaterThan(0.15));
+    });
+  });
+
   group('MotionTokens — PR-10B.2 release settle + arrival memory', () {
     test('release settle is 90 ms with min scale 0.985 (subtle compress)', () {
       expect(

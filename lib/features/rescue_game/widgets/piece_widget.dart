@@ -26,11 +26,20 @@ class PieceWidget extends StatelessWidget {
         tween: Tween<double>(end: liftedScale),
         duration: MotionTokens.pieceLift,
         curve: MotionTokens.standard,
-        builder: (context, scale, child) =>
-            Transform.scale(scale: scale, child: child),
-        child: CustomPaint(
-          size: Size.square(size),
-          painter: _PiecePainter(type: piece.type, color: piece.color),
+        // PR-10C — thread the live animated scale into the painter so the
+        // floor shadow softens in lockstep with the piece lift, not in a
+        // separate snap. Repaint per tween frame is cheap (simple ovals +
+        // paths in a 100×100 viewBox).
+        builder: (context, scale, _) => Transform.scale(
+          scale: scale,
+          child: CustomPaint(
+            size: Size.square(size),
+            painter: _PiecePainter(
+              type: piece.type,
+              color: piece.color,
+              liftedScale: scale,
+            ),
+          ),
         ),
       ),
     );
@@ -38,10 +47,23 @@ class PieceWidget extends StatelessWidget {
 }
 
 class _PiecePainter extends CustomPainter {
-  _PiecePainter({required this.type, required this.color});
+  _PiecePainter({
+    required this.type,
+    required this.color,
+    this.liftedScale = 1.0,
+  });
 
   final PieceType type;
   final PieceColor color;
+  // PR-10C — current live scale (1.0 at rest, approaches 1.025 when
+  // selected). Used by _paintFloorShadow to interpolate shadow geometry
+  // and alpha/blur. Has no effect at rest.
+  final double liftedScale;
+
+  // Lift t: 0 at rest, 1 at the selected-lift ceiling of 1.025. The
+  // rescued held-lift of 1.04 clamps to 1.0 so the shadow doesn't grow
+  // further than the selected state.
+  double get _liftT => ((liftedScale - 1.0) / 0.025).clamp(0.0, 1.0);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -154,12 +176,29 @@ class _PiecePainter extends CustomPainter {
   // edge inside the inner 84%-padded square in board_widget.dart, so the
   // shadow can never bleed into an adjacent square.
   void _paintFloorShadow(Canvas canvas) {
+    // PR-10C — selected lift softens the shadow. At rest (t = 0) the
+    // values match the shipped PR-2 baseline exactly: width 56, height 7,
+    // blur 3.5, full pieceFloorShadow alpha. At full lift (t = 1):
+    // geometry scales by pieceLiftShadowScale, blur grows by
+    // pieceLiftShadowBlurDelta, alpha multiplies by
+    // pieceLiftShadowAlphaMultiplier. Subtle — visible only side-by-side.
+    final t = _liftT;
+    final geomScale = 1.0 + (MotionTokens.pieceLiftShadowScale - 1.0) * t;
+    final blur = 3.5 + MotionTokens.pieceLiftShadowBlurDelta * t;
+    final alphaMultiplier =
+        1.0 - (1.0 - MotionTokens.pieceLiftShadowAlphaMultiplier) * t;
     final shadow = Paint()
-      ..color = ColorTokens.pieceFloorShadow
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.5)
+      ..color = ColorTokens.pieceFloorShadow.withValues(
+        alpha: ColorTokens.pieceFloorShadow.a * alphaMultiplier,
+      )
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, blur)
       ..isAntiAlias = true;
     canvas.drawOval(
-      Rect.fromCenter(center: const Offset(50, 92), width: 56, height: 7),
+      Rect.fromCenter(
+        center: const Offset(50, 92),
+        width: 56 * geomScale,
+        height: 7 * geomScale,
+      ),
       shadow,
     );
   }
@@ -509,5 +548,5 @@ class _PiecePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PiecePainter old) =>
-      old.type != type || old.color != color;
+      old.type != type || old.color != color || old.liftedScale != liftedScale;
 }
