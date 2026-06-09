@@ -26,6 +26,22 @@ class MotionTokens {
   static const double legalDotEmptyAlpha = 0.75;
   static const double legalDotOccupiedAlpha = 0.65;
 
+  // PR-10B.1 — selection halo breathing + attention hierarchy.
+  // Full breath cycle (in + out). Controller uses period / 2 with
+  // repeat(reverse: true) so the two halves are time-symmetric.
+  static const Duration selectedHaloBreathPeriod = Duration(milliseconds: 2800);
+  // Fill alpha breathes between these two values; midpoint 0.15 matches the
+  // prior static fill so the change reads as "breathing around" rather than
+  // a brightness shift.
+  static const double selectedHaloMinAlpha = 0.12;
+  static const double selectedHaloMaxAlpha = 0.18;
+  // Non-selected friendly non-king pieces dim by 6%. Subtle:
+  // "this is not disabled, this is just not the protagonist."
+  static const double nonSelectedFriendlyOpacity = 0.94;
+  // AnimatedOpacity fade for the attention dim. Slow enough to feel
+  // intentional, fast enough to be subliminal.
+  static const Duration attentionFadeDuration = Duration(milliseconds: 180);
+
   // — Move commit (split pause + slide)
   static const Duration commitWindUp = Duration(milliseconds: 80);
   static const Duration pieceSlide = Duration(milliseconds: 220);

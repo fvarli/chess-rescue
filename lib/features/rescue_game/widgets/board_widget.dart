@@ -89,6 +89,10 @@ class _BoardWidgetState extends State<BoardWidget>
   // Brief pause on rescue transition before the brightness resumes at a
   // softer amplitude — the board's "exhale."
   Timer? _ambientExhaleTimer;
+  // PR-10B.1 — selection halo breath. Runs only while a piece is selected
+  // and not committing; stopped + reset otherwise so reads land on a
+  // stable baseline.
+  late final AnimationController _selectionBreath;
 
   late final Animation<double> _dangerPulseValue;
 
@@ -177,10 +181,19 @@ class _BoardWidgetState extends State<BoardWidget>
       vsync: this,
       duration: MotionTokens.ambientLightDriftPeriod,
     )..repeat();
+    _selectionBreath = AnimationController(
+      vsync: this,
+      // Period / 2 with repeat(reverse: true) gives a time-symmetric
+      // breath whose full cycle equals selectedHaloBreathPeriod.
+      duration: Duration(
+        milliseconds: MotionTokens.selectedHaloBreathPeriod.inMilliseconds ~/ 2,
+      ),
+    );
 
     _dangerPulse.repeat();
     _retuneAmbientBreath();
     _syncStateAnimations(initial: true);
+    _syncSelectionBreath();
     _updateStickyDots();
   }
 
@@ -191,7 +204,20 @@ class _BoardWidgetState extends State<BoardWidget>
       _syncStateAnimations(initial: false);
       _retuneAmbientBreath();
     }
+    _syncSelectionBreath();
     _updateStickyDots();
+  }
+
+  // PR-10B.1 — gate the selection halo breath on the current selection.
+  // Runs only when a piece is selected and no commit is in flight.
+  void _syncSelectionBreath() {
+    final shouldBreathe = widget.selected != null && !widget.commitInFlight;
+    if (shouldBreathe && !_selectionBreath.isAnimating) {
+      _selectionBreath.repeat(reverse: true);
+    } else if (!shouldBreathe && _selectionBreath.isAnimating) {
+      _selectionBreath.stop();
+      _selectionBreath.value = 0;
+    }
   }
 
   void _syncStateAnimations({required bool initial}) {
@@ -349,6 +375,7 @@ class _BoardWidgetState extends State<BoardWidget>
     _ambientExhaleTimer?.cancel();
     _ambientBrightness.dispose();
     _ambientLightDrift.dispose();
+    _selectionBreath.dispose();
     super.dispose();
   }
 
@@ -1102,20 +1129,38 @@ class _BoardWidgetState extends State<BoardWidget>
                   : MotionTokens.ringIn,
               curve: MotionTokens.standard,
               builder: (context, opacity, _) {
-                return Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: AppColors.accent.withValues(alpha: 0.15),
-                        border: Border.all(
-                          color: AppColors.accent,
-                          width: MotionTokens.ringBorderWidth,
+                // PR-10B.1 — gentle fill-alpha breath. Contract phase
+                // suppresses the breath at midpoint; the contract is its
+                // own statement and the breath shouldn't compete.
+                return AnimatedBuilder(
+                  animation: _selectionBreath,
+                  builder: (context, _) {
+                    final breathT = contracted
+                        ? 0.5
+                        : MotionTokens.breath.transform(_selectionBreath.value);
+                    final fillAlpha = _lerp(
+                      MotionTokens.selectedHaloMinAlpha,
+                      MotionTokens.selectedHaloMaxAlpha,
+                      breathT,
+                    );
+                    return Opacity(
+                      opacity: opacity,
+                      child: Transform.scale(
+                        scale: scale,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: AppColors.accent.withValues(
+                              alpha: fillAlpha,
+                            ),
+                            border: Border.all(
+                              color: AppColors.accent,
+                              width: MotionTokens.ringBorderWidth,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             );
@@ -1158,6 +1203,7 @@ class _BoardWidgetState extends State<BoardWidget>
   List<Widget> _buildPieces() {
     final centerPad = _sq * 0.08;
     final pieceSize = _sq * 0.84;
+    final selected = widget.selected;
     return [
       for (final p in widget.pieces)
         AnimatedPositioned(
@@ -1171,12 +1217,27 @@ class _BoardWidgetState extends State<BoardWidget>
           child: IgnorePointer(
             child: Padding(
               padding: EdgeInsets.all(centerPad),
-              child: _kingPulseWrap(
-                p,
-                PieceWidget(
-                  piece: p,
-                  size: pieceSize,
-                  liftedScale: _liftFor(p),
+              child: AnimatedOpacity(
+                // PR-10B.1 — non-selected friendly non-king pieces
+                // gently recede to clarify the rescue piece. King never
+                // dims (danger / rescue signaling preserved). Opponents
+                // never dim.
+                opacity:
+                    (selected != null &&
+                        p.color == PieceColor.light &&
+                        p.type != PieceType.king &&
+                        p.id != selected.id)
+                    ? MotionTokens.nonSelectedFriendlyOpacity
+                    : 1.0,
+                duration: MotionTokens.attentionFadeDuration,
+                curve: MotionTokens.standard,
+                child: _kingPulseWrap(
+                  p,
+                  PieceWidget(
+                    piece: p,
+                    size: pieceSize,
+                    liftedScale: _liftFor(p),
+                  ),
                 ),
               ),
             ),

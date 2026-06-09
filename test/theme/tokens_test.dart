@@ -246,6 +246,38 @@ void main() {
     });
   });
 
+  group('MotionTokens — PR-10B.1 selection halo + attention', () {
+    test('selection halo breath cycle is 2800 ms (full period)', () {
+      expect(
+        MotionTokens.selectedHaloBreathPeriod,
+        const Duration(milliseconds: 2800),
+      );
+    });
+
+    test('halo breath alphas straddle the prior static 0.15 fill', () {
+      expect(MotionTokens.selectedHaloMinAlpha, closeTo(0.12, 0.0001));
+      expect(MotionTokens.selectedHaloMaxAlpha, closeTo(0.18, 0.0001));
+      // Midpoint must equal the legacy fill so the change reads as
+      // "breathing around" not as a brightness shift.
+      final midpoint =
+          (MotionTokens.selectedHaloMinAlpha +
+              MotionTokens.selectedHaloMaxAlpha) /
+          2;
+      expect(midpoint, closeTo(0.15, 0.001));
+    });
+
+    test('non-selected friendly opacity is 0.94 (subtle 6% recede)', () {
+      expect(MotionTokens.nonSelectedFriendlyOpacity, closeTo(0.94, 0.0001));
+    });
+
+    test('attention fade duration is 180 ms', () {
+      expect(
+        MotionTokens.attentionFadeDuration,
+        const Duration(milliseconds: 180),
+      );
+    });
+  });
+
   group('MotionTokens — PR-10A touch feel polish', () {
     test('selected piece lift is capped at 1.025 (was 1.05)', () {
       expect(MotionTokens.pieceLiftedScale, closeTo(1.025, 0.0001));
