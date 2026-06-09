@@ -42,6 +42,17 @@ class MotionTokens {
   // intentional, fast enough to be subliminal.
   static const Duration attentionFadeDuration = Duration(milliseconds: 180);
 
+  // PR-10B.2 — tactile closure on successful rescue.
+  // Release / settle compression on the rescuer piece. Sine bell
+  // over 90 ms: scale 1.0 → minScale → 1.0. No overshoot above 1.0.
+  static const Duration releaseSettleDuration = Duration(milliseconds: 90);
+  static const double releaseSettleMinScale = 0.985;
+  // Arrival memory on the destination square. Linear opacity decay from
+  // peak to 0 over the duration. Subliminal trace, not glow — must read
+  // below the rescue glow / ring / arrow.
+  static const Duration arrivalMemoryDuration = Duration(milliseconds: 160);
+  static const double arrivalMemoryPeakAlpha = 0.12;
+
   // — Move commit (split pause + slide)
   static const Duration commitWindUp = Duration(milliseconds: 80);
   static const Duration pieceSlide = Duration(milliseconds: 220);

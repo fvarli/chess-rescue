@@ -246,6 +246,29 @@ void main() {
     });
   });
 
+  group('MotionTokens — PR-10B.2 release settle + arrival memory', () {
+    test('release settle is 90 ms with min scale 0.985 (subtle compress)', () {
+      expect(
+        MotionTokens.releaseSettleDuration,
+        const Duration(milliseconds: 90),
+      );
+      expect(MotionTokens.releaseSettleMinScale, closeTo(0.985, 0.0001));
+      // Must compress (< 1.0), never overshoot.
+      expect(MotionTokens.releaseSettleMinScale, lessThan(1.0));
+    });
+
+    test('arrival memory is 160 ms with peak alpha 0.12 (subliminal)', () {
+      expect(
+        MotionTokens.arrivalMemoryDuration,
+        const Duration(milliseconds: 160),
+      );
+      expect(MotionTokens.arrivalMemoryPeakAlpha, closeTo(0.12, 0.0001));
+      // Must stay below the subliminal threshold; rescue glow peaks
+      // at 0.85 (PR-2 era), so the memory must remain a trace.
+      expect(MotionTokens.arrivalMemoryPeakAlpha, lessThan(0.15));
+    });
+  });
+
   group('MotionTokens — PR-10B.1 selection halo + attention', () {
     test('selection halo breath cycle is 2800 ms (full period)', () {
       expect(

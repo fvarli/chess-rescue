@@ -93,6 +93,12 @@ class _BoardWidgetState extends State<BoardWidget>
   // and not committing; stopped + reset otherwise so reads land on a
   // stable baseline.
   late final AnimationController _selectionBreath;
+  // PR-10B.2 — tactile closure on successful rescue.
+  // _releaseSettle: 90 ms sine bell on the rescuer piece's scale.
+  // _arrivalMemory: 160 ms faint mint trace on the destination square.
+  // Both fire on the danger → rescued transition, gated by !initial.
+  late final AnimationController _releaseSettle;
+  late final AnimationController _arrivalMemory;
 
   late final Animation<double> _dangerPulseValue;
 
@@ -189,6 +195,14 @@ class _BoardWidgetState extends State<BoardWidget>
         milliseconds: MotionTokens.selectedHaloBreathPeriod.inMilliseconds ~/ 2,
       ),
     );
+    _releaseSettle = AnimationController(
+      vsync: this,
+      duration: MotionTokens.releaseSettleDuration,
+    );
+    _arrivalMemory = AnimationController(
+      vsync: this,
+      duration: MotionTokens.arrivalMemoryDuration,
+    );
 
     _dangerPulse.repeat();
     _retuneAmbientBreath();
@@ -246,6 +260,15 @@ class _BoardWidgetState extends State<BoardWidget>
           _moveArrow
             ..reset()
             ..forward();
+          // PR-10B.2 — release settle on the rescuer piece, arrival
+          // memory trace on the destination square. Same gating: real
+          // commit transitions only.
+          _releaseSettle
+            ..reset()
+            ..forward();
+          _arrivalMemory
+            ..reset()
+            ..forward();
           // Ambient exhale: pause brightness for a brief emotional beat,
           // then resume at the softer rescued amplitude (handled in the
           // painter). The light drift is never paused.
@@ -279,6 +302,8 @@ class _BoardWidgetState extends State<BoardWidget>
         _rescueRing.value = 0;
         _kingPulse.value = 0;
         _moveArrow.value = 0;
+        _releaseSettle.value = 0;
+        _arrivalMemory.value = 0;
         _ensureAmbientBrightnessRunning();
         break;
       case GameState.danger:
@@ -291,6 +316,8 @@ class _BoardWidgetState extends State<BoardWidget>
         _failRim.value = 0;
         _kingPulse.value = 0;
         _moveArrow.value = 0;
+        _releaseSettle.value = 0;
+        _arrivalMemory.value = 0;
         _ensureAmbientBrightnessRunning();
         break;
     }
@@ -376,6 +403,8 @@ class _BoardWidgetState extends State<BoardWidget>
     _ambientBrightness.dispose();
     _ambientLightDrift.dispose();
     _selectionBreath.dispose();
+    _releaseSettle.dispose();
+    _arrivalMemory.dispose();
     super.dispose();
   }
 
@@ -444,6 +473,10 @@ class _BoardWidgetState extends State<BoardWidget>
                 // without dimming the centre (where the action lives).
                 _buildInnerVignette(),
                 _buildInnerBezel(),
+                // PR-10B.2 — arrival memory: faint mint trace on the
+                // rescue destination square. Bottom-most rescue layer; the
+                // arrow, glow, ring, pieces, and dots all draw on top.
+                _buildArrivalMemory(),
                 // Cinematic move-arrow sits low — above the board surface,
                 // below every gameplay-state overlay — so pieces, glows, and
                 // rings overlay it cleanly. The arrow connects; it does not
@@ -998,6 +1031,40 @@ class _BoardWidgetState extends State<BoardWidget>
     );
   }
 
+  // PR-10B.2 — faint mint trace on the rescue destination square that
+  // decays linearly over arrivalMemoryDuration. Sits bottom-most in the
+  // rescue-effect stack so the arrow, glow, ring, focus cue, selection
+  // ring, legal dots, and pieces all draw on top. Subliminal closure —
+  // the board remembers where the rescue landed for a breath.
+  Widget _buildArrivalMemory() {
+    return AnimatedBuilder(
+      animation: _arrivalMemory,
+      builder: (context, _) {
+        final t = _arrivalMemory.value;
+        if (t <= 0.0 || t >= 1.0) return const SizedBox.shrink();
+        final alpha = MotionTokens.arrivalMemoryPeakAlpha * (1 - t);
+        final origin = _squareOrigin(
+          widget.rescueTo.file,
+          widget.rescueTo.rank,
+        );
+        return Positioned(
+          left: origin.dx,
+          top: origin.dy,
+          width: _sq,
+          height: _sq,
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: ColorTokens.reliefPrimary.withValues(alpha: alpha),
+                borderRadius: RadiusTokens.brSmall,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildMoveArrow() {
     final from = widget.lastMoveFrom;
     if (widget.state != GameState.rescued ||
@@ -1233,10 +1300,13 @@ class _BoardWidgetState extends State<BoardWidget>
                 curve: MotionTokens.standard,
                 child: _kingPulseWrap(
                   p,
-                  PieceWidget(
-                    piece: p,
-                    size: pieceSize,
-                    liftedScale: _liftFor(p),
+                  _releaseSettleWrap(
+                    p,
+                    PieceWidget(
+                      piece: p,
+                      size: pieceSize,
+                      liftedScale: _liftFor(p),
+                    ),
                   ),
                 ),
               ),
@@ -1261,6 +1331,27 @@ class _BoardWidgetState extends State<BoardWidget>
         final v = math.sin(_kingPulse.value * math.pi);
         final extra = (MotionTokens.kingRescuePulseScalePeak - 1.0) * v;
         return Transform.scale(scale: 1.0 + extra, child: c);
+      },
+      child: child,
+    );
+  }
+
+  // PR-10B.2 — release/settle compression on the rescuer piece (the one
+  // at rescueTo in rescued state). Sine bell 1.0 → minScale → 1.0 over
+  // releaseSettleDuration, no overshoot. Non-rescuer pieces pass through
+  // unchanged so the wrap is free for them.
+  Widget _releaseSettleWrap(Piece p, Widget child) {
+    if (widget.state != GameState.rescued) return child;
+    if (p.file != widget.rescueTo.file || p.rank != widget.rescueTo.rank) {
+      return child;
+    }
+    return AnimatedBuilder(
+      animation: _releaseSettle,
+      builder: (context, c) {
+        // sin(π·t): 0 at endpoints, 1 at t = 0.5 — clean down-and-up arc.
+        final bell = math.sin(math.pi * _releaseSettle.value);
+        final scale = 1.0 - (1.0 - MotionTokens.releaseSettleMinScale) * bell;
+        return Transform.scale(scale: scale, child: c);
       },
       child: child,
     );
