@@ -246,6 +246,22 @@ void main() {
     });
   });
 
+  group('MotionTokens — PR-10A touch feel polish', () {
+    test('selected piece lift is capped at 1.025 (was 1.05)', () {
+      expect(MotionTokens.pieceLiftedScale, closeTo(1.025, 0.0001));
+    });
+
+    test('rescuedLiftedScale unchanged (different semantic state)', () {
+      expect(MotionTokens.rescuedLiftedScale, closeTo(1.04, 0.0001));
+    });
+
+    test('legal dot tokens land at the documented values', () {
+      expect(MotionTokens.legalDotEmptyScale, closeTo(0.22, 0.0001));
+      expect(MotionTokens.legalDotEmptyAlpha, closeTo(0.75, 0.0001));
+      expect(MotionTokens.legalDotOccupiedAlpha, closeTo(0.65, 0.0001));
+    });
+  });
+
   group('MotionTokens — PR-9A rescue motion polish', () {
     test('ring opacity-vs-radius ratio is the conservative 1.4', () {
       expect(MotionTokens.rescueRingOpacityVsRadiusRatio, closeTo(1.4, 0.001));

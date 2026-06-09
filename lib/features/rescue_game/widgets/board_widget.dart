@@ -1277,7 +1277,10 @@ class _LegalDot extends StatelessWidget {
           // inCurve + 0.6→1.0 bloom; the commit fade-out animates from 1→0.
           tween: Tween<double>(begin: 0.0, end: visible ? 1.0 : 0.0),
           duration: visible ? totalInDuration : MotionTokens.commitDotFadeOut,
-          curve: visible ? inCurve : Curves.easeOut,
+          // PR-10A — fade-out curve consolidated through the token system.
+          // standard is easeOutCubic; perceptually adjacent to the prior
+          // easeOut, but no raw Curves literal in interaction animations.
+          curve: visible ? inCurve : MotionTokens.standard,
           builder: (context, t, _) {
             final scale = _lerp(MotionTokens.dotStartScale, 1.0, t);
             return Opacity(
@@ -1292,17 +1295,21 @@ class _LegalDot extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: AppColors.accent.withValues(alpha: 0.8),
+                              color: AppColors.accent.withValues(
+                                alpha: MotionTokens.legalDotOccupiedAlpha,
+                              ),
                               width: 2,
                             ),
                           ),
                         )
                       : Container(
-                          width: sq * 0.28,
-                          height: sq * 0.28,
-                          decoration: const BoxDecoration(
+                          width: sq * MotionTokens.legalDotEmptyScale,
+                          height: sq * MotionTokens.legalDotEmptyScale,
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.accent,
+                            color: AppColors.accent.withValues(
+                              alpha: MotionTokens.legalDotEmptyAlpha,
+                            ),
                           ),
                         ),
                 ),

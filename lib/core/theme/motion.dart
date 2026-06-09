@@ -9,7 +9,9 @@ class MotionTokens {
   // — Piece selection
   static const Duration ringIn = Duration(milliseconds: 140);
   static const Duration pieceLift = Duration(milliseconds: 180);
-  static const double pieceLiftedScale = 1.05;
+  // PR-10A: selected piece lift never exceeds 1.025 — fingertips, not card
+  // grab. Previously 1.05.
+  static const double pieceLiftedScale = 1.025;
   static const double rescuedLiftedScale = 1.04;
   static const double ringStartScale = 0.94;
   static const double ringBorderWidth = 2.5;
@@ -18,6 +20,11 @@ class MotionTokens {
   static const Duration dotBloom = Duration(milliseconds: 180);
   static const Duration dotStaggerStep = Duration(milliseconds: 24);
   static const double dotStartScale = 0.6;
+  // PR-10A — softer legal destination indicators. The board reads as the
+  // protagonist; the dots whisper guidance instead of advertising it.
+  static const double legalDotEmptyScale = 0.22;
+  static const double legalDotEmptyAlpha = 0.75;
+  static const double legalDotOccupiedAlpha = 0.65;
 
   // — Move commit (split pause + slide)
   static const Duration commitWindUp = Duration(milliseconds: 80);
