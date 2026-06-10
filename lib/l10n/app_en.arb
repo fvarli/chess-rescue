@@ -46,9 +46,9 @@
     "description": "Headline shown after a failed move."
   },
 
-  "hintOnboardingOneMoveSaves": "One move saves the game.",
+  "hintOnboardingOneMoveSaves": "One piece can answer this. Find it.",
   "@hintOnboardingOneMoveSaves": {
-    "description": "First-run danger hint shown when no piece is selected."
+    "description": "First-run danger hint shown when no piece is selected. PR-11: pivoted from premise-restatement (the IntroOverlay's job now) to focus-cue-aligned direction — names the relationship (one piece, this threat) without naming the piece or prescribing an action."
   },
 
   "hintOnboardingFindRescue": "Find the rescue.",
@@ -104,8 +104,8 @@
   "@puzzleP1StatusText": {
     "description": "P1 knight rescue — danger-state status pill message."
   },
-  "puzzleP1DangerHint": "Tap a white piece to see its moves.",
-  "@puzzleP1DangerHint": { "description": "P1 danger hint." },
+  "puzzleP1DangerHint": "One piece can answer this. Find it.",
+  "@puzzleP1DangerHint": { "description": "P1 danger hint. Names the relationship (one piece, this threat) without naming the piece or prescribing an action — the focus cue carries the deixis." },
   "puzzleP1FailureHint": "That move doesn't break the attack. Look for a check.",
   "@puzzleP1FailureHint": { "description": "P1 failure hint." },
   "puzzleP1SuccessExplanation": "THE KNIGHT STRIKES BACK",
@@ -246,10 +246,10 @@
   "@homeHeroLine1": { "description": "Home hero, first line. Pairs with homeHeroLine2 to form 'A short rescue / for today.' Display-typography size; calm editorial register." },
   "homeHeroLine2": "for today.",
   "@homeHeroLine2": { "description": "Home hero, second line. See homeHeroLine1." },
-  "homeSupportingLine1": "You'll start in trouble.",
-  "@homeSupportingLine1": { "description": "Home supporting body, first line. Names the panic beat of the emotional loop without describing the system." },
-  "homeSupportingLine2": "One move will get you out.",
-  "@homeSupportingLine2": { "description": "Home supporting body, second line. Promises the one-move rescue without giving it away." },
+  "homeSupportingLine1": "A quiet moment.",
+  "@homeSupportingLine1": { "description": "Home supporting body, first line. Calm editorial invitation — the premise (danger / one move) is carried by IntroOverlay, not by Home." },
+  "homeSupportingLine2": "Begin when ready.",
+  "@homeSupportingLine2": { "description": "Home supporting body, second line. Pairs with line 1 as a soft invitation; intentionally avoids danger/rescue/one-move vocabulary." },
   "homePrimaryCta": "Begin today's rescue  ↦",
   "@homePrimaryCta": { "description": "Single Home primary CTA in v1.2.0. Replaces homeStart + homeContinue — same target for first-time and returning players." },
   "homeRecordsLabel": "RECORDS",

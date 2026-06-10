@@ -62,7 +62,7 @@ void main() {
       final p1 = PuzzleLibrary.all.first;
       final copy = puzzleCopyFor(p1, t);
       expect(copy.statusText, '▮ Active threat');
-      expect(copy.dangerHint, 'Tap a white piece to see its moves.');
+      expect(copy.dangerHint, 'One piece can answer this. Find it.');
       expect(
         copy.failureHint,
         "That move doesn't break the attack. Look for a check.",

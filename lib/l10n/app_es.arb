@@ -9,7 +9,7 @@
   "headlineWhereWillItGo": "¿Adónde irá?",
   "headlineRescued": "Rescatado.",
   "headlineNotTheMove": "No es el movimiento.",
-  "hintOnboardingOneMoveSaves": "Un movimiento salva la partida.",
+  "hintOnboardingOneMoveSaves": "Una pieza puede responder. Encuéntrala.",
   "hintOnboardingFindRescue": "Encuentra el rescate.",
   "hintOnboardingStillTrapped": "El rey sigue atrapado.",
   "hintTapHighlightedSquare": "Toca una casilla resaltada para mover.",
@@ -21,7 +21,7 @@
   "puzzleCounter": "PUZLE {current}/{total}",
 
   "puzzleP1StatusText": "▮ Amenaza activa",
-  "puzzleP1DangerHint": "Toca una pieza blanca para ver sus movimientos.",
+  "puzzleP1DangerHint": "Una pieza puede responder. Encuéntrala.",
   "puzzleP1FailureHint": "Ese movimiento no rompe el ataque. Busca un jaque.",
   "puzzleP1SuccessExplanation": "EL CABALLO CONTRAATACA",
 
@@ -92,8 +92,8 @@
   "homeDailyRescueEyebrow": "RESCATE DIARIO",
   "homeHeroLine1": "Un rescate breve",
   "homeHeroLine2": "para hoy.",
-  "homeSupportingLine1": "Empezarás en problemas.",
-  "homeSupportingLine2": "Un movimiento te sacará.",
+  "homeSupportingLine1": "Un momento tranquilo.",
+  "homeSupportingLine2": "Comienza cuando quieras.",
   "homePrimaryCta": "Comenzar rescate de hoy  ↦",
   "homeRecordsLabel": "RÉCORDS",
 

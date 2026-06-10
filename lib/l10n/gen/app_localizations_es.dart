@@ -38,7 +38,8 @@ class AppL10nEs extends AppL10n {
   String get headlineNotTheMove => 'No es el movimiento.';
 
   @override
-  String get hintOnboardingOneMoveSaves => 'Un movimiento salva la partida.';
+  String get hintOnboardingOneMoveSaves =>
+      'Una pieza puede responder. Encuéntrala.';
 
   @override
   String get hintOnboardingFindRescue => 'Encuentra el rescate.';
@@ -74,8 +75,7 @@ class AppL10nEs extends AppL10n {
   String get puzzleP1StatusText => '▮ Amenaza activa';
 
   @override
-  String get puzzleP1DangerHint =>
-      'Toca una pieza blanca para ver sus movimientos.';
+  String get puzzleP1DangerHint => 'Una pieza puede responder. Encuéntrala.';
 
   @override
   String get puzzleP1FailureHint =>
@@ -265,10 +265,10 @@ class AppL10nEs extends AppL10n {
   String get homeHeroLine2 => 'para hoy.';
 
   @override
-  String get homeSupportingLine1 => 'Empezarás en problemas.';
+  String get homeSupportingLine1 => 'Un momento tranquilo.';
 
   @override
-  String get homeSupportingLine2 => 'Un movimiento te sacará.';
+  String get homeSupportingLine2 => 'Comienza cuando quieras.';
 
   @override
   String get homePrimaryCta => 'Comenzar rescate de hoy  ↦';

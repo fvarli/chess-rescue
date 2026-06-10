@@ -153,10 +153,10 @@ abstract class AppL10n {
   /// **'Not the move.'**
   String get headlineNotTheMove;
 
-  /// First-run danger hint shown when no piece is selected.
+  /// First-run danger hint shown when no piece is selected. PR-11: pivoted from premise-restatement (the IntroOverlay's job now) to focus-cue-aligned direction — names the relationship (one piece, this threat) without naming the piece or prescribing an action.
   ///
   /// In en, this message translates to:
-  /// **'One move saves the game.'**
+  /// **'One piece can answer this. Find it.'**
   String get hintOnboardingOneMoveSaves;
 
   /// First-run hint shown when a piece is selected (or selected state).
@@ -219,10 +219,10 @@ abstract class AppL10n {
   /// **'▮ Active threat'**
   String get puzzleP1StatusText;
 
-  /// P1 danger hint.
+  /// P1 danger hint. Names the relationship (one piece, this threat) without naming the piece or prescribing an action — the focus cue carries the deixis.
   ///
   /// In en, this message translates to:
-  /// **'Tap a white piece to see its moves.'**
+  /// **'One piece can answer this. Find it.'**
   String get puzzleP1DangerHint;
 
   /// P1 failure hint.
@@ -573,16 +573,16 @@ abstract class AppL10n {
   /// **'for today.'**
   String get homeHeroLine2;
 
-  /// Home supporting body, first line. Names the panic beat of the emotional loop without describing the system.
+  /// Home supporting body, first line. Calm editorial invitation — the premise (danger / one move) is carried by IntroOverlay, not by Home.
   ///
   /// In en, this message translates to:
-  /// **'You\'ll start in trouble.'**
+  /// **'A quiet moment.'**
   String get homeSupportingLine1;
 
-  /// Home supporting body, second line. Promises the one-move rescue without giving it away.
+  /// Home supporting body, second line. Pairs with line 1 as a soft invitation; intentionally avoids danger/rescue/one-move vocabulary.
   ///
   /// In en, this message translates to:
-  /// **'One move will get you out.'**
+  /// **'Begin when ready.'**
   String get homeSupportingLine2;
 
   /// Single Home primary CTA in v1.2.0. Replaces homeStart + homeContinue — same target for first-time and returning players.

@@ -38,8 +38,8 @@ void main() {
         // ── Hero block ───────────────────────────────────────────────
         expect(find.text('DAILY RESCUE'), findsOneWidget);
         expect(find.textContaining('A short rescue'), findsOneWidget);
-        expect(find.text('You\'ll start in trouble.'), findsOneWidget);
-        expect(find.text('One move will get you out.'), findsOneWidget);
+        expect(find.text('A quiet moment.'), findsOneWidget);
+        expect(find.text('Begin when ready.'), findsOneWidget);
 
         // ── Legacy king hero must NOT be present ─────────────────────
         expect(
@@ -259,7 +259,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('GÜNLÜK KURTARIŞ'), findsOneWidget);
-      expect(find.text('Tehlikede başlayacaksın.'), findsOneWidget);
+      expect(find.text('Sakin bir an.'), findsOneWidget);
       expect(find.text('BÖLÜM 1 · KARŞI VUR'), findsOneWidget);
       expect(find.text('Mevcut seri'), findsOneWidget);
       expect(find.text('Kurtarış 1 / 3'), findsOneWidget);
@@ -279,7 +279,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('RESCATE DIARIO'), findsOneWidget);
-      expect(find.text('Empezarás en problemas.'), findsOneWidget);
+      expect(find.text('Un momento tranquilo.'), findsOneWidget);
       expect(find.text('EPISODIO 1 · CONTRAATAQUE'), findsOneWidget);
       expect(find.text('Racha actual'), findsOneWidget);
       expect(find.text('Rescate 1 / 3'), findsOneWidget);

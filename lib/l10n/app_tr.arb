@@ -9,7 +9,7 @@
   "headlineWhereWillItGo": "Nereye gidecek?",
   "headlineRescued": "Kurtarıldı.",
   "headlineNotTheMove": "Bu hamle değil.",
-  "hintOnboardingOneMoveSaves": "Tek hamle oyunu kurtarır.",
+  "hintOnboardingOneMoveSaves": "Tek bir taş buna cevap verebilir. Onu bul.",
   "hintOnboardingFindRescue": "Kurtarışı bul.",
   "hintOnboardingStillTrapped": "Şah hâlâ tuzakta.",
   "hintTapHighlightedSquare": "Hamle için vurgulanan kareye dokun.",
@@ -21,7 +21,7 @@
   "puzzleCounter": "BULMACA {current}/{total}",
 
   "puzzleP1StatusText": "▮ Aktif tehdit",
-  "puzzleP1DangerHint": "Hamlelerini görmek için beyaz bir taşa dokun.",
+  "puzzleP1DangerHint": "Tek bir taş buna cevap verebilir. Onu bul.",
   "puzzleP1FailureHint": "Bu hamle saldırıyı kırmıyor. Bir şah çekişi ara.",
   "puzzleP1SuccessExplanation": "AT GERİ VURUR",
 
@@ -92,8 +92,8 @@
   "homeDailyRescueEyebrow": "GÜNLÜK KURTARIŞ",
   "homeHeroLine1": "Bugün için",
   "homeHeroLine2": "kısa bir kurtarış.",
-  "homeSupportingLine1": "Tehlikede başlayacaksın.",
-  "homeSupportingLine2": "Tek bir hamle seni kurtaracak.",
+  "homeSupportingLine1": "Sakin bir an.",
+  "homeSupportingLine2": "Hazır olduğunda başla.",
   "homePrimaryCta": "Bugünün kurtarışına başla  ↦",
   "homeRecordsLabel": "REKORLAR",
 

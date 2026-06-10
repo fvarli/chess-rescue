@@ -405,7 +405,7 @@ class PuzzleLibrary {
     ],
     rescueTo: Square(5, 5), // f6
     rescueNotation: 'Nf6+',
-    dangerHint: 'Tap a white piece to see its moves.',
+    dangerHint: 'One piece can answer this. Find it.',
     failureHint: "That move doesn't break the attack. Look for a check.",
     successExplanation: 'THE KNIGHT STRIKES BACK',
     threatenedKing: Square(6, 0), // g1

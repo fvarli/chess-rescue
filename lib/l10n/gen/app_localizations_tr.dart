@@ -37,7 +37,8 @@ class AppL10nTr extends AppL10n {
   String get headlineNotTheMove => 'Bu hamle değil.';
 
   @override
-  String get hintOnboardingOneMoveSaves => 'Tek hamle oyunu kurtarır.';
+  String get hintOnboardingOneMoveSaves =>
+      'Tek bir taş buna cevap verebilir. Onu bul.';
 
   @override
   String get hintOnboardingFindRescue => 'Kurtarışı bul.';
@@ -72,8 +73,7 @@ class AppL10nTr extends AppL10n {
   String get puzzleP1StatusText => '▮ Aktif tehdit';
 
   @override
-  String get puzzleP1DangerHint =>
-      'Hamlelerini görmek için beyaz bir taşa dokun.';
+  String get puzzleP1DangerHint => 'Tek bir taş buna cevap verebilir. Onu bul.';
 
   @override
   String get puzzleP1FailureHint =>
@@ -261,10 +261,10 @@ class AppL10nTr extends AppL10n {
   String get homeHeroLine2 => 'kısa bir kurtarış.';
 
   @override
-  String get homeSupportingLine1 => 'Tehlikede başlayacaksın.';
+  String get homeSupportingLine1 => 'Sakin bir an.';
 
   @override
-  String get homeSupportingLine2 => 'Tek bir hamle seni kurtaracak.';
+  String get homeSupportingLine2 => 'Hazır olduğunda başla.';
 
   @override
   String get homePrimaryCta => 'Bugünün kurtarışına başla  ↦';

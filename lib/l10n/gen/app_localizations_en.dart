@@ -37,7 +37,8 @@ class AppL10nEn extends AppL10n {
   String get headlineNotTheMove => 'Not the move.';
 
   @override
-  String get hintOnboardingOneMoveSaves => 'One move saves the game.';
+  String get hintOnboardingOneMoveSaves =>
+      'One piece can answer this. Find it.';
 
   @override
   String get hintOnboardingFindRescue => 'Find the rescue.';
@@ -72,7 +73,7 @@ class AppL10nEn extends AppL10n {
   String get puzzleP1StatusText => '▮ Active threat';
 
   @override
-  String get puzzleP1DangerHint => 'Tap a white piece to see its moves.';
+  String get puzzleP1DangerHint => 'One piece can answer this. Find it.';
 
   @override
   String get puzzleP1FailureHint =>
@@ -264,10 +265,10 @@ class AppL10nEn extends AppL10n {
   String get homeHeroLine2 => 'for today.';
 
   @override
-  String get homeSupportingLine1 => 'You\'ll start in trouble.';
+  String get homeSupportingLine1 => 'A quiet moment.';
 
   @override
-  String get homeSupportingLine2 => 'One move will get you out.';
+  String get homeSupportingLine2 => 'Begin when ready.';
 
   @override
   String get homePrimaryCta => 'Begin today\'s rescue  ↦';

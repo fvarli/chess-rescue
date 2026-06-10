@@ -413,4 +413,48 @@ void main() {
       expect(MotionTokens.moveArrowSettledAlpha, closeTo(0.50, 0.001));
     });
   });
+
+  // PR-11 — pin the tokens the first-30-seconds path depends on so the
+  // integration test (test/first_run_flow_test.dart) and the focus-cue
+  // discoverability invariants (test/focus_cue_test.dart) sit on a
+  // contract that cannot drift silently.
+  group('MotionTokens — PR-11 first-run contract', () {
+    test('focus cue onboarding range stays loud (0.30 → 0.58)', () {
+      expect(MotionTokens.focusCueAlphaMin, closeTo(0.30, 0.0001));
+      expect(MotionTokens.focusCueAlphaMax, closeTo(0.58, 0.0001));
+    });
+
+    test('focus cue ambient range stays damped (0.18 → 0.32)', () {
+      expect(MotionTokens.focusCueAmbientAlphaMin, closeTo(0.18, 0.0001));
+      expect(MotionTokens.focusCueAmbientAlphaMax, closeTo(0.32, 0.0001));
+    });
+
+    test(
+      'ambient range is strictly quieter than onboarding range at both ends',
+      () {
+        expect(
+          MotionTokens.focusCueAmbientAlphaMin,
+          lessThan(MotionTokens.focusCueAlphaMin),
+        );
+        expect(
+          MotionTokens.focusCueAmbientAlphaMax,
+          lessThan(MotionTokens.focusCueAlphaMax),
+        );
+      },
+    );
+
+    test('focus cue fade duration is 200 ms', () {
+      expect(MotionTokens.focusCueFade, const Duration(milliseconds: 200));
+    });
+
+    test(
+      'first-rescue extra settle is 400 ms (room for the moment to land)',
+      () {
+        expect(
+          MotionTokens.firstRescueSettleExtra,
+          const Duration(milliseconds: 400),
+        );
+      },
+    );
+  });
 }
