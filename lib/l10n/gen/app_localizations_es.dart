@@ -277,6 +277,12 @@ class AppL10nEs extends AppL10n {
   String get homeRecordsLabel => 'RÉCORDS';
 
   @override
+  String get homeLatestMilestoneLabel => 'RECIENTE';
+
+  @override
+  String get recordsUnlockedTodayTrailer => 'Hoy';
+
+  @override
   String episodeBadge(int number) {
     return 'EPISODIO $number';
   }

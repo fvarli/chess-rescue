@@ -190,6 +190,80 @@ void main() {
     });
   });
 
+  group('HomeScreen — PR-12 Latest milestone line', () {
+    testWidgets(
+      'fresh install: Latest milestone line is ABSENT (no unlocks yet)',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        expect(
+          find.byKey(const ValueKey('home-latest-milestone-line')),
+          findsNothing,
+        );
+        // The RECORDS line still renders at the bottom.
+        expect(find.text('RECORDS'), findsOneWidget);
+        expect(find.text('0 / 13'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'with First Rescue unlocked: Latest milestone line names the last unlocked record',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_intro_seen': true,
+          'flutter.cr_lifetime_saved': 1,
+          'flutter.cr_unlocked_records': '["first-rescue"]',
+        });
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        expect(
+          find.byKey(const ValueKey('home-latest-milestone-line')),
+          findsOneWidget,
+        );
+        expect(find.text('LATELY'), findsOneWidget);
+        // The new line + the records sheet eyebrow both render the title,
+        // but Home alone (no sheet open) renders it exactly once.
+        expect(find.text('First Rescue'), findsOneWidget);
+        expect(find.text('1 / 13'), findsOneWidget);
+      },
+    );
+
+    testWidgets('insertion-order semantic: the LAST unlocked id wins', (
+      tester,
+    ) async {
+      useLargePhoneViewport(tester);
+      SharedPreferences.setMockInitialValues({
+        'flutter.cr_intro_seen': true,
+        'flutter.cr_lifetime_saved': 10,
+        'flutter.cr_unlocked_records':
+            '["first-rescue","familiar-ground","ep1-strike-back"]',
+        'flutter.cr_completed_ids': [
+          'p1-knight-rescue',
+          'a4-the-breakaway',
+          'b4-the-cross-check',
+        ],
+      });
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(ChessRescueApp(store: store));
+      await tester.pump();
+
+      // The last id ("ep1-strike-back") title is "Strike Back".
+      expect(find.text('Strike Back'), findsOneWidget);
+      // Earlier unlocks must NOT be the Lately line (the new sibling
+      // widget would otherwise pull them up). The titles still appear
+      // inside the RecordsSheet if it's open — we don't open it here.
+      expect(find.text('First Rescue'), findsNothing);
+      expect(find.text('Familiar Ground'), findsNothing);
+    });
+  });
+
   group('HomeScreen Ep5 Best Run line', () {
     testWidgets('Best run line is suppressed when bestEndlessStreak is 0', (
       tester,

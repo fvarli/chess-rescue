@@ -94,6 +94,67 @@ void main() {
     expect(find.text('Unshaken throughout.'), findsOneWidget);
   });
 
+  group('PR-12 — RECORDS tab "Today" trailer', () {
+    testWidgets('today-dated unlock shows the "Today" trailer under the row', (
+      tester,
+    ) async {
+      // Seed an unlock whose date is "now" — Today should render.
+      final now = DateTime.now().toUtc();
+      SharedPreferences.setMockInitialValues({
+        'flutter.cr_lifetime_saved': 1,
+        'flutter.cr_unlocked_records': '["first-rescue"]',
+        'flutter.cr_unlocked_record_dates':
+            '{"first-rescue":"${now.toIso8601String()}"}',
+      });
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(_wrapWithSheet(store));
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('records-sheet-row-today-first-rescue')),
+        findsOneWidget,
+      );
+      expect(find.text('Today'), findsOneWidget);
+    });
+
+    testWidgets('legacy unlock (no date stored) renders no "Today" trailer', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({
+        'flutter.cr_lifetime_saved': 1,
+        'flutter.cr_unlocked_records': '["first-rescue"]',
+        // Intentionally NO cr_unlocked_record_dates key.
+      });
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(_wrapWithSheet(store));
+      await tester.pump();
+
+      expect(find.text('First Rescue'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('records-sheet-row-today-first-rescue')),
+        findsNothing,
+      );
+      expect(find.text('Today'), findsNothing);
+    });
+
+    testWidgets('older-dated unlock (last year) renders no "Today" trailer', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({
+        'flutter.cr_lifetime_saved': 1,
+        'flutter.cr_unlocked_records': '["first-rescue"]',
+        'flutter.cr_unlocked_record_dates':
+            '{"first-rescue":"2025-01-01T12:00:00.000Z"}',
+      });
+      final store = await ProgressStore.create();
+      await tester.pumpWidget(_wrapWithSheet(store));
+      await tester.pump();
+
+      expect(find.text('First Rescue'), findsOneWidget);
+      expect(find.text('Today'), findsNothing);
+    });
+  });
+
   testWidgets(
     'all 13 unlocked: count line swaps to "Every page has been written."',
     (tester) async {

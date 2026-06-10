@@ -96,6 +96,8 @@
   "homeSupportingLine2": "Hazır olduğunda başla.",
   "homePrimaryCta": "Bugünün kurtarışına başla  ↦",
   "homeRecordsLabel": "REKORLAR",
+  "homeLatestMilestoneLabel": "SON",
+  "recordsUnlockedTodayTrailer": "Bugün",
 
   "episodeBadge": "BÖLÜM {number}",
   "episodeEp1Title": "KARŞI VUR",

@@ -273,6 +273,12 @@ class AppL10nTr extends AppL10n {
   String get homeRecordsLabel => 'REKORLAR';
 
   @override
+  String get homeLatestMilestoneLabel => 'SON';
+
+  @override
+  String get recordsUnlockedTodayTrailer => 'Bugün';
+
+  @override
   String episodeBadge(int number) {
     return 'BÖLÜM $number';
   }

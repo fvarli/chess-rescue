@@ -5,6 +5,7 @@ import '../../core/models/rescue_record_evaluator.dart';
 import '../../core/models/rescue_record_library.dart';
 import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/util/relative_time.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../signatures/signatures_tab.dart';
 import '../signatures/signatures_tab_pulse.dart';
@@ -200,6 +201,8 @@ class _RecordsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final completedIds = store?.completedIds ?? const <String>{};
     final unlocked = store?.unlockedRecordsSet ?? const <String>{};
+    final unlockDates =
+        store?.unlockedRecordDates ?? const <String, DateTime>{};
     final snapshot = RescueRecordSnapshot(
       lifetimeSaved: store?.lifetimeSaved ?? 0,
       bestEndlessStreak: store?.bestEndlessStreak ?? 0,
@@ -250,7 +253,7 @@ class _RecordsBody extends StatelessWidget {
             ),
             const SizedBox(height: 18),
           ],
-          ..._buildCategorySections(l, states),
+          ..._buildCategorySections(l, states, unlockDates),
           const SizedBox(height: 24),
         ],
       ),
@@ -260,6 +263,7 @@ class _RecordsBody extends StatelessWidget {
   List<Widget> _buildCategorySections(
     AppL10n l,
     List<RescueRecordState> states,
+    Map<String, DateTime> unlockDates,
   ) {
     final widgets = <Widget>[];
     for (final category in RescueRecordCategory.values) {
@@ -269,7 +273,13 @@ class _RecordsBody extends StatelessWidget {
       if (categoryStates.isEmpty) continue;
       widgets.add(_CategoryHeader(label: _categoryLabel(l, category)));
       for (final state in categoryStates) {
-        widgets.add(_RecordRow(l: l, state: state));
+        widgets.add(
+          _RecordRow(
+            l: l,
+            state: state,
+            unlockedAt: unlockDates[state.record.id],
+          ),
+        );
       }
       widgets.add(const SizedBox(height: 18));
     }
@@ -317,10 +327,14 @@ class _CategoryHeader extends StatelessWidget {
 }
 
 class _RecordRow extends StatelessWidget {
-  const _RecordRow({required this.l, required this.state});
+  const _RecordRow({required this.l, required this.state, this.unlockedAt});
 
   final AppL10n l;
   final RescueRecordState state;
+  // PR-12 — when present, the moment this record was unlocked. Used to
+  // surface a quiet "Today" trailer on unlock day. Null for legacy
+  // (pre-PR-12) unlocks; no trailer rendered.
+  final DateTime? unlockedAt;
 
   @override
   Widget build(BuildContext context) {
@@ -414,6 +428,23 @@ class _RecordRow extends StatelessWidget {
                   description,
                   style: AppText.body.copyWith(fontSize: 12, color: descColor),
                 ),
+                // PR-12 — quiet "Today" trailer on the day of unlock.
+                // Older / undated unlocks render no trailer; the grid
+                // settles into a clean title-and-description journal.
+                if (state.isUnlocked &&
+                    unlockedAt != null &&
+                    isToday(unlockedAt!)) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    l.recordsUnlockedTodayTrailer,
+                    key: ValueKey('records-sheet-row-today-${state.record.id}'),
+                    style: AppText.mono.copyWith(
+                      fontSize: 10,
+                      letterSpacing: 0.6,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

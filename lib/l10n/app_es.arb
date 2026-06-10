@@ -96,6 +96,8 @@
   "homeSupportingLine2": "Comienza cuando quieras.",
   "homePrimaryCta": "Comenzar rescate de hoy  ↦",
   "homeRecordsLabel": "RÉCORDS",
+  "homeLatestMilestoneLabel": "RECIENTE",
+  "recordsUnlockedTodayTrailer": "Hoy",
 
   "episodeBadge": "EPISODIO {number}",
   "episodeEp1Title": "CONTRAATAQUE",

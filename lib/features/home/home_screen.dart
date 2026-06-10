@@ -9,6 +9,7 @@ import '../../core/storage/progress_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/tokens.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../records/record_symbols.dart';
 import '../records/records_sheet.dart';
 import '../rescue_game/rescue_screen.dart';
 import '../rescue_game/rescue_screen_pop_result.dart';
@@ -133,8 +134,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final currentInEpisode = progress.completedCount + 1 > puzzleCount
         ? puzzleCount
         : progress.completedCount + 1;
-    final recordsUnlocked = store?.unlockedRecords.length ?? 0;
+    final unlockedRecords = store?.unlockedRecords ?? const <String>[];
+    final recordsUnlocked = unlockedRecords.length;
     final recordsTotal = RescueRecordLibrary.all.length;
+    // PR-12 — last-unlocked record title for the quiet Lately line. Null
+    // on fresh installs (no unlocks yet) or when the id no longer
+    // resolves (library mutated underneath stored ids).
+    final latestMilestoneId = unlockedRecords.isEmpty
+        ? null
+        : unlockedRecords.last;
+    final latestMilestoneTitle =
+        latestMilestoneId != null &&
+            RescueRecordLibrary.byId(latestMilestoneId) != null
+        ? recordTitleFor(latestMilestoneId, t)
+        : null;
 
     return Scaffold(
       backgroundColor: ColorTokens.surfacePrimary,
@@ -225,11 +238,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: SpacingTokens.s24,
                     ),
-                    child: _RecordsLine(
-                      label: t.homeRecordsLabel,
-                      countLabel: t.recordsCount(recordsUnlocked, recordsTotal),
-                      justUnlocked: _sessionJustUnlockedRecords,
-                      onTap: _openRecordsSheet,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (latestMilestoneTitle != null) ...[
+                          _LatestMilestoneLine(
+                            label: t.homeLatestMilestoneLabel,
+                            title: latestMilestoneTitle,
+                            justUnlocked: _sessionJustUnlockedRecords,
+                            onTap: _openRecordsSheet,
+                          ),
+                          const SizedBox(height: SpacingTokens.s4),
+                        ],
+                        _RecordsLine(
+                          label: t.homeRecordsLabel,
+                          countLabel: t.recordsCount(
+                            recordsUnlocked,
+                            recordsTotal,
+                          ),
+                          justUnlocked: _sessionJustUnlockedRecords,
+                          onTap: _openRecordsSheet,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -307,6 +337,75 @@ class _QuietProgressBlock extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+// PR-12 — quiet "lately" line above the RECORDS count, naming the most
+// recently unlocked record. Same visual register, same glow window, same
+// tap target as [_RecordsLine]. Rendered only when at least one record
+// has been unlocked; absent on fresh installs so Home stays at its
+// current density and the CTA keeps full attention.
+class _LatestMilestoneLine extends StatelessWidget {
+  const _LatestMilestoneLine({
+    required this.label,
+    required this.title,
+    required this.justUnlocked,
+    required this.onTap,
+  });
+
+  final String label;
+  final String title;
+  final bool justUnlocked;
+  final VoidCallback onTap;
+
+  static const Duration _pulseDuration = Duration(milliseconds: 1500);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      key: const ValueKey('home-latest-milestone-line'),
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: justUnlocked ? 1.0 : 0.0, end: 0.0),
+        duration: _pulseDuration,
+        curve: Curves.easeOut,
+        builder: (context, glow, _) {
+          final accentColor = Color.lerp(
+            ColorTokens.textSecondary,
+            ColorTokens.reliefPrimary,
+            glow,
+          )!;
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: SpacingTokens.s4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  label,
+                  style: TextTokens.label.copyWith(color: accentColor),
+                ),
+                Text(
+                  '  ·  ',
+                  style: TextTokens.label.copyWith(
+                    color: ColorTokens.textSecondary,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextTokens.body.copyWith(color: accentColor),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

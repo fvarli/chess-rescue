@@ -27,6 +27,12 @@ class ProgressStore {
   static const String _kEpisodeSeeds = 'cr_episode_seeds';
   static const String _kBestEndlessStreak = 'cr_best_endless_streak';
   static const String _kUnlockedRecords = 'cr_unlocked_records';
+  // PR-12 — parallel date map for unlocked records, keyed by record id,
+  // values are ISO 8601 UTC timestamps. Append-only; existing
+  // [_kUnlockedRecords] remains the source of truth for "is this record
+  // unlocked". Legacy unlocks (pre-PR-12) have no entry here — the
+  // records sheet renders no date trailer for them.
+  static const String _kUnlockedRecordDates = 'cr_unlocked_record_dates';
   // Signature Rescues PR 1 — silent storage substrate for PR 2's UI.
   static const String _kSignatures = 'cr_signatures';
   static const String _kRecentlySolved = 'cr_recently_solved';
@@ -118,6 +124,27 @@ class ProgressStore {
   // evaluator. Computed every read — the list is short (<= 13 entries in
   // R1) so the cost is negligible.
   Set<String> get unlockedRecordsSet => unlockedRecords.toSet();
+
+  // PR-12 — per-record unlock timestamps. Sidecar to [unlockedRecords];
+  // tolerates gaps (a legacy id present in the list with no entry here
+  // simply has no date). Returns the empty map if the key was never
+  // written.
+  Map<String, DateTime> get unlockedRecordDates {
+    final raw = _prefs.getString(_kUnlockedRecordDates);
+    if (raw == null || raw.isEmpty) return const <String, DateTime>{};
+    try {
+      final decoded = json.decode(raw);
+      if (decoded is Map) {
+        final out = <String, DateTime>{};
+        for (final entry in decoded.entries) {
+          final parsed = DateTime.tryParse(entry.value.toString());
+          if (parsed != null) out[entry.key.toString()] = parsed;
+        }
+        return out;
+      }
+    } catch (_) {}
+    return const <String, DateTime>{};
+  }
 
   // — Signature Rescues PR 1: silent storage substrate. PR 2 surfaces
   // these values in the SIGNATURES tab and bookmark glyph; PR 1 only
@@ -234,11 +261,23 @@ class ProgressStore {
   // R1 — append a record id to the unlocked-records list if not already
   // present. Insertion order is preserved (the list's last entry is the
   // page the Home preview is currently open at).
-  Future<void> addUnlockedRecord(String id) async {
+  //
+  // PR-12 — on every NEW unlock, also write a parallel timestamp into
+  // [_kUnlockedRecordDates]. Re-calls for an already-unlocked id are a
+  // no-op on both surfaces (the date map preserves the original moment).
+  // [now] is parameterised for test determinism (defaults to
+  // `DateTime.now().toUtc()`).
+  Future<void> addUnlockedRecord(String id, {DateTime? now}) async {
     final current = unlockedRecords;
     if (current.contains(id)) return;
     final next = [...current, id];
     await _prefs.setString(_kUnlockedRecords, json.encode(next));
+    final dates = <String, String>{
+      for (final e in unlockedRecordDates.entries)
+        e.key: e.value.toIso8601String(),
+    };
+    dates[id] = (now ?? DateTime.now().toUtc()).toIso8601String();
+    await _prefs.setString(_kUnlockedRecordDates, json.encode(dates));
   }
 
   // — Signature Rescues PR 1 writers.
@@ -331,6 +370,7 @@ class ProgressStore {
     await _prefs.remove(_kEpisodeSeeds);
     await _prefs.remove(_kBestEndlessStreak);
     await _prefs.remove(_kUnlockedRecords);
+    await _prefs.remove(_kUnlockedRecordDates);
     await _prefs.remove(_kSignatures);
     await _prefs.remove(_kRecentlySolved);
     await _prefs.remove(_kSignaturesFirstBookmarkHintSeen);

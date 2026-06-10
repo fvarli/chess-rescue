@@ -597,6 +597,18 @@ abstract class AppL10n {
   /// **'RECORDS'**
   String get homeRecordsLabel;
 
+  /// PR-12 — Pre-uppercased eyebrow for the Home Latest milestone line. Sits above the RECORDS line in the bottom quiet zone; absent when no records are unlocked. Journal register — names a moment in time rather than a count.
+  ///
+  /// In en, this message translates to:
+  /// **'LATELY'**
+  String get homeLatestMilestoneLabel;
+
+  /// PR-12 — quiet trailer rendered below an unlocked record's description in the RECORDS tab when the unlock happened on the current calendar day. Older / undated unlocks render no trailer (matches the Signatures journal idiom).
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get recordsUnlockedTodayTrailer;
+
   /// Pre-uppercased badge prefix for the episode panel title on Home (e.g. 'EPISODE 1'). Stored pre-uppercased because Dart's String.toUpperCase() is locale-insensitive — see homeRescueMission precedent.
   ///
   /// In en, this message translates to:
