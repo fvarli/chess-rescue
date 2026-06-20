@@ -11,6 +11,7 @@ import '../../core/theme/tokens.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../records/record_symbols.dart';
 import '../records/records_sheet.dart';
+import 'daily_ritual.dart';
 import '../rescue_game/rescue_screen.dart';
 import '../rescue_game/rescue_screen_pop_result.dart';
 import '../settings/language_picker.dart';
@@ -259,6 +260,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           justUnlocked: _sessionJustUnlockedRecords,
                           onTap: _openRecordsSheet,
                         ),
+                        // PR-13 — quiet observational journal line at
+                        // the absolute bottom of Home, shown when the
+                        // player has commit at least one rescue today.
+                        // No animation, no glow, no icon, no tap target.
+                        if (solvedToday(store)) ...[
+                          const SizedBox(height: SpacingTokens.s4),
+                          Text(
+                            t.homeRescuedTodayLine,
+                            key: const ValueKey('home-rescued-today-line'),
+                            style: TextTokens.mono.copyWith(
+                              color: ColorTokens.textSecondary,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

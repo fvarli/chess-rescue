@@ -98,6 +98,7 @@
   "homeRecordsLabel": "REKORLAR",
   "homeLatestMilestoneLabel": "SON",
   "recordsUnlockedTodayTrailer": "Bugün",
+  "homeRescuedTodayLine": "Bugün kurtarıldı",
 
   "episodeBadge": "BÖLÜM {number}",
   "episodeEp1Title": "KARŞI VUR",

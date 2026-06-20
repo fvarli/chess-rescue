@@ -609,6 +609,12 @@ abstract class AppL10n {
   /// **'Today'**
   String get recordsUnlockedTodayTrailer;
 
+  /// PR-13 — quiet, observational, journal-register line in the bottom of Home, shown when the player has commit at least one rescue today. Past tense, no punctuation, no exclamation. Emotional register: 'I've already visited today,' NOT 'Congratulations, you completed today's task.' Never animated, never glowing, never iconed.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescued today'**
+  String get homeRescuedTodayLine;
+
   /// Pre-uppercased badge prefix for the episode panel title on Home (e.g. 'EPISODE 1'). Stored pre-uppercased because Dart's String.toUpperCase() is locale-insensitive — see homeRescueMission precedent.
   ///
   /// In en, this message translates to:

@@ -283,6 +283,9 @@ class AppL10nEs extends AppL10n {
   String get recordsUnlockedTodayTrailer => 'Hoy';
 
   @override
+  String get homeRescuedTodayLine => 'Rescatado hoy';
+
+  @override
   String episodeBadge(int number) {
     return 'EPISODIO $number';
   }

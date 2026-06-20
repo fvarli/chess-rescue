@@ -264,6 +264,77 @@ void main() {
     });
   });
 
+  group('HomeScreen — PR-13 Rescued today line', () {
+    testWidgets(
+      'fresh install: "Rescued today" line is ABSENT (no rescues yet)',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        SharedPreferences.setMockInitialValues({'flutter.cr_intro_seen': true});
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        expect(
+          find.byKey(const ValueKey('home-rescued-today-line')),
+          findsNothing,
+        );
+        expect(find.text('Rescued today'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'seeded recently-solved with today\'s solvedAt: line is PRESENT',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        final now = DateTime.now().toUtc();
+        // The ring's JSON shape is `{entries: [...]}`.
+        final ring =
+            '{"entries":[{'
+            '"canonicalPuzzleId":"p1-knight-rescue",'
+            '"encounteredPuzzleId":"p1-knight-rescue",'
+            '"episodeId":"ep1-strike-back",'
+            '"solvedAt":"${now.toIso8601String()}"'
+            '}]}';
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_intro_seen': true,
+          'flutter.cr_recently_solved': ring,
+        });
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        expect(
+          find.byKey(const ValueKey('home-rescued-today-line')),
+          findsOneWidget,
+        );
+        expect(find.text('Rescued today'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'seeded recently-solved with last-year solvedAt: line is ABSENT',
+      (tester) async {
+        useLargePhoneViewport(tester);
+        final ring =
+            '{"entries":[{'
+            '"canonicalPuzzleId":"p1-knight-rescue",'
+            '"encounteredPuzzleId":"p1-knight-rescue",'
+            '"episodeId":"ep1-strike-back",'
+            '"solvedAt":"2025-01-01T12:00:00.000Z"'
+            '}]}';
+        SharedPreferences.setMockInitialValues({
+          'flutter.cr_intro_seen': true,
+          'flutter.cr_recently_solved': ring,
+        });
+        final store = await ProgressStore.create();
+        await tester.pumpWidget(ChessRescueApp(store: store));
+        await tester.pump();
+
+        expect(find.text('Rescued today'), findsNothing);
+      },
+    );
+  });
+
   group('HomeScreen Ep5 Best Run line', () {
     testWidgets('Best run line is suppressed when bestEndlessStreak is 0', (
       tester,

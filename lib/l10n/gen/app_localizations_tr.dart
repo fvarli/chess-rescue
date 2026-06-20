@@ -279,6 +279,9 @@ class AppL10nTr extends AppL10n {
   String get recordsUnlockedTodayTrailer => 'Bugün';
 
   @override
+  String get homeRescuedTodayLine => 'Bugün kurtarıldı';
+
+  @override
   String episodeBadge(int number) {
     return 'BÖLÜM $number';
   }

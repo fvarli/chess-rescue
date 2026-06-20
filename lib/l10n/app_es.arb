@@ -98,6 +98,7 @@
   "homeRecordsLabel": "RÉCORDS",
   "homeLatestMilestoneLabel": "RECIENTE",
   "recordsUnlockedTodayTrailer": "Hoy",
+  "homeRescuedTodayLine": "Rescatado hoy",
 
   "episodeBadge": "EPISODIO {number}",
   "episodeEp1Title": "CONTRAATAQUE",
