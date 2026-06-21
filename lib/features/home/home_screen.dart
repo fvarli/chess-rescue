@@ -378,48 +378,53 @@ class _LatestMilestoneLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      key: const ValueKey('home-latest-milestone-line'),
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: justUnlocked ? 1.0 : 0.0, end: 0.0),
-        duration: _pulseDuration,
-        curve: Curves.easeOut,
-        builder: (context, glow, _) {
-          final accentColor = Color.lerp(
-            ColorTokens.textSecondary,
-            ColorTokens.reliefPrimary,
-            glow,
-          )!;
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: SpacingTokens.s4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  label,
-                  style: TextTokens.label.copyWith(color: accentColor),
-                ),
-                Text(
-                  '  ·  ',
-                  style: TextTokens.label.copyWith(
-                    color: ColorTokens.textSecondary,
+    return Semantics(
+      button: true,
+      label: '$label, $title',
+      excludeSemantics: true,
+      child: GestureDetector(
+        key: const ValueKey('home-latest-milestone-line'),
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: justUnlocked ? 1.0 : 0.0, end: 0.0),
+          duration: _pulseDuration,
+          curve: Curves.easeOut,
+          builder: (context, glow, _) {
+            final accentColor = Color.lerp(
+              ColorTokens.textSecondary,
+              ColorTokens.reliefPrimary,
+              glow,
+            )!;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: SpacingTokens.s4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    label,
+                    style: TextTokens.label.copyWith(color: accentColor),
                   ),
-                ),
-                Flexible(
-                  child: Text(
-                    title,
-                    style: TextTokens.body.copyWith(color: accentColor),
-                    overflow: TextOverflow.ellipsis,
+                  Text(
+                    '  ·  ',
+                    style: TextTokens.label.copyWith(
+                      color: ColorTokens.textSecondary,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                  Flexible(
+                    child: Text(
+                      title,
+                      style: TextTokens.body.copyWith(color: accentColor),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -442,44 +447,49 @@ class _RecordsLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: justUnlocked ? 1.0 : 0.0, end: 0.0),
-        duration: _pulseDuration,
-        curve: Curves.easeOut,
-        builder: (context, glow, _) {
-          final accentColor = Color.lerp(
-            ColorTokens.textSecondary,
-            ColorTokens.reliefPrimary,
-            glow,
-          )!;
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: SpacingTokens.s4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  label,
-                  style: TextTokens.label.copyWith(color: accentColor),
-                ),
-                Text(
-                  '  ·  ',
-                  style: TextTokens.label.copyWith(
-                    color: ColorTokens.textSecondary,
+    return Semantics(
+      button: true,
+      label: '$label, $countLabel',
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: justUnlocked ? 1.0 : 0.0, end: 0.0),
+          duration: _pulseDuration,
+          curve: Curves.easeOut,
+          builder: (context, glow, _) {
+            final accentColor = Color.lerp(
+              ColorTokens.textSecondary,
+              ColorTokens.reliefPrimary,
+              glow,
+            )!;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: SpacingTokens.s4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    label,
+                    style: TextTokens.label.copyWith(color: accentColor),
                   ),
-                ),
-                Text(
-                  countLabel,
-                  style: TextTokens.mono.copyWith(color: accentColor),
-                ),
-              ],
-            ),
-          );
-        },
+                  Text(
+                    '  ·  ',
+                    style: TextTokens.label.copyWith(
+                      color: ColorTokens.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    countLabel,
+                    style: TextTokens.mono.copyWith(color: accentColor),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -646,66 +656,77 @@ class _EpisodeCard extends StatelessWidget {
         ? ColorTokens.textPrimary
         : ColorTokens.disabled;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: isNewlyUnlocked ? 1.0 : 0.0, end: 0.0),
-        duration: _pulseDuration,
-        curve: Curves.easeOut,
-        builder: (context, glow, _) {
-          return Container(
-            key: ValueKey('home-episode-card-${episode.number}'),
-            width: _EpisodeCardList.cardWidth,
-            height: _EpisodeCardList.cardHeight,
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: RadiusTokens.brMedium,
-              border: Border.all(color: border, width: borderWidth),
-              boxShadow: glow > 0
-                  ? [
-                      BoxShadow(
-                        color: ColorTokens.reliefPrimary.withValues(
-                          alpha: 0.30 * glow,
+    final badge = t.episodeBadge(episode.number);
+    final a11yLabel = progress.isUnlocked
+        ? '$badge, $title'
+        : '$badge, $title, ${t.episodeLockedLabel}';
+
+    return Semantics(
+      button: true,
+      label: a11yLabel,
+      selected: isFocused,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: isNewlyUnlocked ? 1.0 : 0.0, end: 0.0),
+          duration: _pulseDuration,
+          curve: Curves.easeOut,
+          builder: (context, glow, _) {
+            return Container(
+              key: ValueKey('home-episode-card-${episode.number}'),
+              width: _EpisodeCardList.cardWidth,
+              height: _EpisodeCardList.cardHeight,
+              decoration: BoxDecoration(
+                color: bg,
+                borderRadius: RadiusTokens.brMedium,
+                border: Border.all(color: border, width: borderWidth),
+                boxShadow: glow > 0
+                    ? [
+                        BoxShadow(
+                          color: ColorTokens.reliefPrimary.withValues(
+                            alpha: 0.30 * glow,
+                          ),
+                          blurRadius: 14 * glow,
+                          spreadRadius: 2 * glow,
                         ),
-                        blurRadius: 14 * glow,
-                        spreadRadius: 2 * glow,
-                      ),
-                    ]
-                  : null,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: SpacingTokens.s12,
-              vertical: SpacingTokens.s12,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  t.episodeBadge(episode.number),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextTokens.mono.copyWith(
-                    color: eyebrowColor,
-                    fontSize: 10,
+                      ]
+                    : null,
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: SpacingTokens.s12,
+                vertical: SpacingTokens.s12,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    t.episodeBadge(episode.number),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextTokens.mono.copyWith(
+                      color: eyebrowColor,
+                      fontSize: 10,
+                    ),
                   ),
-                ),
-                const SizedBox(height: SpacingTokens.s8),
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextTokens.title.copyWith(
-                    fontSize: 16,
-                    height: 1.05,
-                    color: titleColor,
+                  const SizedBox(height: SpacingTokens.s8),
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextTokens.title.copyWith(
+                      fontSize: 16,
+                      height: 1.05,
+                      color: titleColor,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                _CardProgressRow(episode: episode, progress: progress),
-              ],
-            ),
-          );
-        },
+                  const Spacer(),
+                  _CardProgressRow(episode: episode, progress: progress),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -786,33 +807,38 @@ class _PrimaryCtaState extends State<_PrimaryCta> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapCancel: () => setState(() => _pressed = false),
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTap: widget.onTap,
-      child: AnimatedScale(
-        scale: _pressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          decoration: BoxDecoration(
-            color: ColorTokens.reliefPrimary,
-            borderRadius: RadiusTokens.brMedium,
-            boxShadow: [
-              BoxShadow(
-                color: ColorTokens.reliefPrimary.withValues(alpha: 0.28),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Text(
-            widget.label,
-            textAlign: TextAlign.center,
-            style: TextTokens.button.copyWith(color: AppColors.onRescue),
+    return Semantics(
+      button: true,
+      label: widget.label,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapCancel: () => setState(() => _pressed = false),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _pressed ? 0.97 : 1.0,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            decoration: BoxDecoration(
+              color: ColorTokens.reliefPrimary,
+              borderRadius: RadiusTokens.brMedium,
+              boxShadow: [
+                BoxShadow(
+                  color: ColorTokens.reliefPrimary.withValues(alpha: 0.28),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Text(
+              widget.label,
+              textAlign: TextAlign.center,
+              style: TextTokens.button.copyWith(color: AppColors.onRescue),
+            ),
           ),
         ),
       ),

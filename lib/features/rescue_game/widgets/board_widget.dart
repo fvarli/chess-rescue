@@ -8,7 +8,9 @@ import '../../../core/models/square.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../game_state.dart';
+import 'piece_a11y.dart';
 import 'piece_widget.dart';
 
 class BoardWidget extends StatefulWidget {
@@ -1447,14 +1449,20 @@ class _BoardWidgetState extends State<BoardWidget>
                     : 1.0,
                 duration: MotionTokens.attentionFadeDuration,
                 curve: MotionTokens.standard,
-                child: _kingPulseWrap(
-                  p,
-                  _releaseSettleWrap(
+                child: ExcludeSemantics(
+                  // PR-15 — the per-square Semantics in _buildTapLayer
+                  // already names the occupying piece. Pieces themselves
+                  // are visual-only here; excluding them prevents a
+                  // double-read on the rescue board.
+                  child: _kingPulseWrap(
                     p,
-                    PieceWidget(
-                      piece: p,
-                      size: pieceSize,
-                      liftedScale: _liftFor(p),
+                    _releaseSettleWrap(
+                      p,
+                      PieceWidget(
+                        piece: p,
+                        size: pieceSize,
+                        liftedScale: _liftFor(p),
+                      ),
                     ),
                   ),
                 ),
@@ -1508,6 +1516,25 @@ class _BoardWidgetState extends State<BoardWidget>
 
   Widget _buildTapLayer() {
     final locked = widget.commitInFlight || widget.resetInFlight;
+    // PR-15 — each tap target wraps in Semantics with a label that
+    // names the algebraic square + its occupant (e.g. 'e4, Light knight'
+    // or 'a1, empty'). The piece layer carries ExcludeSemantics so the
+    // screen reader announces this label once, not twice. When the
+    // surrounding host did not install the AppL10n delegate (some
+    // board-only widget tests do this), fall back to the bare algebraic
+    // notation so the widget never crashes on screen-reader build.
+    final l = AppL10n.of(context);
+    Piece? occupantAt(int file, int rank) {
+      for (final p in widget.pieces) {
+        if (p.file == file && p.rank == rank) return p;
+      }
+      return null;
+    }
+
+    String labelFor(int file, int rank) => l == null
+        ? squareNotation(file, rank)
+        : squareA11yLabel(file, rank, occupantAt(file, rank), l);
+
     return Positioned.fill(
       child: IgnorePointer(
         ignoring: locked,
@@ -1517,10 +1544,15 @@ class _BoardWidgetState extends State<BoardWidget>
           children: [
             for (int j = 0; j < 8; j++)
               for (int i = 0; i < 8; i++)
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => widget.onTapSquare(i, 7 - j),
-                  child: const SizedBox.expand(),
+                Semantics(
+                  button: true,
+                  label: labelFor(i, 7 - j),
+                  excludeSemantics: true,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => widget.onTapSquare(i, 7 - j),
+                    child: const SizedBox.expand(),
+                  ),
                 ),
           ],
         ),

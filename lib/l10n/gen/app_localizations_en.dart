@@ -599,4 +599,48 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get familiarFirstSeenHintLine => 'You know this one.';
+
+  @override
+  String get a11yPieceLightKing => 'Light king';
+
+  @override
+  String get a11yPieceLightQueen => 'Light queen';
+
+  @override
+  String get a11yPieceLightRook => 'Light rook';
+
+  @override
+  String get a11yPieceLightBishop => 'Light bishop';
+
+  @override
+  String get a11yPieceLightKnight => 'Light knight';
+
+  @override
+  String get a11yPieceLightPawn => 'Light pawn';
+
+  @override
+  String get a11yPieceDarkKing => 'Dark king';
+
+  @override
+  String get a11yPieceDarkQueen => 'Dark queen';
+
+  @override
+  String get a11yPieceDarkRook => 'Dark rook';
+
+  @override
+  String get a11yPieceDarkBishop => 'Dark bishop';
+
+  @override
+  String get a11yPieceDarkKnight => 'Dark knight';
+
+  @override
+  String get a11yPieceDarkPawn => 'Dark pawn';
+
+  @override
+  String get a11ySquareEmpty => 'empty';
+
+  @override
+  String a11ySquareLabel(String square, String occupant) {
+    return '$square, $occupant';
+  }
 }

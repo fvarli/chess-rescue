@@ -1184,6 +1184,90 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'You know this one.'**
   String get familiarFirstSeenHintLine;
+
+  /// PR-15 screen-reader label for a friendly (light) king. One atomic localized phrase per (color, type) combo so translators control natural word order across locales (e.g. Spanish noun-first).
+  ///
+  /// In en, this message translates to:
+  /// **'Light king'**
+  String get a11yPieceLightKing;
+
+  /// PR-15 screen-reader label for a friendly (light) queen.
+  ///
+  /// In en, this message translates to:
+  /// **'Light queen'**
+  String get a11yPieceLightQueen;
+
+  /// PR-15 screen-reader label for a friendly (light) rook.
+  ///
+  /// In en, this message translates to:
+  /// **'Light rook'**
+  String get a11yPieceLightRook;
+
+  /// PR-15 screen-reader label for a friendly (light) bishop.
+  ///
+  /// In en, this message translates to:
+  /// **'Light bishop'**
+  String get a11yPieceLightBishop;
+
+  /// PR-15 screen-reader label for a friendly (light) knight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light knight'**
+  String get a11yPieceLightKnight;
+
+  /// PR-15 screen-reader label for a friendly (light) pawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Light pawn'**
+  String get a11yPieceLightPawn;
+
+  /// PR-15 screen-reader label for an enemy (dark) king.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark king'**
+  String get a11yPieceDarkKing;
+
+  /// PR-15 screen-reader label for an enemy (dark) queen.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark queen'**
+  String get a11yPieceDarkQueen;
+
+  /// PR-15 screen-reader label for an enemy (dark) rook.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark rook'**
+  String get a11yPieceDarkRook;
+
+  /// PR-15 screen-reader label for an enemy (dark) bishop.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark bishop'**
+  String get a11yPieceDarkBishop;
+
+  /// PR-15 screen-reader label for an enemy (dark) knight.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark knight'**
+  String get a11yPieceDarkKnight;
+
+  /// PR-15 screen-reader label for an enemy (dark) pawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark pawn'**
+  String get a11yPieceDarkPawn;
+
+  /// PR-15 screen-reader description of an empty board square. Lowercase because it sits after the comma in a11ySquareLabel, e.g. 'e4, empty'.
+  ///
+  /// In en, this message translates to:
+  /// **'empty'**
+  String get a11ySquareEmpty;
+
+  /// PR-15 screen-reader label composed from a square's algebraic notation plus its occupant (a piece label or 'empty'). Template lets translators reorder per locale if needed; in en/tr/es 'square, occupant' reads naturally.
+  ///
+  /// In en, this message translates to:
+  /// **'{square}, {occupant}'**
+  String a11ySquareLabel(String square, String occupant);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

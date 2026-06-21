@@ -165,25 +165,31 @@ class _TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isActive ? AppColors.rescue : Colors.transparent,
-              width: 1,
+    return Semantics(
+      button: true,
+      selected: isActive,
+      label: label,
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? AppColors.rescue : Colors.transparent,
+                width: 1,
+              ),
             ),
           ),
-        ),
-        child: Text(
-          label,
-          style: AppText.mono.copyWith(
-            fontSize: 10,
-            letterSpacing: 1.2,
-            color: isActive ? AppColors.text : AppColors.textMuted,
+          child: Text(
+            label,
+            style: AppText.mono.copyWith(
+              fontSize: 10,
+              letterSpacing: 1.2,
+              color: isActive ? AppColors.text : AppColors.textMuted,
+            ),
           ),
         ),
       ),

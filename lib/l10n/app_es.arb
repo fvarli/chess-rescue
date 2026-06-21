@@ -201,5 +201,20 @@
   "relativeTimeToday": "hoy",
 
   "familiarCueLabel": "FAMILIAR",
-  "familiarFirstSeenHintLine": "Lo conoces."
+  "familiarFirstSeenHintLine": "Lo conoces.",
+
+  "a11yPieceLightKing": "Rey claro",
+  "a11yPieceLightQueen": "Reina clara",
+  "a11yPieceLightRook": "Torre clara",
+  "a11yPieceLightBishop": "Alfil claro",
+  "a11yPieceLightKnight": "Caballo claro",
+  "a11yPieceLightPawn": "Peón claro",
+  "a11yPieceDarkKing": "Rey oscuro",
+  "a11yPieceDarkQueen": "Reina oscura",
+  "a11yPieceDarkRook": "Torre oscura",
+  "a11yPieceDarkBishop": "Alfil oscuro",
+  "a11yPieceDarkKnight": "Caballo oscuro",
+  "a11yPieceDarkPawn": "Peón oscuro",
+  "a11ySquareEmpty": "vacío",
+  "a11ySquareLabel": "{square}, {occupant}"
 }

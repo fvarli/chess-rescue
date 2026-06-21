@@ -91,33 +91,38 @@ class _StartRescueButtonState extends State<_StartRescueButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapCancel: () => setState(() => _pressed = false),
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTap: widget.onTap,
-      child: AnimatedScale(
-        scale: _pressed ? MotionTokens.buttonPressedScale : 1.0,
-        duration: _pressed
-            ? MotionTokens.buttonPressIn
-            : MotionTokens.buttonPressOut,
-        curve: MotionTokens.press,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-          decoration: BoxDecoration(
-            color: AppColors.rescue,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.rescue.withValues(alpha: 0.35),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Text(
-            widget.label,
-            style: AppText.button.copyWith(color: AppColors.onRescue),
+    return Semantics(
+      button: true,
+      label: widget.label,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapCancel: () => setState(() => _pressed = false),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _pressed ? MotionTokens.buttonPressedScale : 1.0,
+          duration: _pressed
+              ? MotionTokens.buttonPressIn
+              : MotionTokens.buttonPressOut,
+          curve: MotionTokens.press,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.rescue,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.rescue.withValues(alpha: 0.35),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Text(
+              widget.label,
+              style: AppText.button.copyWith(color: AppColors.onRescue),
+            ),
           ),
         ),
       ),

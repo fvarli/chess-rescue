@@ -594,4 +594,48 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get familiarFirstSeenHintLine => 'Bunu biliyorsun.';
+
+  @override
+  String get a11yPieceLightKing => 'Açık şah';
+
+  @override
+  String get a11yPieceLightQueen => 'Açık vezir';
+
+  @override
+  String get a11yPieceLightRook => 'Açık kale';
+
+  @override
+  String get a11yPieceLightBishop => 'Açık fil';
+
+  @override
+  String get a11yPieceLightKnight => 'Açık at';
+
+  @override
+  String get a11yPieceLightPawn => 'Açık piyon';
+
+  @override
+  String get a11yPieceDarkKing => 'Koyu şah';
+
+  @override
+  String get a11yPieceDarkQueen => 'Koyu vezir';
+
+  @override
+  String get a11yPieceDarkRook => 'Koyu kale';
+
+  @override
+  String get a11yPieceDarkBishop => 'Koyu fil';
+
+  @override
+  String get a11yPieceDarkKnight => 'Koyu at';
+
+  @override
+  String get a11yPieceDarkPawn => 'Koyu piyon';
+
+  @override
+  String get a11ySquareEmpty => 'boş';
+
+  @override
+  String a11ySquareLabel(String square, String occupant) {
+    return '$square, $occupant';
+  }
 }

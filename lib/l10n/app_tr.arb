@@ -201,5 +201,20 @@
   "relativeTimeToday": "bugün",
 
   "familiarCueLabel": "AŞİNA",
-  "familiarFirstSeenHintLine": "Bunu biliyorsun."
+  "familiarFirstSeenHintLine": "Bunu biliyorsun.",
+
+  "a11yPieceLightKing": "Açık şah",
+  "a11yPieceLightQueen": "Açık vezir",
+  "a11yPieceLightRook": "Açık kale",
+  "a11yPieceLightBishop": "Açık fil",
+  "a11yPieceLightKnight": "Açık at",
+  "a11yPieceLightPawn": "Açık piyon",
+  "a11yPieceDarkKing": "Koyu şah",
+  "a11yPieceDarkQueen": "Koyu vezir",
+  "a11yPieceDarkRook": "Koyu kale",
+  "a11yPieceDarkBishop": "Koyu fil",
+  "a11yPieceDarkKnight": "Koyu at",
+  "a11yPieceDarkPawn": "Koyu piyon",
+  "a11ySquareEmpty": "boş",
+  "a11ySquareLabel": "{square}, {occupant}"
 }
