@@ -16,9 +16,12 @@ void main() {
     home: Scaffold(body: Center(child: child)),
   );
 
+  // PR-14 — 32 px added to the size matrix so the small-size legibility
+  // path (optical-scale stroke + ear notch / jaw / 3-bead crown / 2-notch
+  // rook / lengthened bishop slit) is exercised under paint.
   for (final type in PieceType.values) {
     for (final color in PieceColor.values) {
-      for (final size in const [36.0, 48.0, 64.0]) {
+      for (final size in const [32.0, 36.0, 48.0, 64.0]) {
         testWidgets(
           'PieceWidget(${type.name}, ${color.name}) renders at ${size.toInt()}px',
           (tester) async {
@@ -40,6 +43,48 @@ void main() {
       }
     }
   }
+
+  // PR-14 — pin the optical-scale stroke curve. The numbers here define
+  // the contract: 48 px and above match shipped main exactly (1.15 px),
+  // below 48 px the stroke grows linearly so the silhouette outline
+  // survives sub-pixel rendering.
+  group('PR-14 — pieceBodyStrokeFor optical-scale curve', () {
+    test('size >= 48 px returns the shipped 1.15 baseline exactly', () {
+      expect(pieceBodyStrokeFor(48), closeTo(1.15, 1e-9));
+      expect(pieceBodyStrokeFor(64), closeTo(1.15, 1e-9));
+      expect(pieceBodyStrokeFor(96), closeTo(1.15, 1e-9));
+      expect(pieceBodyStrokeFor(200), closeTo(1.15, 1e-9));
+    });
+
+    test('at 32 px the body stroke grows to ~1.27 px', () {
+      // Boost = (48 - 32) / 48 * 0.35 = 16/48 * 0.35 ≈ 0.1167
+      expect(pieceBodyStrokeFor(32), closeTo(1.15 + (16 / 48) * 0.35, 1e-9));
+    });
+
+    test('at 24 px the body stroke grows to ~1.325 px', () {
+      expect(pieceBodyStrokeFor(24), closeTo(1.15 + (24 / 48) * 0.35, 1e-9));
+    });
+
+    test('curve is monotonically non-increasing as size grows', () {
+      double last = double.infinity;
+      for (final s in const [16.0, 20.0, 24.0, 32.0, 40.0, 48.0, 64.0]) {
+        final v = pieceBodyStrokeFor(s);
+        expect(
+          v,
+          lessThanOrEqualTo(last),
+          reason: 'stroke must not grow as size grows; size=$s returned $v',
+        );
+        last = v;
+      }
+    });
+
+    test('curve clamps gracefully at size 0 (no NaN, no negative)', () {
+      final v = pieceBodyStrokeFor(0);
+      expect(v.isFinite, isTrue);
+      expect(v, lessThanOrEqualTo(1.15 + 0.35));
+      expect(v, greaterThan(1.15));
+    });
+  });
 
   // PR-10C — render at lifted scales (selected 1.025, rescued held 1.04) so
   // the new lift-aware shadow path is exercised. The TweenAnimationBuilder

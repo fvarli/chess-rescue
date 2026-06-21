@@ -4,6 +4,22 @@ import '../../../core/models/piece.dart';
 import '../../../core/theme/motion.dart';
 import '../../../core/theme/tokens.dart';
 
+/// PR-14 — optical-scale body stroke width.
+///
+/// At rendered sizes ≥ 48 px returns the shipped 1.15 px baseline exactly,
+/// so 48 / 64 px piece renders are unchanged from current main. Below 48 px
+/// the stroke grows linearly so the silhouette outline survives sub-pixel
+/// rendering at 32 px and below. At 32 px the result is ≈ 1.27 px.
+///
+/// Pure function — no token, no allocation, no side effect. Exposed at
+/// file scope so the test file can pin the curve without depending on the
+/// private `_PiecePainter`.
+double pieceBodyStrokeFor(double sizePx) {
+  if (sizePx >= 48) return 1.15;
+  final boost = ((48 - sizePx) / 48).clamp(0.0, 1.0) * 0.35;
+  return 1.15 + boost;
+}
+
 class PieceWidget extends StatelessWidget {
   const PieceWidget({
     super.key,
@@ -65,6 +81,12 @@ class _PiecePainter extends CustomPainter {
   // further than the selected state.
   double get _liftT => ((liftedScale - 1.0) / 0.025).clamp(0.0, 1.0);
 
+  // PR-14 — current paint's body stroke width, set in [paint] before
+  // dispatching to per-piece methods. Used by helpers (`_paintFootRim`,
+  // bishop slit, knight mane / jaw) that derive related strokes from the
+  // body width so small-size pieces scale together.
+  double _bodyStroke = 1.15;
+
   @override
   void paint(Canvas canvas, Size size) {
     // Geometry is authored in a 100x100 viewBox per primitives.jsx.
@@ -96,10 +118,11 @@ class _PiecePainter extends CustomPainter {
         colors: [topColor, bottomColor],
       ).createShader(const Rect.fromLTRB(0, 0, 100, 100));
 
+    _bodyStroke = pieceBodyStrokeFor(size.width);
     final stroke = Paint()
       ..color = strokeColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.15
+      ..strokeWidth = _bodyStroke
       ..strokeJoin = StrokeJoin.round
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true;
@@ -218,13 +241,16 @@ class _PiecePainter extends CustomPainter {
     );
   }
 
-  // Uses ColorTokens.shadow + 0.8px stroke so the rim accents the contact
-  // without competing with the body stroke.
+  // Uses ColorTokens.shadow with a rim width derived from the body stroke
+  // (≈ 0.696× the body) so the rim accents the contact without competing
+  // with the body outline at any size — at 48+ px it remains 0.8 px,
+  // matching shipped main; at 32 px it grows to ~0.88 px in lockstep with
+  // the body stroke.
   void _paintFootRim(Canvas canvas) {
     final rim = Paint()
       ..color = ColorTokens.shadow
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8
+      ..strokeWidth = _bodyStroke * (0.8 / 1.15)
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true;
     // Upper-half arc of the foot ellipse at y≈84, width 64.
@@ -284,13 +310,14 @@ class _PiecePainter extends CustomPainter {
   }
 
   void _paintQueen(Canvas canvas, Paint fill, Paint stroke, bool isLight) {
-    // Five crown beads.
+    // PR-14 — 3-bead crown replaces the original 5-bead coronet. Wider
+    // spacing + taller centre bead means every bead survives at 32 px;
+    // the queen no longer merges with the king's cross at small sizes.
+    // The crown band below at y=18-26 keeps the coronet anchored.
     const beads = [
-      [28.0, 16.0, 3.6],
-      [39.0, 11.0, 3.6],
-      [50.0, 8.0, 4.0],
-      [61.0, 11.0, 3.6],
-      [72.0, 16.0, 3.6],
+      [28.0, 15.0, 3.4], // left  — sits just over the crown band
+      [50.0, 7.0, 4.5], // tall centre — clear apex point
+      [72.0, 15.0, 3.4], // right
     ];
     for (final b in beads) {
       final bead = Path()
@@ -335,22 +362,22 @@ class _PiecePainter extends CustomPainter {
   }
 
   void _paintRook(Canvas canvas, Paint fill, Paint stroke, bool isLight) {
-    // Battlements: M24 6 H34 V14 H40 V6 H47 V14 H53 V6 H60 V14 H66 V6 H76 V24 H24 Z
+    // PR-14 — 3 equal towers + 2 deep notches replace the original
+    // 4-tower / 3-notch sawtooth. Notch depth grows from 8 px to 14 px
+    // so the crenellations stay distinct at 32 px instead of blurring
+    // into a flat top. Reads as "castle top" at every size.
+    // M24 4 H36 V18 H44 V4 H56 V18 H64 V4 H76 V24 H24 Z
     final battlements = Path()
-      ..moveTo(24, 6)
-      ..lineTo(34, 6)
-      ..lineTo(34, 14)
-      ..lineTo(40, 14)
-      ..lineTo(40, 6)
-      ..lineTo(47, 6)
-      ..lineTo(47, 14)
-      ..lineTo(53, 14)
-      ..lineTo(53, 6)
-      ..lineTo(60, 6)
-      ..lineTo(60, 14)
-      ..lineTo(66, 14)
-      ..lineTo(66, 6)
-      ..lineTo(76, 6)
+      ..moveTo(24, 4)
+      ..lineTo(36, 4)
+      ..lineTo(36, 18)
+      ..lineTo(44, 18)
+      ..lineTo(44, 4)
+      ..lineTo(56, 4)
+      ..lineTo(56, 18)
+      ..lineTo(64, 18)
+      ..lineTo(64, 4)
+      ..lineTo(76, 4)
       ..lineTo(76, 24)
       ..lineTo(24, 24)
       ..close();
@@ -402,14 +429,16 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, head, fill, stroke);
 
-    // Mitre slit: M52 8 L57 13 (stroke only, slightly thicker).
+    // PR-14 — lengthened mitre slit + 1.6× body stroke multiplier so the
+    // bishop's signature cut survives at 32 px instead of falling below
+    // a pixel. Endpoints extend out from (52,8)→(57,13) to (51,7)→(58,14).
     final slit = Path()
-      ..moveTo(52, 8)
-      ..lineTo(57, 13);
+      ..moveTo(51, 7)
+      ..lineTo(58, 14);
     final slitStroke = Paint()
       ..color = strokeColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.15 * 1.4
+      ..strokeWidth = _bodyStroke * 1.6
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true;
     canvas.drawPath(slit, slitStroke);
@@ -471,14 +500,42 @@ class _PiecePainter extends CustomPainter {
       ..close();
     _drawPath(canvas, head, fill, stroke);
 
-    // Mane crease: M58 18 Q66 30 70 50 — stroke only, 0.4 opacity.
+    // PR-14 — small pointed-up ear silhouette at the top-back of the
+    // head. Universally the most iconic equine cue at 32 px, where the
+    // eye + nostril details fall below a pixel. Sits above the existing
+    // head curve so the previous silhouette is preserved underneath.
+    final ear = Path()
+      ..moveTo(62, 14)
+      ..lineTo(66, 7)
+      ..lineTo(70, 14)
+      ..close();
+    _drawPath(canvas, ear, fill, stroke);
+
+    // PR-14 — short jaw stroke inside the lower-front of the head.
+    // Reads as a defined jawline at 48+ px; at 32 px it gives the
+    // muzzle a load-bearing horizontal that anchors the horse profile
+    // when the eye / nostril vanish into anti-aliasing.
+    final jaw = Path()
+      ..moveTo(20, 46)
+      ..lineTo(30, 50);
+    final jawStroke = Paint()
+      ..color = strokeColor.withValues(alpha: strokeColor.a * 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _bodyStroke * 0.85
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true;
+    canvas.drawPath(jaw, jawStroke);
+
+    // PR-14 — mane crease at slightly bolder alpha (0.4 → 0.55) so the
+    // neck curve reads as anatomy instead of noise at small sizes. Path
+    // unchanged. Stroke width inherits from the body scale.
     final mane = Path()
       ..moveTo(58, 18)
       ..quadraticBezierTo(66, 30, 70, 50);
     final maneStroke = Paint()
-      ..color = strokeColor.withValues(alpha: strokeColor.a * 0.4)
+      ..color = strokeColor.withValues(alpha: strokeColor.a * 0.55)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.15
+      ..strokeWidth = _bodyStroke
       ..strokeCap = StrokeCap.round
       ..isAntiAlias = true;
     canvas.drawPath(mane, maneStroke);
