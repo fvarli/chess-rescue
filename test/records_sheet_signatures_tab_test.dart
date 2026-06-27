@@ -41,7 +41,7 @@ void main() {
         expect(find.text('RECORDS'), findsOneWidget);
         expect(find.text('SIGNATURES'), findsOneWidget);
         // Default tab: RECORDS — count line and category sections visible.
-        expect(find.text('0 / 13'), findsOneWidget);
+        expect(find.text('0 / 14'), findsOneWidget);
         expect(find.text('First Rescue'), findsOneWidget);
         // SignaturesTab is NOT mounted on the default tab.
         expect(find.byType(SignaturesTab), findsNothing);
@@ -62,7 +62,7 @@ void main() {
 
         expect(find.byType(SignaturesTab), findsOneWidget);
         // Count line and category sections do NOT render on SIGNATURES.
-        expect(find.text('0 / 13'), findsNothing);
+        expect(find.text('0 / 14'), findsNothing);
         expect(find.text('First Rescue'), findsNothing);
         // Empty-state copy IS visible (no signatures saved on fresh install).
         expect(find.text('Some rescues stay with you.'), findsOneWidget);
@@ -83,7 +83,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 50));
 
         expect(find.byType(SignaturesTab), findsNothing);
-        expect(find.text('0 / 13'), findsOneWidget);
+        expect(find.text('0 / 14'), findsOneWidget);
       },
     );
   });

@@ -206,7 +206,7 @@ void main() {
         );
         // The RECORDS line still renders at the bottom.
         expect(find.text('RECORDS'), findsOneWidget);
-        expect(find.text('0 / 13'), findsOneWidget);
+        expect(find.text('0 / 14'), findsOneWidget);
       },
     );
 
@@ -231,7 +231,7 @@ void main() {
         // The new line + the records sheet eyebrow both render the title,
         // but Home alone (no sheet open) renders it exactly once.
         expect(find.text('First Rescue'), findsOneWidget);
-        expect(find.text('1 / 13'), findsOneWidget);
+        expect(find.text('1 / 14'), findsOneWidget);
       },
     );
 

@@ -87,6 +87,18 @@ class RescueRecordLibrary {
     episodeId: 'ep3-hold-the-line',
     predecessorId: 'ep2-end-the-threat',
   );
+  // PR-17 — Episode 6 episode-complete record. Chains off ep3.
+  static const RescueRecord ep6PinTheThreat = RescueRecord(
+    id: 'ep6-pin-the-threat',
+    titleKey: 'recordTitle_ep6PinTheThreat',
+    descriptionLockedKey: 'recordDescriptionLocked_ep6PinTheThreat',
+    descriptionUnlockedKey: 'recordDescriptionUnlocked_ep6PinTheThreat',
+    category: RescueRecordCategory.episodes,
+    source: RescueRecordSource.episodeComplete,
+    reveal: RescueRecordReveal.chained,
+    episodeId: 'ep6-pin-the-threat',
+    predecessorId: 'ep3-hold-the-line',
+  );
   // Ep4 + AtO are eventOnly because completedIds does not track master
   // episode completion. GameController writes both ids when Ep4 finale
   // / first-rescue-after-Ep4 fires.
@@ -167,6 +179,7 @@ class RescueRecordLibrary {
     ep1StrikeBack,
     ep2EndTheThreat,
     ep3HoldTheLine,
+    ep6PinTheThreat,
     ep4TheOtherSide,
     againstTheOdds,
     endlessSpark,

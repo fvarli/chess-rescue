@@ -213,6 +213,66 @@ class AppL10nEs extends AppL10n {
   String get puzzleCAM1SuccessExplanation => 'EL CABALLO COME AL ALFIL';
 
   @override
+  String get puzzleE6P1StatusText => '▮ Amenaza deslizante';
+
+  @override
+  String get puzzleE6P1DangerHint => 'Cierra la columna detrás de la amenaza.';
+
+  @override
+  String get puzzleE6P1FailureHint => 'Esa jugada no clava a la atacante.';
+
+  @override
+  String get puzzleE6P1SuccessExplanation => 'LA LÍNEA SUJETA A LA DAMA';
+
+  @override
+  String get puzzleE6P2StatusText => '▮ Peligro diagonal';
+
+  @override
+  String get puzzleE6P2DangerHint => 'Atraviesa la diagonal tras la dama.';
+
+  @override
+  String get puzzleE6P2FailureHint => 'La diagonal sigue siendo de la dama.';
+
+  @override
+  String get puzzleE6P2SuccessExplanation => 'EL ALFIL CLAVA A LA DAMA';
+
+  @override
+  String get puzzleE6P3StatusText => '▮ Amenaza de fila';
+
+  @override
+  String get puzzleE6P3DangerHint => 'Extiende tu línea por la fila.';
+
+  @override
+  String get puzzleE6P3FailureHint => 'La dama aún encuentra la diagonal.';
+
+  @override
+  String get puzzleE6P3SuccessExplanation => 'LA FILA ENCADENA A LA DAMA';
+
+  @override
+  String get puzzleE6P4StatusText => '▮ Dos atacantes';
+
+  @override
+  String get puzzleE6P4DangerHint => 'Una sola línea los sujeta a ambos.';
+
+  @override
+  String get puzzleE6P4FailureHint => 'Solo una atacante queda clavada.';
+
+  @override
+  String get puzzleE6P4SuccessExplanation => 'UNA CLAVADA, DOS ATACANTES';
+
+  @override
+  String get puzzleE6P5StatusText => '▮ Amenaza paciente';
+
+  @override
+  String get puzzleE6P5DangerHint => 'Clava a la dama y aprieta.';
+
+  @override
+  String get puzzleE6P5FailureHint => 'Una clavada sola no basta.';
+
+  @override
+  String get puzzleE6P5SuccessExplanation => 'LA CLAVADA SE VUELVE AMENAZA';
+
+  @override
   String get settingsLanguage => 'Idioma';
 
   @override
@@ -322,6 +382,12 @@ class AppL10nEs extends AppL10n {
   String get episodeEp5Tagline => 'Salva al rey. Otra vez. Y otra.';
 
   @override
+  String get episodeEp6Title => 'INMOVILIZA LA AMENAZA';
+
+  @override
+  String get episodeEp6Tagline => 'La amenaza que no puede moverse.';
+
+  @override
   String episodeBestRun(int count) {
     return 'Mejor racha: $count';
   }
@@ -385,6 +451,9 @@ class AppL10nEs extends AppL10n {
   String get recordTitle_ep3HoldTheLine => 'Mantén la línea';
 
   @override
+  String get recordTitle_ep6PinTheThreat => 'Inmoviliza la amenaza';
+
+  @override
   String get recordTitle_ep4TheOtherSide => 'El otro lado';
 
   @override
@@ -424,6 +493,10 @@ class AppL10nEs extends AppL10n {
 
   @override
   String get recordDescriptionLocked_ep3HoldTheLine => 'Termina el Episodio 3.';
+
+  @override
+  String get recordDescriptionLocked_ep6PinTheThreat =>
+      'Termina el Episodio 6.';
 
   @override
   String get recordDescriptionLocked_ep4TheOtherSide =>
@@ -473,6 +546,10 @@ class AppL10nEs extends AppL10n {
   @override
   String get recordDescriptionUnlocked_ep3HoldTheLine =>
       'Episodio 3 terminado.';
+
+  @override
+  String get recordDescriptionUnlocked_ep6PinTheThreat =>
+      'Episodio 6 terminado.';
 
   @override
   String get recordDescriptionUnlocked_ep4TheOtherSide =>

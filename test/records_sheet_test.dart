@@ -28,7 +28,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'fresh install: sheet shows 0 / 13 + intro line + 3 revealed entry-level rows',
+    'fresh install: sheet shows 0 / 14 + intro line + 3 revealed entry-level rows',
     (tester) async {
       SharedPreferences.setMockInitialValues({});
       final store = await ProgressStore.create();
@@ -37,7 +37,7 @@ void main() {
 
       expect(find.byKey(const ValueKey('records-sheet')), findsOneWidget);
       expect(find.text('RESCUE RECORDS'), findsOneWidget);
-      expect(find.text('0 / 13'), findsOneWidget);
+      expect(find.text('0 / 14'), findsOneWidget);
       expect(
         find.text('These pages will fill themselves.'),
         findsAtLeastNWidgets(1),
@@ -67,7 +67,7 @@ void main() {
       await tester.pumpWidget(_wrapWithSheet(store));
       await tester.pump();
 
-      expect(find.text('1 / 13'), findsOneWidget);
+      expect(find.text('1 / 14'), findsOneWidget);
       expect(find.text('First Rescue'), findsOneWidget);
       // The Rescuer row appears, but as mystery.
       expect(find.text('The Rescuer'), findsNothing);
@@ -156,7 +156,7 @@ void main() {
   });
 
   testWidgets(
-    'all 13 unlocked: count line swaps to "Every page has been written."',
+    'all 14 unlocked: count line swaps to "Every page has been written."',
     (tester) async {
       // Records with derived (non-eventOnly) sources require their
       // underlying signals to be satisfied. Set lifetime/streak/completedIds
@@ -175,6 +175,13 @@ void main() {
           'p3-block-the-file',
           'p4-seal-the-diagonal',
           'b1-the-martyr',
+          // PR-17 — Episode 6 canonical ids must also be cleared so the
+          // ep6-pin-the-threat episode-complete record evaluates unlocked.
+          'e6p1-first-pin',
+          'e6p2-diagonal-pin',
+          'e6p3-pin-via-rank',
+          'e6p4-cross-pin',
+          'e6p5-pin-and-threat',
         ],
         'flutter.cr_unlocked_records':
             '["ep4-the-other-side","against-the-odds","unshaken"]',

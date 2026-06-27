@@ -5,13 +5,13 @@ import 'package:chess_rescue/core/models/rescue_record_library.dart';
 
 void main() {
   group('RescueRecordLibrary — structure', () {
-    test('exactly 13 records in book order', () {
-      expect(RescueRecordLibrary.all, hasLength(13));
+    test('exactly 14 records in book order', () {
+      expect(RescueRecordLibrary.all, hasLength(14));
     });
 
     test('record ids are unique', () {
       final ids = RescueRecordLibrary.all.map((r) => r.id).toSet();
-      expect(ids.length, 13);
+      expect(ids.length, 14);
     });
 
     test(
@@ -28,13 +28,14 @@ void main() {
       },
     );
 
-    test('Episodes category contains 5 records', () {
+    test('Episodes category contains 6 records', () {
       final eps = RescueRecordLibrary.byCategory(RescueRecordCategory.episodes);
-      expect(eps, hasLength(5));
+      expect(eps, hasLength(6));
       expect(eps.map((r) => r.id).toList(), [
         'ep1-strike-back',
         'ep2-end-the-threat',
         'ep3-hold-the-line',
+        'ep6-pin-the-threat',
         'ep4-the-other-side',
         'against-the-odds',
       ]);

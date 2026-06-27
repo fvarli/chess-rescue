@@ -477,6 +477,126 @@ abstract class AppL10n {
   /// **'THE KNIGHT TAKES THE BISHOP'**
   String get puzzleCAM1SuccessExplanation;
 
+  /// Episode 6 Puzzle 1 — first pin via rook on the h-file. Status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Sliding threat'**
+  String get puzzleE6P1StatusText;
+
+  /// E6P1 danger hint — directs the player to occupy the file between the attacker and the back-piece.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock the file behind the threat.'**
+  String get puzzleE6P1DangerHint;
+
+  /// E6P1 failure hint — frames the missed pin without naming pieces or coordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'That move doesn\'t tie the attacker down.'**
+  String get puzzleE6P1FailureHint;
+
+  /// E6P1 success explanation — mono caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'THE LINE HOLDS THE QUEEN'**
+  String get puzzleE6P1SuccessExplanation;
+
+  /// Episode 6 Puzzle 2 — diagonal pin via bishop. Status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Diagonal danger'**
+  String get puzzleE6P2StatusText;
+
+  /// E6P2 danger hint — directs the player to the diagonal that runs through queen and the more-valuable piece behind.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross the diagonal behind the queen.'**
+  String get puzzleE6P2DangerHint;
+
+  /// E6P2 failure hint — softly notes that the wrong move leaves the queen free.
+  ///
+  /// In en, this message translates to:
+  /// **'The diagonal still belongs to the queen.'**
+  String get puzzleE6P2FailureHint;
+
+  /// E6P2 success explanation — mono caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'THE BISHOP TIES THE QUEEN'**
+  String get puzzleE6P2SuccessExplanation;
+
+  /// Episode 6 Puzzle 3 — pin via rank. Status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Rank threat'**
+  String get puzzleE6P3StatusText;
+
+  /// E6P3 danger hint — directs to the horizontal pin geometry.
+  ///
+  /// In en, this message translates to:
+  /// **'Stretch your line across the rank.'**
+  String get puzzleE6P3DangerHint;
+
+  /// E6P3 failure hint — names the missed pin lane without coordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'The queen still finds the diagonal.'**
+  String get puzzleE6P3FailureHint;
+
+  /// E6P3 success explanation — mono caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'THE RANK SHACKLES THE QUEEN'**
+  String get puzzleE6P3SuccessExplanation;
+
+  /// Episode 6 Puzzle 4 — cross-pin. Status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Two attackers'**
+  String get puzzleE6P4StatusText;
+
+  /// E6P4 danger hint — hints that a single move freezes more than one attacker.
+  ///
+  /// In en, this message translates to:
+  /// **'One line can hold them both.'**
+  String get puzzleE6P4DangerHint;
+
+  /// E6P4 failure hint — frames a partial answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one attacker is tied down.'**
+  String get puzzleE6P4FailureHint;
+
+  /// E6P4 success explanation — mono caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'ONE PIN, TWO ATTACKERS'**
+  String get puzzleE6P4SuccessExplanation;
+
+  /// Episode 6 Puzzle 5 — pin with counter-threat. Status pill.
+  ///
+  /// In en, this message translates to:
+  /// **'▮ Patient threat'**
+  String get puzzleE6P5StatusText;
+
+  /// E6P5 danger hint — frames the dual-purpose move (pin plus follow-up threat).
+  ///
+  /// In en, this message translates to:
+  /// **'Bind the queen and turn the screw.'**
+  String get puzzleE6P5DangerHint;
+
+  /// E6P5 failure hint — guides toward the move that pins AND threatens.
+  ///
+  /// In en, this message translates to:
+  /// **'A pin alone won\'t do it here.'**
+  String get puzzleE6P5FailureHint;
+
+  /// E6P5 success explanation — mono caps register.
+  ///
+  /// In en, this message translates to:
+  /// **'THE PIN BECOMES A THREAT'**
+  String get puzzleE6P5SuccessExplanation;
+
   /// Title of the language picker bottom sheet.
   ///
   /// In en, this message translates to:
@@ -681,6 +801,18 @@ abstract class AppL10n {
   /// **'Save the king. Again. And again.'**
   String get episodeEp5Tagline;
 
+  /// Episode 6 title — canonical pin-defense chapter (E6P1-E6P5). Pre-uppercased per locale (Dart's String.toUpperCase is locale-insensitive).
+  ///
+  /// In en, this message translates to:
+  /// **'PIN THE THREAT'**
+  String get episodeEp6Title;
+
+  /// Episode 6 tagline — names the pin's effect (constrains rather than captures) in calm register.
+  ///
+  /// In en, this message translates to:
+  /// **'The threat that cannot move.'**
+  String get episodeEp6Tagline;
+
   /// Ep5-only Home card line. Shown only when bestEndlessStreak > 0.
   ///
   /// In en, this message translates to:
@@ -789,6 +921,12 @@ abstract class AppL10n {
   /// **'Hold the Line'**
   String get recordTitle_ep3HoldTheLine;
 
+  /// R1 record title — clearing Episode 6 (canonical pin-defense chapter).
+  ///
+  /// In en, this message translates to:
+  /// **'Pin the Threat'**
+  String get recordTitle_ep6PinTheThreat;
+
   /// R1 record title — clearing Episode 4 (master mirror chapter).
   ///
   /// In en, this message translates to:
@@ -870,6 +1008,12 @@ abstract class AppL10n {
   /// R1 locked-description.
   ///
   /// In en, this message translates to:
+  /// **'Clear Episode 6.'**
+  String get recordDescriptionLocked_ep6PinTheThreat;
+
+  /// R1 locked-description.
+  ///
+  /// In en, this message translates to:
   /// **'Clear Episode 4.'**
   String get recordDescriptionLocked_ep4TheOtherSide;
 
@@ -944,6 +1088,12 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Cleared Episode 3.'**
   String get recordDescriptionUnlocked_ep3HoldTheLine;
+
+  /// R1 unlocked-description.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared Episode 6.'**
+  String get recordDescriptionUnlocked_ep6PinTheThreat;
 
   /// R1 unlocked-description.
   ///

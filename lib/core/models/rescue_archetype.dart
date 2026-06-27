@@ -10,4 +10,9 @@ enum RescueArchetype {
   removeDefender, // frontier — no template yet
   forcedInterposition, // frontier — no template yet
   escapeSquare, // deferred (king moves) — no template yet
+  // PR-17 Episode 6 — Pin the Threat. The rescue places a long-range
+  // friendly piece on a line that connects the enemy attacker to a more
+  // valuable enemy piece behind it; the attacker can no longer leave the
+  // pin line to deliver its mate.
+  pinDefense,
 }

@@ -14,6 +14,12 @@ const String _idA4 = 'a4-the-breakaway';
 const String _idB1 = 'b1-the-martyr';
 const String _idB3 = 'b3-remove-the-defender';
 const String _idB4 = 'b4-the-cross-check';
+// PR-17 Episode 6 — Pin the Threat. Five hand-authored pin-defense puzzles.
+const String _idE6P1 = 'e6p1-first-pin';
+const String _idE6P2 = 'e6p2-diagonal-pin';
+const String _idE6P3 = 'e6p3-pin-via-rank';
+const String _idE6P4 = 'e6p4-cross-pin';
+const String _idE6P5 = 'e6p5-pin-and-threat';
 
 class EpisodeLibrary {
   EpisodeLibrary._();
@@ -86,7 +92,23 @@ class EpisodeLibrary {
     unlockRequirementId: 'ep3-hold-the-line',
   );
 
-  static const List<Episode> all = [ep1, ep2, ep3, ep4, ep5];
+  // PR-17 Episode 6 — Pin the Threat. The fourth canonical episode. Unlocks
+  // after ep3 completion, parallel to ep4 (master) and ep5 (endless). Five
+  // hand-authored puzzles share one unified motif: white plays a long-range
+  // move that places a friendly piece on a line connecting the enemy
+  // attacker to a more valuable enemy piece behind it.
+  static const Episode ep6 = Episode(
+    id: 'ep6-pin-the-threat',
+    number: 6,
+    titleKey: 'episodeEp6Title',
+    taglineKey: 'episodeEp6Tagline',
+    kind: EpisodeKind.canonical,
+    archetypes: {RescueArchetype.pinDefense},
+    canonicalPuzzleIds: [_idE6P1, _idE6P2, _idE6P3, _idE6P4, _idE6P5],
+    unlockRequirementId: 'ep3-hold-the-line',
+  );
+
+  static const List<Episode> all = [ep1, ep2, ep3, ep4, ep5, ep6];
 
   static Episode get first => ep1;
 

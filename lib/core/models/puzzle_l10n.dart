@@ -103,6 +103,42 @@ PuzzleCopy puzzleCopyFor(Puzzle puzzle, AppL10n t) {
         failureHint: t.puzzleCAM1FailureHint,
         successExplanation: t.puzzleCAM1SuccessExplanation,
       );
+    // PR-17 — Episode 6 puzzles (pin defense motif).
+    case 'e6p1-first-pin':
+      return PuzzleCopy(
+        statusText: t.puzzleE6P1StatusText,
+        dangerHint: t.puzzleE6P1DangerHint,
+        failureHint: t.puzzleE6P1FailureHint,
+        successExplanation: t.puzzleE6P1SuccessExplanation,
+      );
+    case 'e6p2-diagonal-pin':
+      return PuzzleCopy(
+        statusText: t.puzzleE6P2StatusText,
+        dangerHint: t.puzzleE6P2DangerHint,
+        failureHint: t.puzzleE6P2FailureHint,
+        successExplanation: t.puzzleE6P2SuccessExplanation,
+      );
+    case 'e6p3-pin-via-rank':
+      return PuzzleCopy(
+        statusText: t.puzzleE6P3StatusText,
+        dangerHint: t.puzzleE6P3DangerHint,
+        failureHint: t.puzzleE6P3FailureHint,
+        successExplanation: t.puzzleE6P3SuccessExplanation,
+      );
+    case 'e6p4-cross-pin':
+      return PuzzleCopy(
+        statusText: t.puzzleE6P4StatusText,
+        dangerHint: t.puzzleE6P4DangerHint,
+        failureHint: t.puzzleE6P4FailureHint,
+        successExplanation: t.puzzleE6P4SuccessExplanation,
+      );
+    case 'e6p5-pin-and-threat':
+      return PuzzleCopy(
+        statusText: t.puzzleE6P5StatusText,
+        dangerHint: t.puzzleE6P5DangerHint,
+        failureHint: t.puzzleE6P5FailureHint,
+        successExplanation: t.puzzleE6P5SuccessExplanation,
+      );
     default:
       // Future puzzles without an l10n entry render their authored EN strings.
       return PuzzleCopy(

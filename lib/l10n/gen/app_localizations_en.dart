@@ -213,6 +213,68 @@ class AppL10nEn extends AppL10n {
   String get puzzleCAM1SuccessExplanation => 'THE KNIGHT TAKES THE BISHOP';
 
   @override
+  String get puzzleE6P1StatusText => '▮ Sliding threat';
+
+  @override
+  String get puzzleE6P1DangerHint => 'Lock the file behind the threat.';
+
+  @override
+  String get puzzleE6P1FailureHint =>
+      'That move doesn\'t tie the attacker down.';
+
+  @override
+  String get puzzleE6P1SuccessExplanation => 'THE LINE HOLDS THE QUEEN';
+
+  @override
+  String get puzzleE6P2StatusText => '▮ Diagonal danger';
+
+  @override
+  String get puzzleE6P2DangerHint => 'Cross the diagonal behind the queen.';
+
+  @override
+  String get puzzleE6P2FailureHint =>
+      'The diagonal still belongs to the queen.';
+
+  @override
+  String get puzzleE6P2SuccessExplanation => 'THE BISHOP TIES THE QUEEN';
+
+  @override
+  String get puzzleE6P3StatusText => '▮ Rank threat';
+
+  @override
+  String get puzzleE6P3DangerHint => 'Stretch your line across the rank.';
+
+  @override
+  String get puzzleE6P3FailureHint => 'The queen still finds the diagonal.';
+
+  @override
+  String get puzzleE6P3SuccessExplanation => 'THE RANK SHACKLES THE QUEEN';
+
+  @override
+  String get puzzleE6P4StatusText => '▮ Two attackers';
+
+  @override
+  String get puzzleE6P4DangerHint => 'One line can hold them both.';
+
+  @override
+  String get puzzleE6P4FailureHint => 'Only one attacker is tied down.';
+
+  @override
+  String get puzzleE6P4SuccessExplanation => 'ONE PIN, TWO ATTACKERS';
+
+  @override
+  String get puzzleE6P5StatusText => '▮ Patient threat';
+
+  @override
+  String get puzzleE6P5DangerHint => 'Bind the queen and turn the screw.';
+
+  @override
+  String get puzzleE6P5FailureHint => 'A pin alone won\'t do it here.';
+
+  @override
+  String get puzzleE6P5SuccessExplanation => 'THE PIN BECOMES A THREAT';
+
+  @override
   String get settingsLanguage => 'Language';
 
   @override
@@ -322,6 +384,12 @@ class AppL10nEn extends AppL10n {
   String get episodeEp5Tagline => 'Save the king. Again. And again.';
 
   @override
+  String get episodeEp6Title => 'PIN THE THREAT';
+
+  @override
+  String get episodeEp6Tagline => 'The threat that cannot move.';
+
+  @override
   String episodeBestRun(int count) {
     return 'Best run: $count';
   }
@@ -383,6 +451,9 @@ class AppL10nEn extends AppL10n {
   String get recordTitle_ep3HoldTheLine => 'Hold the Line';
 
   @override
+  String get recordTitle_ep6PinTheThreat => 'Pin the Threat';
+
+  @override
   String get recordTitle_ep4TheOtherSide => 'The Other Side';
 
   @override
@@ -421,6 +492,9 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get recordDescriptionLocked_ep3HoldTheLine => 'Clear Episode 3.';
+
+  @override
+  String get recordDescriptionLocked_ep6PinTheThreat => 'Clear Episode 6.';
 
   @override
   String get recordDescriptionLocked_ep4TheOtherSide => 'Clear Episode 4.';
@@ -466,6 +540,9 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get recordDescriptionUnlocked_ep3HoldTheLine => 'Cleared Episode 3.';
+
+  @override
+  String get recordDescriptionUnlocked_ep6PinTheThreat => 'Cleared Episode 6.';
 
   @override
   String get recordDescriptionUnlocked_ep4TheOtherSide =>

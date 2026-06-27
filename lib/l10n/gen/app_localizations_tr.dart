@@ -209,6 +209,66 @@ class AppL10nTr extends AppL10n {
   String get puzzleCAM1SuccessExplanation => 'AT FİLİ ALIR';
 
   @override
+  String get puzzleE6P1StatusText => '▮ Kayan tehdit';
+
+  @override
+  String get puzzleE6P1DangerHint => 'Tehdidin arkasındaki hattı kilitle.';
+
+  @override
+  String get puzzleE6P1FailureHint => 'Bu hamle saldırganı bağlamıyor.';
+
+  @override
+  String get puzzleE6P1SuccessExplanation => 'HAT VEZİRİ TUTAR';
+
+  @override
+  String get puzzleE6P2StatusText => '▮ Çapraz tehlike';
+
+  @override
+  String get puzzleE6P2DangerHint => 'Vezirin arkasındaki çaprazı kes.';
+
+  @override
+  String get puzzleE6P2FailureHint => 'Çapraz hâlâ vezirin.';
+
+  @override
+  String get puzzleE6P2SuccessExplanation => 'FİL VEZİRİ BAĞLAR';
+
+  @override
+  String get puzzleE6P3StatusText => '▮ Yatay tehdit';
+
+  @override
+  String get puzzleE6P3DangerHint => 'Hattını ranka uzat.';
+
+  @override
+  String get puzzleE6P3FailureHint => 'Vezir çaprazı hâlâ buluyor.';
+
+  @override
+  String get puzzleE6P3SuccessExplanation => 'RANK VEZİRİ KELEPÇELER';
+
+  @override
+  String get puzzleE6P4StatusText => '▮ İki saldırgan';
+
+  @override
+  String get puzzleE6P4DangerHint => 'Tek bir hat ikisini de tutabilir.';
+
+  @override
+  String get puzzleE6P4FailureHint => 'Sadece bir saldırgan bağlandı.';
+
+  @override
+  String get puzzleE6P4SuccessExplanation => 'TEK BAĞ, İKİ SALDIRGAN';
+
+  @override
+  String get puzzleE6P5StatusText => '▮ Sabırlı tehdit';
+
+  @override
+  String get puzzleE6P5DangerHint => 'Veziri bağla ve sıkıştır.';
+
+  @override
+  String get puzzleE6P5FailureHint => 'Tek başına bağlamak yetmiyor.';
+
+  @override
+  String get puzzleE6P5SuccessExplanation => 'BAĞ BİR TEHDİDE DÖNÜŞÜR';
+
+  @override
   String get settingsLanguage => 'Dil';
 
   @override
@@ -318,6 +378,12 @@ class AppL10nTr extends AppL10n {
   String get episodeEp5Tagline => 'Şahı kurtar. Tekrar. Ve tekrar.';
 
   @override
+  String get episodeEp6Title => 'TEHDİDİ BAĞLA';
+
+  @override
+  String get episodeEp6Tagline => 'Hareket edemeyen tehdit.';
+
+  @override
   String episodeBestRun(int count) {
     return 'En iyi tur: $count';
   }
@@ -380,6 +446,9 @@ class AppL10nTr extends AppL10n {
   String get recordTitle_ep3HoldTheLine => 'Hattı Tut';
 
   @override
+  String get recordTitle_ep6PinTheThreat => 'Tehdidi Bağla';
+
+  @override
   String get recordTitle_ep4TheOtherSide => 'Diğer Taraf';
 
   @override
@@ -417,6 +486,9 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get recordDescriptionLocked_ep3HoldTheLine => 'Bölüm 3\'ü bitir.';
+
+  @override
+  String get recordDescriptionLocked_ep6PinTheThreat => 'Bölüm 6\'yı bitir.';
 
   @override
   String get recordDescriptionLocked_ep4TheOtherSide => 'Bölüm 4\'ü bitir.';
@@ -462,6 +534,9 @@ class AppL10nTr extends AppL10n {
 
   @override
   String get recordDescriptionUnlocked_ep3HoldTheLine => 'Bölüm 3 bitti.';
+
+  @override
+  String get recordDescriptionUnlocked_ep6PinTheThreat => 'Bölüm 6 bitti.';
 
   @override
   String get recordDescriptionUnlocked_ep4TheOtherSide => 'Diğer taraf yürüdü.';

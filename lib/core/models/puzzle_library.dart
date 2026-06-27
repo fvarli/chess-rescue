@@ -252,6 +252,35 @@ class PuzzleLibrary {
         ),
       ],
     ),
+    // ── PR-17 — Episode 6 "Pin the Threat" canonical puzzles.
+    // Each rescue is a long-range move that lies a friendly piece on a line
+    // connecting the enemy attacker to a more valuable enemy piece behind
+    // it; the attacker can no longer leave the pin line to deliver mate.
+    PuzzleTemplate(
+      archetype: RescueArchetype.pinDefense,
+      puzzle: _e6p1FirstPin,
+      decoyPool: [Square(0, 5), Square(2, 0)], // a6, c1
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.pinDefense,
+      puzzle: _e6p2DiagonalPin,
+      decoyPool: [], // f1's natural decoys are already in legalMoves
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.pinDefense,
+      puzzle: _e6p3PinViaRank,
+      decoyPool: [Square(0, 5), Square(2, 0)], // a6, c1
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.pinDefense,
+      puzzle: _e6p4CrossPin,
+      decoyPool: [Square(4, 2)], // e3
+    ),
+    PuzzleTemplate(
+      archetype: RescueArchetype.pinDefense,
+      puzzle: _e6p5PinAndThreat,
+      decoyPool: [Square(4, 4)], // e5
+    ),
   ];
 
   // ── Puzzle 1 — Knight rescue (REAL).
@@ -1437,6 +1466,428 @@ class PuzzleLibrary {
     failureHint: 'The bishop is still there. Take it.',
     successExplanation: 'THE KNIGHT TAKES THE BISHOP',
     threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ════════════════════════════════════════════════════════════════════
+  // PR-17 — Episode 6 "Pin the Threat" canonical puzzles. All five share
+  // the pin-defense motif: white's single move places a long-range piece
+  // on a line behind the attacker, freezing it against a more valuable
+  // enemy piece. Stationary king (always white K g1 or e1), one rescue,
+  // 3-5 plausible decoys. PROTOTYPE — hand-authored, manually
+  // move-reviewed; not engine-validated (matches the a4/b1/b3/b4/cc2/cam1
+  // expansion-puzzle convention).
+  // ════════════════════════════════════════════════════════════════════
+
+  // ── E6P1 — First Pin (PROTOTYPE).
+  // Archetype: PIN DEFENSE (vertical, against king). Black queen at h3
+  // threatens Qxg2# (the bishop on c6 defends g2). White plays Rh1 — the
+  // rook lands on the h-file behind the queen, pinning it against the
+  // black king on h8. The queen can no longer leave the h-file to deliver
+  // mate. Decoys: any other rook move on rank 1 or the a-file.
+  static const Puzzle _e6p1FirstPin = Puzzle(
+    id: 'e6p1-first-pin',
+    title: 'First pin',
+    statusText: '▮ Sliding threat',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wR',
+        type: PieceType.rook,
+        color: PieceColor.light,
+        file: 0,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 2,
+      ),
+      Piece(
+        id: 'bB',
+        type: PieceType.bishop,
+        color: PieceColor.dark,
+        file: 2,
+        rank: 5,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-h7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(0, 0), // a1 (the rook)
+    legalMoves: [
+      Square(7, 0), // h1 * (the pin)
+      Square(4, 0), // e1
+      Square(1, 0), // b1
+      Square(0, 4), // a5
+      Square(0, 7), // a8
+    ],
+    rescueTo: Square(7, 0), // h1
+    rescueNotation: 'Rh1',
+    dangerHint: 'Lock the file behind the threat.',
+    failureHint: "That move doesn't tie the attacker down.",
+    successExplanation: 'THE LINE HOLDS THE QUEEN',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── E6P2 — Diagonal Pin (PROTOTYPE).
+  // Archetype: PIN DEFENSE (long diagonal, against king). Black queen at
+  // f3 looms one diagonal step from the white king on g1 and threatens
+  // Qf1+. White plays Bg2 — the bishop lands on the a8-h1 long diagonal
+  // behind the queen, pinning it against the black king on a8. The
+  // queen can no longer cross to its mate without exposing its king.
+  static const Puzzle _e6p2DiagonalPin = Puzzle(
+    id: 'e6p2-diagonal-pin',
+    title: 'Diagonal pin',
+    statusText: '▮ Diagonal danger',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wB',
+        type: PieceType.bishop,
+        color: PieceColor.light,
+        file: 5,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 2,
+      ),
+      Piece(
+        id: 'bP-a7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-c7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 2,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(5, 0), // f1 (the bishop)
+    legalMoves: [
+      Square(6, 1), // g2 * (the long-diagonal pin)
+      Square(4, 1), // e2
+      Square(3, 2), // d3
+      Square(2, 3), // c4
+      Square(0, 5), // a6
+    ],
+    rescueTo: Square(6, 1), // g2
+    rescueNotation: 'Bg2',
+    dangerHint: 'Cross the diagonal behind the queen.',
+    failureHint: 'The diagonal still belongs to the queen.',
+    successExplanation: 'THE BISHOP TIES THE QUEEN',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── E6P3 — Pin via Rank (PROTOTYPE).
+  // Archetype: PIN DEFENSE (horizontal, against king). Black queen at g4
+  // lines up directly above the white king on the g-file; only the f2
+  // pawn shelters the king. The queen threatens to swing onto the
+  // mating diagonal next move. White plays Ra4 — the rook stretches
+  // across the 4th rank, pinning the queen against the black king at h4.
+  // The queen can move along the 4th rank but cannot leave it.
+  static const Puzzle _e6p3PinViaRank = Puzzle(
+    id: 'e6p3-pin-via-rank',
+    title: 'Pin via rank',
+    statusText: '▮ Rank threat',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wR',
+        type: PieceType.rook,
+        color: PieceColor.light,
+        file: 0,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'wP-g2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 6,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 3,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 3,
+      ),
+      Piece(
+        id: 'bP-a7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(0, 0), // a1 (the rook)
+    legalMoves: [
+      Square(0, 3), // a4 * (the rank pin)
+      Square(0, 1), // a2
+      Square(0, 2), // a3
+      Square(1, 0), // b1
+      Square(4, 0), // e1
+    ],
+    rescueTo: Square(0, 3), // a4
+    rescueNotation: 'Ra4',
+    dangerHint: 'Stretch your line across the rank.',
+    failureHint: 'The queen still finds the diagonal.',
+    successExplanation: 'THE RANK SHACKLES THE QUEEN',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── E6P4 — Cross-Pin (PROTOTYPE).
+  // Archetype: PIN DEFENSE (two attackers, one line). Black has stacked a
+  // queen at h3 and a rook at h6 on the h-file, both threatening Qxg2#
+  // (or Rxh1+ if the rook gets there first). White plays Rh1 — one move
+  // pins both attackers against the black king at h8. Neither can leave
+  // the h-file without exposing the king.
+  static const Puzzle _e6p4CrossPin = Puzzle(
+    id: 'e6p4-cross-pin',
+    title: 'Cross-pin',
+    statusText: '▮ Two attackers',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 6,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wR',
+        type: PieceType.rook,
+        color: PieceColor.light,
+        file: 0,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 2,
+      ),
+      Piece(
+        id: 'bR',
+        type: PieceType.rook,
+        color: PieceColor.dark,
+        file: 7,
+        rank: 5,
+      ),
+      Piece(
+        id: 'bB',
+        type: PieceType.bishop,
+        color: PieceColor.dark,
+        file: 2,
+        rank: 5,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(0, 0), // a1 (the rook)
+    legalMoves: [
+      Square(7, 0), // h1 * (cross-pin)
+      Square(4, 0), // e1
+      Square(1, 0), // b1
+      Square(0, 3), // a4
+      Square(0, 7), // a8
+    ],
+    rescueTo: Square(7, 0), // h1
+    rescueNotation: 'Rh1',
+    dangerHint: 'One line can hold them both.',
+    failureHint: 'Only one attacker is tied down.',
+    successExplanation: 'ONE PIN, TWO ATTACKERS',
+    threatenedKing: Square(6, 0), // g1
+    isPrototype: true,
+  );
+
+  // ── E6P5 — Pin and Counter-Threat (PROTOTYPE).
+  // Archetype: PIN DEFENSE (with follow-up threat). Black queen at b4
+  // threatens a mating move. White plays Bd2 — the bishop pins the queen
+  // along the b4-e1 diagonal against the king's square, AND simultaneously
+  // threatens the black bishop at a5. The pin defuses the immediate
+  // threat; the follow-up forces black to react instead of attacking.
+  static const Puzzle _e6p5PinAndThreat = Puzzle(
+    id: 'e6p5-pin-and-threat',
+    title: 'Pin and threat',
+    statusText: '▮ Patient threat',
+    pieces: [
+      Piece(
+        id: 'wK',
+        type: PieceType.king,
+        color: PieceColor.light,
+        file: 4,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wB',
+        type: PieceType.bishop,
+        color: PieceColor.light,
+        file: 2,
+        rank: 0,
+      ),
+      Piece(
+        id: 'wP-f2',
+        type: PieceType.pawn,
+        color: PieceColor.light,
+        file: 5,
+        rank: 1,
+      ),
+      Piece(
+        id: 'bK',
+        type: PieceType.king,
+        color: PieceColor.dark,
+        file: 4,
+        rank: 7,
+      ),
+      Piece(
+        id: 'bQ',
+        type: PieceType.queen,
+        color: PieceColor.dark,
+        file: 1,
+        rank: 3,
+      ),
+      Piece(
+        id: 'bB',
+        type: PieceType.bishop,
+        color: PieceColor.dark,
+        file: 0,
+        rank: 4,
+      ),
+      Piece(
+        id: 'bP-f7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 5,
+        rank: 6,
+      ),
+      Piece(
+        id: 'bP-g7',
+        type: PieceType.pawn,
+        color: PieceColor.dark,
+        file: 6,
+        rank: 6,
+      ),
+    ],
+    tappableSquare: Square(2, 0), // c1 (the bishop)
+    legalMoves: [
+      Square(3, 1), // d2 * (pin + threat)
+      Square(4, 2), // e3 (decoy: just blocks queen's diagonal, no pin)
+      Square(1, 1), // b2
+      Square(0, 2), // a3
+      Square(5, 3), // f4
+    ],
+    rescueTo: Square(3, 1), // d2
+    rescueNotation: 'Bd2',
+    dangerHint: 'Bind the queen and turn the screw.',
+    failureHint: "A pin alone won't do it here.",
+    successExplanation: 'THE PIN BECOMES A THREAT',
+    threatenedKing: Square(4, 0), // e1
     isPrototype: true,
   );
 }

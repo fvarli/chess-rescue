@@ -23,6 +23,8 @@ IconData? symbolFor(String recordId) {
       return Icons.close;
     case 'ep3-hold-the-line':
       return Icons.horizontal_rule;
+    case 'ep6-pin-the-threat':
+      return Icons.lock_outline;
     case 'ep4-the-other-side':
       return Icons.flip;
     case 'against-the-odds':
@@ -54,6 +56,8 @@ String recordTitleFor(String id, AppL10n l) {
       return l.recordTitle_ep2EndTheThreat;
     case 'ep3-hold-the-line':
       return l.recordTitle_ep3HoldTheLine;
+    case 'ep6-pin-the-threat':
+      return l.recordTitle_ep6PinTheThreat;
     case 'ep4-the-other-side':
       return l.recordTitle_ep4TheOtherSide;
     case 'against-the-odds':
@@ -85,6 +89,8 @@ String recordDescriptionLockedFor(String id, AppL10n l) {
       return l.recordDescriptionLocked_ep2EndTheThreat;
     case 'ep3-hold-the-line':
       return l.recordDescriptionLocked_ep3HoldTheLine;
+    case 'ep6-pin-the-threat':
+      return l.recordDescriptionLocked_ep6PinTheThreat;
     case 'ep4-the-other-side':
       return l.recordDescriptionLocked_ep4TheOtherSide;
     case 'against-the-odds':
@@ -116,6 +122,8 @@ String recordDescriptionUnlockedFor(String id, AppL10n l) {
       return l.recordDescriptionUnlocked_ep2EndTheThreat;
     case 'ep3-hold-the-line':
       return l.recordDescriptionUnlocked_ep3HoldTheLine;
+    case 'ep6-pin-the-threat':
+      return l.recordDescriptionUnlocked_ep6PinTheThreat;
     case 'ep4-the-other-side':
       return l.recordDescriptionUnlocked_ep4TheOtherSide;
     case 'against-the-odds':

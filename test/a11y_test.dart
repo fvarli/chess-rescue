@@ -155,7 +155,7 @@ void main() {
       await tester.pumpWidget(ChessRescueApp(store: store));
       await tester.pump();
 
-      expect(find.bySemanticsLabel('RECORDS, 0 / 13'), findsOneWidget);
+      expect(find.bySemanticsLabel('RECORDS, 0 / 14'), findsOneWidget);
       handle.dispose();
     });
 

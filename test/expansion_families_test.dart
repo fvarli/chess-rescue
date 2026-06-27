@@ -34,8 +34,11 @@ void main() {
   final pool = PuzzleLibrary.expansionTemplates;
 
   group('expansion pool shape', () {
-    test('contains the Tier-1 families and Sprint V1 additions', () {
-      expect(pool.length, 6);
+    test('contains the Tier-1 families, Sprint V1 additions, and ep6', () {
+      // PR-17 adds the 5 ep6 pin-defense puzzles to expansionTemplates so
+      // SessionComposer can resolve them by id via the templates+expansion
+      // union. They live alongside the existing 6 expansion puzzles.
+      expect(pool.length, 11);
       expect(pool.map((t) => t.puzzle.id).toList(), [
         'a4-the-breakaway',
         'b1-the-martyr',
@@ -43,6 +46,11 @@ void main() {
         'b4-the-cross-check',
         'cc2-bishop-captures-shield',
         'cam1-knight-takes-bishop',
+        'e6p1-first-pin',
+        'e6p2-diagonal-pin',
+        'e6p3-pin-via-rank',
+        'e6p4-cross-pin',
+        'e6p5-pin-and-threat',
       ]);
     });
 
