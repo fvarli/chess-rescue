@@ -23,6 +23,10 @@ Debug-only puzzle/variation gallery (separate entrypoint, tree-shaken from relea
 flutter run -t lib/debug/instance_gallery.dart -d linux
 ```
 
+Developing on a physical Android phone (native Wireless debugging, and the `.dev` debug/profile
+application ID that lets the local build sit beside the Google Play install): see
+`docs/android-device-workflow.md`.
+
 ## Release (Android)
 
 ```sh
