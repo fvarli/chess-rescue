@@ -51,6 +51,28 @@ android {
     }
 
     buildTypes {
+        // Local development only. The debug build installs under a distinct
+        // application ID so it can sit side-by-side with the Google Play
+        // production install on a physical device — `flutter run` would
+        // otherwise hit a signing mismatch against the Play build and
+        // uninstall it (data and all) to force the install through.
+        // Release identity and signing are deliberately untouched.
+        getByName("debug") {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+
+        // `profile` is created by the Flutter Gradle plugin via
+        // initWith(debug), but that copy happens while the plugin is applied —
+        // before this block runs — so it does NOT inherit the suffix above.
+        // Verified: without this, `flutter build apk --profile` produces the
+        // production application ID. Profile runs are used for on-device
+        // performance passes, so it needs the same isolation.
+        getByName("profile") {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
